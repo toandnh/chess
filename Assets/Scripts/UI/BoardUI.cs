@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Chess.Game {
-	public class BoardUI : MonoBehaviour
-	{
+	public class BoardUI : MonoBehaviour {
 		const float pieceDepth = -0.1f;
 		
 		public BoardTheme boardTheme;
+		public PieceTheme pieceTheme;
 		public bool isWhiteBottom = true;
 
 		MeshRenderer[, ] squareRenderers;
@@ -44,6 +44,17 @@ namespace Chess.Game {
 			}
 
 			ResetSquareColor();
+		}
+
+		public void UpdatePosition(Board board) {
+			for (int file = 0; file < 8; file++) {
+				for (int rank = 0; rank < 8; rank++) {
+					Coord coord = new Coord(file, rank);
+					int piece = board.square[BoardRepresentation.IndexFromCoord(coord.fileIndex, coord.rankIndex)];
+					squarePieceRenderers[file, rank].sprite = pieceTheme.GetPieceSprite(piece);
+					squarePieceRenderers[file, rank].transform.position = PositionFromCoord(file, rank, pieceDepth);
+				}
+			}
 		}
 
 		public Vector3 PositionFromCoord(int file, int rank, float depth = 0) {

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Default
   m_EditorClassIdentifier: 
   whitePieces:
-    pawn: {fileID: 0}
-    rook: {fileID: 0}
-    knight: {fileID: 0}
-    bishop: {fileID: 0}
-    king: {fileID: 0}
-    queen: {fileID: 0}
+    pawn: {fileID: -273603093, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    rook: {fileID: -345055049, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    knight: {fileID: -774538332, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    bishop: {fileID: 416456713, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    king: {fileID: 1291401904, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    queen: {fileID: -1484348960, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
   blackPieces:
-    pawn: {fileID: 0}
-    rook: {fileID: 0}
-    knight: {fileID: 0}
-    bishop: {fileID: 0}
-    king: {fileID: 0}
-    queen: {fileID: 0}
+    pawn: {fileID: 810583983, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    rook: {fileID: -813732695, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    knight: {fileID: 707578632, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    bishop: {fileID: -946940733, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    king: {fileID: 496631487, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    queen: {fileID: 2040747784, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}

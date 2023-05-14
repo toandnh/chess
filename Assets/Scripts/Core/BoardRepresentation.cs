@@ -1,7 +1,7 @@
 namespace Chess {
 	public static class BoardRepresentation {
-		public const string fileName = "abcdefgh";
-		public const string rankName = "12345678";
+		public const string FileNames = "abcdefgh";
+		public const string RankNames = "12345678";
 
 		public const int a1 = 0;
 		public const int b1 = 1;
@@ -46,7 +46,7 @@ namespace Chess {
 		}
 
 		public static string SquareNameFromCoord(int fileIndex, int rankIndex) {
-			return fileName[fileIndex] + "" + (rankIndex + 1);
+			return FileNames[fileIndex] + "" + (rankIndex + 1);
 		}
 
 		public static string SquareNameFromCoord(Coord coord) {

@@ -362,6 +362,7 @@ GameObject:
   m_Component:
   - component: {fileID: 877292612}
   - component: {fileID: 877292613}
+  - component: {fileID: 877292614}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -393,8 +394,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 877292610}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6811aa85b84f1444a9371668d7a4ecce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &877292614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 877292610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: adb41eb76e5e5654fb82f2cdec7ce7f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   boardTheme: {fileID: 11400000, guid: b82148fd55e5df444a5d0b4d4d4cb8d0, type: 2}
+  pieceTheme: {fileID: 11400000, guid: f9416be9639b2da429130d4335c19384, type: 2}
   isWhiteBottom: 1

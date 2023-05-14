@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Default
   m_EditorClassIdentifier: 
   lightSquares:
-    normal: {r: 0.764151, g: 0.5830301, b: 0.5579744, a: 0}
+    normal: {r: 0.94509804, g: 0.8509804, b: 0.7529412, a: 0}
   darkSquares:
-    normal: {r: 0.754717, g: 0.48862064, b: 0.22356708, a: 0}
+    normal: {r: 0.6627451, g: 0.47843137, b: 0.39607844, a: 0}
