@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightSquares:
     normal: {r: 0.94509804, g: 0.8509804, b: 0.7529412, a: 0}
-    selected: {r: 0.6226415, g: 0.6167828, b: 0.36066213, a: 0}
+    selected: {r: 0.8609319, g: 0.8773585, b: 0.450267, a: 0}
   darkSquares:
     normal: {r: 0.6627451, g: 0.47843137, b: 0.39607844, a: 0}
-    selected: {r: 0.3490566, g: 0.34230554, b: 0.10998575, a: 0}
+    selected: {r: 0.8301887, g: 0.8215959, b: 0.37906727, a: 0}

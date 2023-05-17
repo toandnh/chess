@@ -105,7 +105,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: King_W
+      name: KingW
       rect:
         serializedVersion: 2
         x: 0
@@ -113,7 +113,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -126,7 +126,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: King_B
+      name: KingB
       rect:
         serializedVersion: 2
         x: 0
@@ -134,7 +134,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -147,7 +147,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Queen_W
+      name: QueenW
       rect:
         serializedVersion: 2
         x: 333
@@ -155,7 +155,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,7 +168,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Queen_B
+      name: QueenB
       rect:
         serializedVersion: 2
         x: 333
@@ -176,7 +176,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -189,7 +189,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bishop_W
+      name: BishopW
       rect:
         serializedVersion: 2
         x: 666
@@ -197,7 +197,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -210,7 +210,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bishop_B
+      name: BishopB
       rect:
         serializedVersion: 2
         x: 666
@@ -218,7 +218,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -231,7 +231,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_W
+      name: KnightW
       rect:
         serializedVersion: 2
         x: 999
@@ -239,7 +239,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -252,7 +252,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_B
+      name: KnightB
       rect:
         serializedVersion: 2
         x: 999
@@ -260,7 +260,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -273,7 +273,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rook_W
+      name: RookW
       rect:
         serializedVersion: 2
         x: 1332
@@ -281,7 +281,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -294,7 +294,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Rook_B
+      name: RookB
       rect:
         serializedVersion: 2
         x: 1332
@@ -302,7 +302,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -315,7 +315,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Pawn_W
+      name: PawnW
       rect:
         serializedVersion: 2
         x: 1665
@@ -323,7 +323,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -336,7 +336,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Pawn_B
+      name: PawnB
       rect:
         serializedVersion: 2
         x: 1665
@@ -344,7 +344,7 @@ TextureImporter:
         width: 333
         height: 333
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -367,18 +367,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Bishop_B: -946940733
-      Bishop_W: 416456713
-      King_B: 496631487
-      King_W: 1291401904
-      Knight_B: 707578632
-      Knight_W: -774538332
-      Pawn_B: 810583983
-      Pawn_W: -273603093
-      Queen_B: 2040747784
-      Queen_W: -1484348960
-      Rook_B: -813732695
-      Rook_W: -345055049
+      BishopB: -946940733
+      BishopW: 416456713
+      KingB: 496631487
+      KingW: 1291401904
+      KnightB: 707578632
+      KnightW: -774538332
+      PawnB: 810583983
+      PawnW: -273603093
+      QueenB: 2040747784
+      QueenW: -1484348960
+      RookB: -813732695
+      RookW: -345055049
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
