@@ -9,6 +9,7 @@ namespace Chess.Game {
 		[System.Serializable]
 		public struct SquareColors {
 			public Color normal;
+			public Color selected;
 		}
 	}
 }

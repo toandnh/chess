@@ -2,10 +2,13 @@ using System.Collections.Generic;
 
 namespace Chess {
 	public class Board {
-		public int[] square;
+		public int[] Square;
+
+		public bool WhiteToMove;
+		public int ColorToMove;
 
 		void Initialize() {
-			square = new int[64];
+			Square = new int[64];
 		}
 
 		public void LoadStartPosition() {
@@ -19,8 +22,21 @@ namespace Chess {
 
 			for (int squareIndex = 0; squareIndex < 64; squareIndex++) {
 				int piece = loadedPosition.squares[squareIndex];
-				square[squareIndex] = piece;
+				Square[squareIndex] = piece;
 			}
+
+			WhiteToMove = loadedPosition.whiteToMove;
+			ColorToMove = WhiteToMove ? Piece.White : Piece.Black;
+		}
+
+		public void MakeMove(Move move) {
+			int moveFrom = move.StartSquare;
+			int moveTo = move.TargetSquare;
+			int movePiece = Square[moveFrom];
+
+			// Update the board representation
+			Square[moveTo] = movePiece;
+			Square[moveFrom] = 0;
 		}
 	}
 }

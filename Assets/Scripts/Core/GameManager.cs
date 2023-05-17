@@ -4,6 +4,21 @@ using UnityEngine;
 
 namespace Chess.Game {
 	public class GameManager : MonoBehaviour {
+		public enum State { Playing }
+
+		public event System.Action<Move> onMoveMade;
+
+		public enum PlayerType {Human, AI}
+
+		State gameState;
+
+		public PlayerType whitePlayerType;
+		public PlayerType blackPlayerType;
+
+		Player whitePlayer;
+		Player blackPlayer;
+		Player playerToMove;
+
 		public Board board { get; private set; }
 		BoardUI boardUI;
 
@@ -11,14 +26,67 @@ namespace Chess.Game {
 			board = new Board();
 			boardUI = FindObjectOfType<BoardUI>();
 
-			NewGame();
+			NewGame(whitePlayerType, blackPlayerType);
 		}
 
-		void NewGame() {
+		void Update() {
+			if (gameState == State.Playing) {
+				playerToMove.Update();
+			}
+		}
+
+		public void NewGame(bool humanPlayWhite) {
+			boardUI.SetPerspective(humanPlayWhite);
+			NewGame(PlayerType.Human, PlayerType.Human);
+		}
+
+		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
 			board.LoadStartPosition();
-			Debug.Log(board);
+
 			boardUI.UpdatePosition(board);
-			Debug.Log(boardUI);
+			boardUI.ResetSquareColor();
+
+			CreatePlayer(ref whitePlayer, whitePlayerType);
+			CreatePlayer(ref blackPlayer, blackPlayerType);
+
+			gameState = State.Playing;
+
+			NotifyPlayerToMove();
+		}
+
+		void CreatePlayer(ref Player player, PlayerType playerType) {
+			if (player != null) {
+				player.onMoveChosen -= OnMoveChosen;
+			}
+
+			if (playerType == PlayerType.Human) {
+				player = new HumanPlayer(board);
+			} else {
+
+			}
+			player.onMoveChosen += OnMoveChosen;
+		}
+
+		void NotifyPlayerToMove() {
+			gameState = GetGameState();
+
+			if (gameState == State.Playing) {
+				playerToMove = board.WhiteToMove ? whitePlayer : blackPlayer;
+				playerToMove.NotifyTurnToMove();
+			}
+		}
+
+		State GetGameState() {
+			return State.Playing;
+		}
+
+		void OnMoveChosen(Move move) {
+			board.MakeMove(move);
+
+			onMoveMade?.Invoke(move);
+			boardUI.OnMoveMade(board, move);
+
+			NotifyPlayerToMove();
 		}
 	}
 }
