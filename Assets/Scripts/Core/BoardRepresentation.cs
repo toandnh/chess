@@ -26,11 +26,11 @@ namespace Chess {
 		}
 		
 		public static int FileIndex(int squareIndex) {
-			return squareIndex >> 3;
+			return squareIndex & 0b000111;
 		}
 
 		public static int RankIndex(int squareIndex) {
-			return squareIndex & 0b000111;
+			return squareIndex >> 3;
 		}
 
 		public static int IndexFromCoord(int fileIndex, int rankIndex) {

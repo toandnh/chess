@@ -5,6 +5,14 @@ namespace Chess {
 		const ushort startSquareMask = 0b000000000111111;
 		const ushort targetSquareMask = 0b000111111000000;
 
+		public Move(ushort moveValue) {
+			this.moveValue = moveValue;
+		}
+
+		public Move(int startSquare, int targetSquare) {
+			moveValue = (ushort) (startSquare | targetSquare << 6);
+		}
+
 		public int StartSquare {
 			get {
 				return moveValue & startSquareMask;
@@ -14,6 +22,12 @@ namespace Chess {
 		public int TargetSquare {
 			get {
 				return (moveValue & targetSquareMask) >> 6;
+			}
+		}
+
+		public static Move InvalidMove {
+			get {
+				return new Move(0);
 			}
 		}
 
@@ -33,20 +47,6 @@ namespace Chess {
 			get {
 				return BoardRepresentation.SquareNameFromIndex(StartSquare) + "-" + BoardRepresentation.SquareNameFromIndex(TargetSquare);
 			}
-		}
-
-		public static Move InvalidMove {
-			get {
-				return new Move(0);
-			}
-		}
-
-		public Move(ushort moveValue) {
-			this.moveValue = moveValue;
-		}
-
-		public Move(int startSquare, int targetSquare) {
-			moveValue = (ushort) (startSquare | targetSquare << 6);
 		}
 	}
 }

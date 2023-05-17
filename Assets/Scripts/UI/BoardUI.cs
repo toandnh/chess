@@ -4,12 +4,15 @@ using UnityEngine;
 
 namespace Chess.Game {
 	public class BoardUI : MonoBehaviour {
-		const float pieceDepth = -0.1f;
-		const float pieceDragDepth = -0.2f;
-		
 		public BoardTheme boardTheme;
 		public PieceTheme pieceTheme;
+
+		const float pieceDepth = -0.1f;
+		const float pieceDragDepth = -0.2f;
+
 		public bool isWhiteBottom = true;
+
+		Move lastMove;
 
 		MeshRenderer[, ] squareRenderers;
 		SpriteRenderer[, ] squarePieceRenderers;
@@ -48,8 +51,15 @@ namespace Chess.Game {
 		}
 
 		public void OnMoveMade(Board board, Move move) {
+			lastMove = move;
+
 			UpdatePosition(board);
 			ResetSquareColor();
+		}
+
+		void HighlightMove(Move move) {
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.lightSquares.moveFromHighLight, boardTheme.darkSquares.moveFromHighLight);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.lightSquares.moveToHighLight, boardTheme.darkSquares.moveToHighLight);
 		}
 
 		public void SetPerspective(bool whitePov) {
@@ -94,11 +104,15 @@ namespace Chess.Game {
 			ResetSquareColor();
 		}
 
-		public void ResetSquareColor() {
+		public void ResetSquareColor(bool highlight = true) {
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
 					SetSquareColor(new Coord(file, rank), boardTheme.lightSquares.normal, boardTheme.darkSquares.normal);
 				}
+			}
+
+			if (highlight && !lastMove.IsInvalid) {
+				HighlightMove(lastMove);
 			}
 		}
 
@@ -117,6 +131,10 @@ namespace Chess.Game {
 					squareRenderers[file, rank].transform.position = PositionFromCoord(file, rank, 0);
 					squarePieceRenderers[file, rank].transform.position = PositionFromCoord(file, rank, pieceDepth);
 				}
+			}
+
+			if (!lastMove.IsInvalid) {
+				HighlightMove(lastMove);
 			}
 		}
 

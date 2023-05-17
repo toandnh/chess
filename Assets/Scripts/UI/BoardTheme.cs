@@ -10,6 +10,8 @@ namespace Chess.Game {
 		public struct SquareColors {
 			public Color normal;
 			public Color selected;
+			public Color moveFromHighLight;
+			public Color moveToHighLight;
 		}
 	}
 }

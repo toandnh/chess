@@ -37,6 +37,10 @@ namespace Chess {
 			// Update the board representation
 			Square[moveTo] = movePiece;
 			Square[moveFrom] = 0;
+
+			// Switch side to move
+			WhiteToMove = !WhiteToMove;
+			ColorToMove = WhiteToMove ? Piece.White : Piece.Black;
 		}
 	}
 }
