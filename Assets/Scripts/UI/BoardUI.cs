@@ -12,10 +12,18 @@ namespace Chess.Game {
 
 		public bool isWhiteBottom = true;
 
+		public Sprite[] textSpriteList;
+		public Sprite[] numberSpriteList;
+
 		Move lastMove;
 
 		MeshRenderer[, ] squareRenderers;
+		MeshRenderer[, ] fileLabelRenderers;
+		MeshRenderer[, ] rankLabelRenderers;
 		SpriteRenderer[, ] squarePieceRenderers;
+		SpriteRenderer[, ] squareTextRenderers;
+		SpriteRenderer[, ] squareNumberRenderers;
+
 
 		void Awake() {
 			CreateBoard();
@@ -24,7 +32,11 @@ namespace Chess.Game {
 		void CreateBoard() {
 			Shader squareShader = Shader.Find("Unlit/Color");
 			squareRenderers = new MeshRenderer[8, 8];
+			fileLabelRenderers = new MeshRenderer[8, 1];
+			rankLabelRenderers = new MeshRenderer[1, 8];
 			squarePieceRenderers = new SpriteRenderer[8, 8];
+			squareTextRenderers = new SpriteRenderer[8, 1];
+			squareNumberRenderers = new SpriteRenderer[1, 8];
 
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
@@ -42,9 +54,49 @@ namespace Chess.Game {
 					SpriteRenderer pieceRenderer = new GameObject("Piece").AddComponent<SpriteRenderer>();
 					pieceRenderer.transform.parent = square;
 					pieceRenderer.transform.position = PositionFromCoord(file, rank, pieceDepth);
-					pieceRenderer.transform.localScale = Vector3.one * 100 / (2000 / 6f);
+					//pieceRenderer.transform.localScale = Vector3.one * 100 / (2000 / 6f);
 					squarePieceRenderers[file, rank] = pieceRenderer;
 				}
+			}
+
+			for (int file = 0; file < 8; file++) {
+				// Create square
+				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
+				square.parent = transform;
+				square.name = "file" + file.ToString();
+				square.position = PositionFromCoord(file, -1, 0);
+				Material squareMaterial = new Material(squareShader);
+
+				fileLabelRenderers[file, 0] = square.gameObject.GetComponent<MeshRenderer>();
+				fileLabelRenderers[file, 0].material = squareMaterial;
+				fileLabelRenderers[file, 0].material.color = boardTheme.labelSquares;
+
+				// Create text sprite renderer for current square
+				SpriteRenderer textRenderer = new GameObject("File").AddComponent<SpriteRenderer>();
+				textRenderer.sprite = textSpriteList[file];
+				textRenderer.transform.parent = square;
+				textRenderer.transform.position = PositionFromCoord(file, -1, pieceDepth);
+				squareTextRenderers[file, 0] = textRenderer;
+			}
+
+			for (int rank = 0; rank < 8; rank++) {
+				// Create square
+				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
+				square.parent = transform;
+				square.name = "rank" + rank.ToString();
+				square.position = PositionFromCoord(-1, rank, 0);
+				Material squareMaterial = new Material(squareShader);
+
+				rankLabelRenderers[0, rank] = square.gameObject.GetComponent<MeshRenderer>();
+				rankLabelRenderers[0, rank].material = squareMaterial;
+				rankLabelRenderers[0, rank].material.color = boardTheme.labelSquares;
+
+				// Create number sprite renderer for current square
+				SpriteRenderer numberRenderer = new GameObject("Rank").AddComponent<SpriteRenderer>();
+				numberRenderer.sprite = numberSpriteList[rank];
+				numberRenderer.transform.parent = square;
+				numberRenderer.transform.position = PositionFromCoord(-1, rank, pieceDepth);
+				squareNumberRenderers[0, rank] = numberRenderer;
 			}
 
 			ResetSquareColor();
@@ -58,8 +110,8 @@ namespace Chess.Game {
 		}
 
 		void HighlightMove(Move move) {
-			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.lightSquares.moveFromHighLight, boardTheme.darkSquares.moveFromHighLight);
-			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.lightSquares.moveToHighLight, boardTheme.darkSquares.moveToHighLight);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.lightSquares.highlighted, boardTheme.darkSquares.highlighted);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.lightSquares.highlighted, boardTheme.darkSquares.highlighted);
 		}
 
 		public void SetPerspective(bool whitePov) {

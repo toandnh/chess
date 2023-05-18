@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Default
   m_EditorClassIdentifier: 
   whitePieces:
-    pawn: {fileID: -273603093, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    rook: {fileID: -345055049, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    knight: {fileID: -774538332, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    bishop: {fileID: 416456713, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    king: {fileID: 1291401904, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    queen: {fileID: -1484348960, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    pawn: {fileID: 21300000, guid: 9a9f360cf952cd740ac3a5f145082d30, type: 3}
+    rook: {fileID: 21300000, guid: 05ba667ff284789459ce54e940947575, type: 3}
+    knight: {fileID: 21300000, guid: e664c64586565504d8cc157286363258, type: 3}
+    bishop: {fileID: 21300000, guid: e09bde70069625a4aa97966c42215e60, type: 3}
+    king: {fileID: 21300000, guid: aff0f034f7c015c44bf457dda0b1ff45, type: 3}
+    queen: {fileID: 21300000, guid: 309c73ecab99a29489d56ee133a38ad3, type: 3}
   blackPieces:
-    pawn: {fileID: 810583983, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    rook: {fileID: -813732695, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    knight: {fileID: 707578632, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    bishop: {fileID: -946940733, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    king: {fileID: 496631487, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
-    queen: {fileID: 2040747784, guid: 06aaa270c0dbc3a44a074bd1db9c84c2, type: 3}
+    pawn: {fileID: 21300000, guid: 533f0fe374ee5744bbad4e9c5e6e79ce, type: 3}
+    rook: {fileID: 21300000, guid: 66d426a0609761844955f1c34786b8c7, type: 3}
+    knight: {fileID: 21300000, guid: 877e2238f447c6c4f8e4b7a1cd5c5959, type: 3}
+    bishop: {fileID: 21300000, guid: b5677a133471ddb4eaeefcfa69e2a53b, type: 3}
+    king: {fileID: 21300000, guid: d1f2a64c27aaab44696f385473b29d27, type: 3}
+    queen: {fileID: 21300000, guid: 01f6d5c58b1925f4592c7cd73ab81f70, type: 3}

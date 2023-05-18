@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 06aaa270c0dbc3a44a074bd1db9c84c2
+guid: 2248bb1d68bf3394ab9f72de091d3ac7
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -33,7 +33,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 25
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -105,13 +105,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: KingW
+      name: letter_a
       rect:
         serializedVersion: 2
         x: 0
-        y: 333
-        width: 333
-        height: 333
+        y: 1
+        width: 8
+        height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -119,20 +119,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6e60500c8e1b8114fa962b0cd9f5a016
-      internalID: 1291401904
+      spriteID: 7b184250cbb4d7149bc1e29fe35e95ee
+      internalID: -459050572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KingB
+      name: letter_b
       rect:
         serializedVersion: 2
-        x: 0
+        x: 23
         y: 0
-        width: 333
-        height: 333
+        width: 6
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,20 +140,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4da53c6add2647c44a09de4c2d25b1b4
-      internalID: 496631487
+      spriteID: 60f39f8e8513ee74e8dedac0a48efbff
+      internalID: -2025773798
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: QueenW
+      name: letter_c
       rect:
         serializedVersion: 2
-        x: 333
-        y: 333
-        width: 333
-        height: 333
+        x: 45
+        y: 1
+        width: 6
+        height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -161,20 +161,41 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94bd8fb46bc72ad49aa6a7df6d40c530
-      internalID: -1484348960
+      spriteID: f7554e59a1fc9014c9b95651487c4d2b
+      internalID: -463024079
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: QueenB
+      name: letter_d
       rect:
         serializedVersion: 2
-        x: 333
+        x: 67
+        y: 1
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3289e011d985f434599c00c6a18600fc
+      internalID: 1300741697
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: letter_e
+      rect:
+        serializedVersion: 2
+        x: 89
         y: 0
-        width: 333
-        height: 333
+        width: 6
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -182,20 +203,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bda5129c3d97b3b448181ecc07fb7ca9
-      internalID: 2040747784
+      spriteID: 0a7624cfbc00122468a58c4e71a52190
+      internalID: 719533122
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BishopW
+      name: letter_f
       rect:
         serializedVersion: 2
-        x: 666
-        y: 333
-        width: 333
-        height: 333
+        x: 111
+        y: 1
+        width: 6
+        height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,20 +224,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba1f384d782117d45924d0080fe8ca0e
-      internalID: 416456713
+      spriteID: 3cb333672b8a577409829fb3709dcfda
+      internalID: 1408346954
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: BishopB
+      name: letter_g
       rect:
         serializedVersion: 2
-        x: 666
-        y: 0
-        width: 333
-        height: 333
+        x: 133
+        y: 1
+        width: 6
+        height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -224,20 +245,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dabc16bee0c8d4745b7da10751799639
-      internalID: -946940733
+      spriteID: eb1c6e39dbf54a64f81a5b5bdfe14083
+      internalID: 1766289133
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: KnightW
+      name: letter_h
       rect:
         serializedVersion: 2
-        x: 999
-        y: 333
-        width: 333
-        height: 333
+        x: 155
+        y: 1
+        width: 6
+        height: 8
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -245,113 +266,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03460e837d2d798448a93bd17530b344
-      internalID: -774538332
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: KnightB
-      rect:
-        serializedVersion: 2
-        x: 999
-        y: 0
-        width: 333
-        height: 333
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fa25e4975ce0e574ca9e35e52d6c6042
-      internalID: 707578632
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RookW
-      rect:
-        serializedVersion: 2
-        x: 1332
-        y: 333
-        width: 333
-        height: 333
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 32fc1f5ca3f880f43a7820e258532ec6
-      internalID: -345055049
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: RookB
-      rect:
-        serializedVersion: 2
-        x: 1332
-        y: 0
-        width: 333
-        height: 333
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6403dc52811a5764a830be2bda5945ca
-      internalID: -813732695
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PawnW
-      rect:
-        serializedVersion: 2
-        x: 1665
-        y: 333
-        width: 333
-        height: 333
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bb2bb88c37804d942bc2a4ded3c8de0a
-      internalID: -273603093
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: PawnB
-      rect:
-        serializedVersion: 2
-        x: 1665
-        y: 0
-        width: 333
-        height: 333
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 113c7bff282e8cd40b73fc628238699b
-      internalID: 810583983
+      spriteID: 6274e9dbb12385940817806b96286377
+      internalID: -393656236
       vertices: []
       indices: 
       edges: []
@@ -367,18 +283,14 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      BishopB: -946940733
-      BishopW: 416456713
-      KingB: 496631487
-      KingW: 1291401904
-      KnightB: 707578632
-      KnightW: -774538332
-      PawnB: 810583983
-      PawnW: -273603093
-      QueenB: 2040747784
-      QueenW: -1484348960
-      RookB: -813732695
-      RookW: -345055049
+      letter_a: -459050572
+      letter_b: -2025773798
+      letter_c: -463024079
+      letter_d: 1300741697
+      letter_e: 719533122
+      letter_f: 1408346954
+      letter_g: 1766289133
+      letter_h: -393656236
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

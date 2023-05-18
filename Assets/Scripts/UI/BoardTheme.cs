@@ -3,6 +3,7 @@ using UnityEngine;
 namespace Chess.Game {
 	[CreateAssetMenu(menuName = "Theme/Board")]
 	public class BoardTheme : ScriptableObject {
+		public Color labelSquares;
 		public SquareColors lightSquares;
 		public SquareColors darkSquares;
 
@@ -10,8 +11,7 @@ namespace Chess.Game {
 		public struct SquareColors {
 			public Color normal;
 			public Color selected;
-			public Color moveFromHighLight;
-			public Color moveToHighLight;
+			public Color highlighted;
 		}
 	}
 }

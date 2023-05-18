@@ -12,9 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 534143ced25fd494c92dc8a999c14cc5, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
+  labelSquares: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0}
   lightSquares:
-    normal: {r: 0.94509804, g: 0.8509804, b: 0.7529412, a: 0}
+    normal: {r: 0.9882353, g: 0.95686275, b: 0.88235295, a: 0}
     selected: {r: 0.8609319, g: 0.8773585, b: 0.450267, a: 0}
+    highlighted: {r: 0.8627451, g: 0.8784314, b: 0.4509804, a: 0}
   darkSquares:
-    normal: {r: 0.6627451, g: 0.47843137, b: 0.39607844, a: 0}
+    normal: {r: 0.019607844, g: 0.44313726, b: 0.21568628, a: 0}
     selected: {r: 0.8301887, g: 0.8215959, b: 0.37906727, a: 0}
+    highlighted: {r: 0.83137256, g: 0.8235294, b: 0.38039216, a: 0}
