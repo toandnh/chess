@@ -21,7 +21,7 @@ namespace Chess {
 		public const int g8 = 62;
 		public const int h8 = 63;
 
-		public static bool LightSquare(int fileIndex, int rankIndex) {
+		public static bool IsLightSquare(int fileIndex, int rankIndex) {
 			return (fileIndex + rankIndex) % 2 != 0;
 		}
 		

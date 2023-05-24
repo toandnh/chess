@@ -904,15 +904,6 @@ MonoBehaviour:
   boardTheme: {fileID: 11400000, guid: b82148fd55e5df444a5d0b4d4d4cb8d0, type: 2}
   pieceTheme: {fileID: 11400000, guid: f9416be9639b2da429130d4335c19384, type: 2}
   isWhiteBottom: 1
-  numberSpriteList:
-  - {fileID: -1728795953, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: -488313384, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: 1192007485, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: -560771354, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: 1381384973, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: 1907068951, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: 913375793, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
-  - {fileID: 776275730, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
   textSpriteList:
   - {fileID: -459050572, guid: 2248bb1d68bf3394ab9f72de091d3ac7, type: 3}
   - {fileID: -2025773798, guid: 2248bb1d68bf3394ab9f72de091d3ac7, type: 3}
@@ -922,3 +913,12 @@ MonoBehaviour:
   - {fileID: 1408346954, guid: 2248bb1d68bf3394ab9f72de091d3ac7, type: 3}
   - {fileID: 1766289133, guid: 2248bb1d68bf3394ab9f72de091d3ac7, type: 3}
   - {fileID: -393656236, guid: 2248bb1d68bf3394ab9f72de091d3ac7, type: 3}
+  numberSpriteList:
+  - {fileID: -1728795953, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: -488313384, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: 1192007485, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: -560771354, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: 1381384973, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: 1907068951, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: 913375793, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
+  - {fileID: 776275730, guid: 215943dc9dd533a438676c97bc927e06, type: 3}

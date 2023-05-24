@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Chess.Game {
 	public abstract class Player {
-		public event System.Action<Move> onMoveChosen;
+		public event System.Action<Move> OnMoveChosen;
 
 		public abstract void Update();
 
 		public abstract void NotifyTurnToMove();
 
 		public virtual void ChoseMove(Move move) {
-			onMoveChosen?.Invoke(move);
+			OnMoveChosen?.Invoke(move);
 		}
 	}
 }

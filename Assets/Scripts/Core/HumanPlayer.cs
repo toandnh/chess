@@ -109,8 +109,25 @@ namespace Chess.Game {
 			int startIndex = BoardRepresentation.IndexFromCoord(startSquare);
 			int targetIndex = BoardRepresentation.IndexFromCoord(targetSquare);
 
+			bool isLegalMove = false;
+
 			Move chosenMove = new Move(startIndex, targetIndex);
-			bool isLegalMove = true;
+			MoveGenerator moveGenerator = new MoveGenerator();
+
+			var legalMoves = moveGenerator.GenerateMoves(board);
+
+			//Debug.Log(BoardRepresentation.FileNames[startSquare.fileIndex] + "" + BoardRepresentation.RankNames[startSquare.rankIndex] + " -> " 
+			//					+ BoardRepresentation.FileNames[targetSquare.fileIndex] + "" + BoardRepresentation.RankNames[targetSquare.rankIndex]);
+			//Debug.Log(legalMoves.Count);
+
+			for (int i = 0; i < legalMoves.Count; i++) {
+				var legalMove = legalMoves[i];
+				if (legalMove.StartSquare == startIndex && legalMove.TargetSquare == targetIndex) {
+					isLegalMove = true;
+					chosenMove = legalMove;
+					break;
+				}
+			}
 
 			if (isLegalMove) {
 				currentState = InputState.None;

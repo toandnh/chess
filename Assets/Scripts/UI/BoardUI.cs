@@ -14,6 +14,7 @@ namespace Chess.Game {
 
 		public Sprite[] textSpriteList;
 		public Sprite[] numberSpriteList;
+		
 
 		Move lastMove;
 

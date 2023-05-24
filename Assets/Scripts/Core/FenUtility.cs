@@ -3,17 +3,17 @@ using System.Collections.Generic;
 namespace Chess {
 	public static class FenUtility {
 		public class LoadedPositionInfo {
-			public int[] squares;
-			public bool whiteCastleKingSide;
-			public bool whiteCastleQueenSide;
-			public bool blackCastleKingSide;
-			public bool blackCastleQueenSide;
-			public int epFile;
-			public bool whiteToMove;
-			public int plyCount;
+			public int[] Squares;
+			public bool WhiteCastleKingSide;
+			public bool WhiteCastleQueenSide;
+			public bool BlackCastleKingSide;
+			public bool BlackCastleQueenSide;
+			public int EpFile;
+			public bool WhiteToMove;
+			public int PlyCount;
 
 			public LoadedPositionInfo() {
-				squares = new int[64];
+				Squares = new int[64];
 			}
 		}
 
@@ -45,30 +45,30 @@ namespace Chess {
 					} else {
 						int pieceColor = char.IsUpper(symbol) ? Piece.White : Piece.Black;
 						int pieceType = pieceTypeFromSymbol[char.ToLower(symbol)];
-						loadedPositionInfo.squares[rank * 8 + file] = pieceColor | pieceType;
+						loadedPositionInfo.Squares[rank * 8 + file] = pieceColor | pieceType;
 						file++;
 					}
 				}
 			}
 
 			// Active color
-			loadedPositionInfo.whiteToMove = sections[1] == "w";
+			loadedPositionInfo.WhiteToMove = sections[1] == "w";
 
 			// Castling rights
 			string castlingRights = sections[2];
-			loadedPositionInfo.whiteCastleKingSide = castlingRights.Contains('K');
-			loadedPositionInfo.whiteCastleQueenSide = castlingRights.Contains('Q');
-			loadedPositionInfo.blackCastleKingSide = castlingRights.Contains('k');
-			loadedPositionInfo.blackCastleQueenSide = castlingRights.Contains('q');
+			loadedPositionInfo.WhiteCastleKingSide = castlingRights.Contains('K');
+			loadedPositionInfo.WhiteCastleQueenSide = castlingRights.Contains('Q');
+			loadedPositionInfo.BlackCastleKingSide = castlingRights.Contains('k');
+			loadedPositionInfo.BlackCastleQueenSide = castlingRights.Contains('q');
 
 			// Possible enPassant target square
-			char enPassantFileName = sections[3][0];
+			string enPassantFileName = sections[3][0].ToString();
 			if (BoardRepresentation.FileNames.Contains(enPassantFileName)) {
-				loadedPositionInfo.epFile = BoardRepresentation.FileNames.IndexOf(enPassantFileName) + 1;
+				loadedPositionInfo.EpFile = BoardRepresentation.FileNames.IndexOf(enPassantFileName) + 1;
 			}
 
 			// Halfmove clock
-			int.TryParse(sections[4], out loadedPositionInfo.plyCount);
+			int.TryParse(sections[4], out loadedPositionInfo.PlyCount);
 
 			return loadedPositionInfo;
 		}

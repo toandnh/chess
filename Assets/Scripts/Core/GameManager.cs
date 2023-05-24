@@ -25,7 +25,7 @@ namespace Chess.Game {
 		Player blackPlayer;
 		Player playerToMove;
 
-		public Board board { get; private set; }
+		Board board;
 		BoardUI boardUI;
 
 		void Start() {
@@ -68,7 +68,7 @@ namespace Chess.Game {
 
 		void CreatePlayer(ref Player player, PlayerType playerType) {
 			if (player != null) {
-				player.onMoveChosen -= OnMoveChosen;
+				player.OnMoveChosen -= OnMoveChosen;
 			}
 
 			if (playerType == PlayerType.Human) {
@@ -76,7 +76,7 @@ namespace Chess.Game {
 			} else {
 
 			}
-			player.onMoveChosen += OnMoveChosen;
+			player.OnMoveChosen += OnMoveChosen;
 		}
 
 		void NotifyPlayerToMove() {
