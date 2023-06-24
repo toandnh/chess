@@ -195,7 +195,7 @@ namespace Chess.Game {
 		}
 
 		public bool CanGetSquareUnderMouse(Vector2 mouseWorld, out Coord selectedCoord) {
-			int file = (int) (mouseWorld.x + 4);
+			int file = (int) (mouseWorld.x + 7);
 			int rank = (int) (mouseWorld.y + 4);
 
 			if (!IsWhiteBottom) {
@@ -252,9 +252,9 @@ namespace Chess.Game {
 
 		public Vector3 PositionFromCoord(int file, int rank, float depth = 0) {
 			if (IsWhiteBottom) {
-				return new Vector3(-3.5f + file, -3.5f + rank, depth);
+				return new Vector3(-6.5f + file, -3.5f + rank, depth);
 			} else {
-				return new Vector3(-3.5f + 7 - file, -3.5f + 7 - rank, depth); 
+				return new Vector3(-6.5f + 7 - file, -3.5f + 7 - rank, depth); 
 			}
 		}
 
