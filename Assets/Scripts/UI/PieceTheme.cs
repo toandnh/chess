@@ -5,11 +5,11 @@ namespace Chess.Game {
 	public class PieceTheme : ScriptableObject {
 		[System.Serializable]
 		public class PieceSprites {
-			public Sprite pawn, rook, knight, bishop, king, queen;
+			public Sprite pawn, knight, bishop, rook, queen, king;
 			
 			public Sprite this [int i] {
 				get {
-					return new Sprite[] { pawn, rook, knight, bishop, king, queen }[i];
+					return new Sprite[] { pawn, knight, bishop, rook, queen, king }[i];
 				}
 			}
 		}
@@ -23,20 +23,20 @@ namespace Chess.Game {
 			switch(Piece.PieceType(piece)) {
 				case Piece.Pawn:
 					return pieceSprites.pawn;
-				case Piece.Rook:
-					return pieceSprites.rook;
 				case Piece.Knight:
 					return pieceSprites.knight;
 				case Piece.Bishop:
 					return pieceSprites.bishop;
-				case Piece.King:
-					return pieceSprites.king;
+					case Piece.Rook:
+					return pieceSprites.rook;
 				case Piece.Queen:
 					return pieceSprites.queen;
+				case Piece.King:
+					return pieceSprites.king;
 				default:
 					return null;
 			}
-		} 
+		}
 	}
 	
 }

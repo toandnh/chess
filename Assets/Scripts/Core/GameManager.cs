@@ -6,7 +6,7 @@ namespace Chess.Game {
 	public class GameManager : MonoBehaviour {
 		public enum State { Playing }
 
-		public event System.Action<Move> onMoveMade;
+		public event System.Action<Move> OnMoveMade;
 
 		AudioSource Capture;
 		AudioSource Castle;
@@ -27,6 +27,8 @@ namespace Chess.Game {
 
 		Board board;
 		BoardUI boardUI;
+
+		string testPromotionFen = "8/6P1/3k1K2/8/8/8/8/8 w - - 0 1";
 
 		void Start() {
 			board = new Board();
@@ -53,7 +55,8 @@ namespace Chess.Game {
 		}
 
 		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
-			board.LoadStartPosition();
+			//board.LoadStartPosition();
+			board.LoadCustomPosition(testPromotionFen);
 
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor();
@@ -95,10 +98,10 @@ namespace Chess.Game {
 		void OnMoveChosen(Move move) {
 			board.MakeMove(move);
 
-			onMoveMade?.Invoke(move);
-			MoveSelf.Play();
+			OnMoveMade?.Invoke(move);
 			
 			boardUI.OnMoveMade(board, move);
+			MoveSelf.Play();
 
 			NotifyPlayerToMove();
 		}

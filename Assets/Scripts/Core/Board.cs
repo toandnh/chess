@@ -8,6 +8,8 @@ namespace Chess {
 
 		public PieceList PieceList;
 
+		public int PromotePiece { get; set; }
+
 		public const int WhiteIndex = 0;
 		public const int BlackIndex = 1;
 
@@ -22,10 +24,16 @@ namespace Chess {
 			Square = new int[64];
 
 			PieceList = new PieceList();
+
+			PromotePiece = -1;
 		}
 
 		public void LoadStartPosition() {
 			LoadPosition(FenUtility.StartFen);
+		}
+
+		public void LoadCustomPosition(string fen) {
+			LoadPosition(fen);
 		}
 
 		public void LoadPosition(string fen) {
@@ -59,7 +67,7 @@ namespace Chess {
 
 		public void MakeMove(Move move) {
 			CurrentGameState = 0;
-			
+
 			int moveFrom = move.StartSquare;
 			int moveTo = move.TargetSquare;
 
@@ -86,12 +94,23 @@ namespace Chess {
 
 					break;
 				case Move.Flag.EnPassant:
-					int epSquare = moveTo + (WhiteToMove ? -8 : 8);
+					int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
 
-					CurrentGameState |= (ushort) (Square[epSquare] << 8);
-					Square[epSquare] = Piece.None;
+					CurrentGameState |= (ushort) (Square[epPawnSquare] << 8);
+					Square[epPawnSquare] = Piece.None;
 
-					PieceList.Remove(movePieceType, OpponentColor, epSquare);
+					PieceList.Remove(movePieceType, OpponentColor, epPawnSquare);
+
+					break;
+				case Move.Flag.Promote:
+					PieceList.Remove(movePieceType, ColorToMove, moveTo);
+
+					movePiece = ColorToMove | PromotePiece;
+					movePieceType = Piece.PieceType(movePiece);
+
+					PieceList.Add(movePieceType, ColorToMove, moveTo);
+
+					PromotePiece = -1;
 
 					break;
 				default:

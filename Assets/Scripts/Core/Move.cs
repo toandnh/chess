@@ -5,7 +5,8 @@ namespace Chess {
 			public const int None = 0;
 			public const int EnPassant = 1;
 			public const int Castling = 2;
-			public const int PawnTwoForward = 7;
+			public const int PawnTwoForward = 3;
+			public const int Promote = 4;
 		}
 		readonly ushort moveValue;
 

@@ -134,11 +134,16 @@ namespace Chess {
 
 			foreach (int pawnSquare in pawns) {
 				int rank = RankIndex(pawnSquare);
+				int promotionRank = board.WhiteToMove ? 7 : 0;
 
 				int squareOneForward = pawnSquare + pawnOffset;
 				// Forward moves
 				if (board.Square[squareOneForward] == Piece.None) {
-					moves.Add(new Move(pawnSquare, squareOneForward));
+					if (RankIndex(squareOneForward) == promotionRank) {
+						moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.Promote));
+					} else {
+						moves.Add(new Move(pawnSquare, squareOneForward));
+					}
 
 					// Pawn on starting square, can move two forward
 					if (rank == startRank) {
@@ -159,13 +164,15 @@ namespace Chess {
 
 						// Regular capture
 						if (Piece.IsColor(targetSquarePiece, opponentColor)) {
-							moves.Add(new Move(pawnSquare, targetSquare));
+							if (RankIndex(targetSquare) == promotionRank) {
+								moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.Promote));
+							} else {
+								moves.Add(new Move(pawnSquare, targetSquare));
+							}
 						}
 
 						// En-passant capture
 						if (targetSquare == enPassantSquare) {
-							//int epCaptureSquare = targetSquare + (board.WhiteToMove ? -8 : 8);
-
 							moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.EnPassant));
 						}
 					}

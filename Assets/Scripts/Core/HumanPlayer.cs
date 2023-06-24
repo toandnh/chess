@@ -7,7 +7,8 @@ namespace Chess.Game {
 		public enum InputState {
 			None,
 			PieceSelected,
-			DraggingPiece
+			DraggingPiece,
+			PromotePiece
 		}
 
 		InputState currentState;
@@ -43,6 +44,9 @@ namespace Chess.Game {
 				case InputState.DraggingPiece:
 					HandleDragMovement(mousePos);
 					break;
+				case InputState.PromotePiece:
+					HandleMenuPieceSelection(mousePos);
+					break;
 				default:
 					break;
 			}
@@ -54,12 +58,49 @@ namespace Chess.Game {
 
 		void HandlePieceSelection(Vector2 mousePos) {
 			if (Input.GetMouseButtonDown(0)) {
-				if (boardUI.TryGetSquareUnderMouse(mousePos, out selectedPieceSquare)) {
+				if (boardUI.CanGetSquareUnderMouse(mousePos, out selectedPieceSquare)) {
 					int index = BoardRepresentation.IndexFromCoord(selectedPieceSquare);
 					// If square contains a piece, select that piece for dragging
 					if (Piece.IsColor(board.Square[index], board.ColorToMove)) {
 						currentState = InputState.DraggingPiece;
 						boardUI.SelectSquare(selectedPieceSquare);
+					}
+				}
+			}
+		}
+
+		void HandleMenuPieceSelection(Vector2 mousePos) {
+			if (Input.GetMouseButtonDown(0)) {
+				if (boardUI.CanGetSquareUnderMouse(mousePos, out selectedPieceSquare)) {
+					int index = BoardRepresentation.IndexFromCoord(selectedPieceSquare);
+
+					// If square is menu square
+					int startSquareIndex = boardUI.PromoteStartSquareIndex;
+					int endSquareIndex = startSquareIndex - 8 * 4;
+
+					// Cancel move
+					if (index == endSquareIndex) {
+						board.PromotePiece = -1;
+						boardUI.DestroyPromoteMenu();
+						currentState = InputState.None;
+						return ;
+					}
+
+					for (int squareIndex = startSquareIndex; squareIndex > endSquareIndex; squareIndex -= 8) {
+						if (index == squareIndex) {
+							int pieceIndex = 7 - BoardRepresentation.RankIndex(squareIndex);
+
+							// Map the location of the pieces in the menu to its number representation
+							// E.g. The rook appears second in the menu, and its number representation is Piece.Rook = 4; 5 - 1 = 4
+							// See Piece class for more information on number representation of pieces
+							board.PromotePiece = 5 - pieceIndex;
+
+							boardUI.DestroyPromoteMenu();
+							currentState = InputState.None;
+
+							Move chosenMove = new Move(startSquareIndex - 8, startSquareIndex, Move.Flag.Promote);
+							ChoseMove(chosenMove);
+						}
 					}
 				}
 			}
@@ -81,8 +122,9 @@ namespace Chess.Game {
 
 		void HandlePiecePlacement(Vector2 mousePos) {
 			Coord targetSquare;
-
-			if (boardUI.TryGetSquareUnderMouse(mousePos, out targetSquare)) {
+			
+			if (boardUI.CanGetSquareUnderMouse(mousePos, out targetSquare)) {
+				// Return the piece to its original position
 				if (targetSquare.Equals(selectedPieceSquare)) {
 					boardUI.ResetPiecePosition(selectedPieceSquare);
 					if (currentState == InputState.DraggingPiece) {
@@ -91,6 +133,7 @@ namespace Chess.Game {
 						currentState = InputState.None;
 						boardUI.DeselectSquare(selectedPieceSquare);
 					}
+				// Try to move the piece to its target position
 				} else {
 					int targetIndex = BoardRepresentation.IndexFromCoord(targetSquare.fileIndex, targetSquare.rankIndex);
 					if (Piece.IsColor(board.Square[targetIndex], board.ColorToMove) && board.Square[targetIndex] != 0) {
@@ -116,10 +159,6 @@ namespace Chess.Game {
 
 			var legalMoves = moveGenerator.GenerateMoves(board);
 
-			//Debug.Log(BoardRepresentation.FileNames[startSquare.fileIndex] + "" + BoardRepresentation.RankNames[startSquare.rankIndex] + " -> " 
-			//					+ BoardRepresentation.FileNames[targetSquare.fileIndex] + "" + BoardRepresentation.RankNames[targetSquare.rankIndex]);
-			//Debug.Log(legalMoves.Count);
-
 			for (int i = 0; i < legalMoves.Count; i++) {
 				var legalMove = legalMoves[i];
 				if (legalMove.StartSquare == startIndex && legalMove.TargetSquare == targetIndex) {
@@ -130,6 +169,15 @@ namespace Chess.Game {
 			}
 
 			if (isLegalMove) {
+				// Promotion move
+				if (chosenMove.MoveFlag == Move.Flag.Promote) {
+					CancelPieceSelection();
+					boardUI.CreatePromoteMenu(chosenMove.TargetSquare, board.ColorToMove);
+					boardUI.PromoteStartSquareIndex = targetIndex;
+					currentState = InputState.PromotePiece;
+					return ;
+				}
+
 				currentState = InputState.None;
 				ChoseMove(chosenMove);
 			} else {

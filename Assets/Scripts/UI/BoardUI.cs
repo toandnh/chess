@@ -7,23 +7,32 @@ namespace Chess.Game {
 		public BoardTheme boardTheme;
 		public PieceTheme pieceTheme;
 
+		public Sprite[] textSpriteList;
+		public Sprite[] numberSpriteList;
+
+		public bool IsWhiteBottom = true;
+		public bool PromoteMenuOnScreen = false;
+
+		public int PromoteStartSquareIndex { get; set; }
+
 		const float pieceDepth = -0.1f;
 		const float pieceDragDepth = -0.2f;
 
-		public bool isWhiteBottom = true;
-
-		public Sprite[] textSpriteList;
-		public Sprite[] numberSpriteList;
-		
+		const float menuDepth = -0.3f;
+		const float menuChoiceDepth = -0.4f;
 
 		Move lastMove;
 
 		MeshRenderer[, ] squareRenderers;
+		SpriteRenderer[, ] squarePieceRenderers;
+
 		MeshRenderer[, ] fileLabelRenderers;
 		MeshRenderer[, ] rankLabelRenderers;
-		SpriteRenderer[, ] squarePieceRenderers;
 		SpriteRenderer[, ] squareTextRenderers;
 		SpriteRenderer[, ] squareNumberRenderers;
+
+		MeshRenderer[, ] squareMenuRenderers;
+		SpriteRenderer[, ] menuPieceRenderers;
 
 
 		void Awake() {
@@ -32,10 +41,12 @@ namespace Chess.Game {
 
 		void CreateBoard() {
 			Shader squareShader = Shader.Find("Unlit/Color");
+
 			squareRenderers = new MeshRenderer[8, 8];
+			squarePieceRenderers = new SpriteRenderer[8, 8];
+
 			fileLabelRenderers = new MeshRenderer[8, 1];
 			rankLabelRenderers = new MeshRenderer[1, 8];
-			squarePieceRenderers = new SpriteRenderer[8, 8];
 			squareTextRenderers = new SpriteRenderer[8, 1];
 			squareNumberRenderers = new SpriteRenderer[1, 8];
 
@@ -103,6 +114,54 @@ namespace Chess.Game {
 			ResetSquareColor();
 		}
 
+		public void CreatePromoteMenu(int startSquare, int colorIndex) {
+			PromoteMenuOnScreen = true;
+
+			Shader squareShader = Shader.Find("Unlit/Color");
+
+			squareMenuRenderers = new MeshRenderer[1, 5];
+			menuPieceRenderers = new SpriteRenderer[1, 5];
+
+			int mask = IsWhiteBottom ? 0b01000 : 0b10000;
+
+			int file = BoardRepresentation.FileIndex(startSquare);
+			int rank = BoardRepresentation.RankIndex(startSquare);
+
+			for (int index = 0; index < 4; index++) {
+				// Map index to piece representation
+				int pieceType = 5 - index;
+
+				// Create square
+				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
+				square.parent = transform;
+				square.name = "menu" + index.ToString();
+				square.position = PositionFromCoord(file, rank, menuDepth);
+				Material squareMaterial = new Material(squareShader);
+
+				squareMenuRenderers[0, index] = square.gameObject.GetComponent<MeshRenderer>();
+				squareMenuRenderers[0, index].material = squareMaterial;
+				squareMenuRenderers[0, index].material.color = boardTheme.menuSquares;
+
+				// Create options sprite
+				SpriteRenderer pieceChoiceRenderer = new GameObject("Menu").AddComponent<SpriteRenderer>();
+				pieceChoiceRenderer.sprite = pieceTheme.GetPieceSprite(mask | pieceType);
+				pieceChoiceRenderer.transform.parent = square;
+				pieceChoiceRenderer.transform.position = PositionFromCoord(file, rank, menuChoiceDepth);
+				menuPieceRenderers[0, index] = pieceChoiceRenderer;
+
+				rank--;
+			}
+		}
+
+		public void DestroyPromoteMenu() {
+			foreach (MeshRenderer meshRenderer in squareMenuRenderers) {
+				Destroy(meshRenderer);
+			}
+			foreach (SpriteRenderer spriteRenderer in menuPieceRenderers) {
+				Destroy(spriteRenderer);
+			}
+		}
+
 		public void OnMoveMade(Board board, Move move) {
 			lastMove = move;
 
@@ -116,7 +175,7 @@ namespace Chess.Game {
 		}
 
 		public void SetPerspective(bool whitePov) {
-			isWhiteBottom = whitePov;
+			IsWhiteBottom = whitePov;
 			ResetSquarePosition();
 		}
 
@@ -135,11 +194,11 @@ namespace Chess.Game {
 			squarePieceRenderers[pieceCoord.fileIndex, pieceCoord.rankIndex].transform.position = new Vector3(mousePos.x, mousePos.y, pieceDragDepth);
 		}
 
-		public bool TryGetSquareUnderMouse(Vector2 mouseWorld, out Coord selectedCoord) {
+		public bool CanGetSquareUnderMouse(Vector2 mouseWorld, out Coord selectedCoord) {
 			int file = (int) (mouseWorld.x + 4);
 			int rank = (int) (mouseWorld.y + 4);
 
-			if (!isWhiteBottom) {
+			if (!IsWhiteBottom) {
 				file = 7 - file;
 				rank = 7 - rank;
 			}
@@ -192,7 +251,7 @@ namespace Chess.Game {
 		}
 
 		public Vector3 PositionFromCoord(int file, int rank, float depth = 0) {
-			if (isWhiteBottom) {
+			if (IsWhiteBottom) {
 				return new Vector3(-3.5f + file, -3.5f + rank, depth);
 			} else {
 				return new Vector3(-3.5f + 7 - file, -3.5f + 7 - rank, depth); 
