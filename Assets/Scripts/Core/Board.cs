@@ -29,7 +29,8 @@ namespace Chess {
 		}
 
 		public void LoadStartPosition() {
-			LoadPosition(FenUtility.StartFen);
+			LoadPosition(FenUtility.StartFenWhite);
+			//LoadPosition(FenUtility.StartFenBlack);
 		}
 
 		public void LoadCustomPosition(string fen) {
@@ -76,7 +77,13 @@ namespace Chess {
 
 			int moveFlag = move.MoveFlag;
 
-			// Update position in piece lists
+			// Remove piece - if taken, from piece list
+			if (Square[moveTo] != 0) { // already check for color when generating legal moves
+				int targetPieceType = Piece.PieceType(Square[moveTo]);
+				PieceList.Remove(targetPieceType, OpponentColor, moveTo);
+			}
+
+			// Update move piece's position in piece lists
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
 
 			// Handle special move

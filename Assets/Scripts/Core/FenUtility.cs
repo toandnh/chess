@@ -25,7 +25,8 @@ namespace Chess {
 			['k'] = Piece.King,
 			['q'] = Piece.Queen
 		};
-		public const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+		public const string StartFenWhite = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+		public const string StartFenBlack = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr w KQkq - 0 1";
 
 		public static LoadedPositionInfo PositionFromFen(string fen) {
 			LoadedPositionInfo loadedPositionInfo = new LoadedPositionInfo();

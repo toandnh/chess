@@ -174,7 +174,7 @@ namespace Chess.Game {
 			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.lightSquares.highlighted, boardTheme.darkSquares.highlighted);
 		}
 
-		public void SetPerspective(bool whitePov) {
+		public void SetWhitePerspective(bool whitePov) {
 			IsWhiteBottom = whitePov;
 			ResetSquarePosition();
 		}

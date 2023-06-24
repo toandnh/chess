@@ -28,7 +28,7 @@ namespace Chess.Game {
 		Board board;
 		BoardUI boardUI;
 
-		string testPromotionFen = "8/6P1/3k1K2/8/8/8/8/8 w - - 0 1";
+		//string testPromotionFen = "8/6P1/3k1K2/8/8/8/8/8 w - - 0 1";
 
 		void Start() {
 			board = new Board();
@@ -50,13 +50,13 @@ namespace Chess.Game {
 		}
 
 		public void NewGame(bool humanPlayWhite) {
-			boardUI.SetPerspective(humanPlayWhite);
+			boardUI.SetWhitePerspective(humanPlayWhite);
 			NewGame(PlayerType.Human, PlayerType.Human);
 		}
 
 		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
-			//board.LoadStartPosition();
-			board.LoadCustomPosition(testPromotionFen);
+			board.LoadStartPosition();
+			//board.LoadCustomPosition(testPromotionFen);
 
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor();
