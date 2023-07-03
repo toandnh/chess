@@ -20,6 +20,10 @@ namespace Chess {
 			return (piece & colorMask) == color;
 		}
 
+		public static int PieceColor(int piece) {
+			return piece & colorMask;
+		}
+
 		public static int PieceType(int piece) {
 			return piece & typeMask;
 		}

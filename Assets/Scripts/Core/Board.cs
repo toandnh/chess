@@ -8,13 +8,13 @@ namespace Chess {
 
 		public PieceList PieceList;
 
-		public int PromotePiece { get; set; }
-
 		public const int WhiteIndex = 0;
 		public const int BlackIndex = 1;
 
 		//
 		public uint CurrentGameState;
+
+		public int PromotePiece { get; set; }
 
 		public bool WhiteToMove;
 		public int ColorToMove;
@@ -77,18 +77,27 @@ namespace Chess {
 
 			int moveFlag = move.MoveFlag;
 
-			// Remove piece - if taken, from piece list
-			if (Square[moveTo] != 0) { // already check for color when generating legal moves
-				int targetPieceType = Piece.PieceType(Square[moveTo]);
-				PieceList.Remove(targetPieceType, OpponentColor, moveTo);
-			}
-
 			// Update move piece's position in piece lists
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
 
 			// Handle special move
 			switch (moveFlag) {
-				case Move.Flag.Castling:
+				case Move.Flag.EnPassant:
+					int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
+
+					CurrentGameState |= (ushort) (Square[epPawnSquare] << 8);
+					Square[epPawnSquare] = Piece.None;
+
+					// Remove opponent's pawn from the list
+					PieceList.Remove(movePieceType, OpponentColor, epPawnSquare);
+
+					break;
+				case Move.Flag.Capture:
+					int targetPieceType = Piece.PieceType(Square[moveTo]);
+					PieceList.Remove(targetPieceType, OpponentColor, moveTo);
+
+					break;
+				case Move.Flag.Castle:
 					bool kingside = moveTo == g1 || moveTo == g8;
 
 					int castlingRookFromIndex = kingside ? moveTo + 1 : moveTo - 2;
@@ -100,14 +109,7 @@ namespace Chess {
 					PieceList.Update(Piece.Rook, ColorToMove, castlingRookFromIndex, castlingRookToIndex);
 
 					break;
-				case Move.Flag.EnPassant:
-					int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
-
-					CurrentGameState |= (ushort) (Square[epPawnSquare] << 8);
-					Square[epPawnSquare] = Piece.None;
-
-					PieceList.Remove(movePieceType, OpponentColor, epPawnSquare);
-
+				case Move.Flag.Check:
 					break;
 				case Move.Flag.Promote:
 					PieceList.Remove(movePieceType, ColorToMove, moveTo);

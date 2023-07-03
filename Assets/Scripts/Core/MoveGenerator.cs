@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Chess {
 	using static BoardRepresentation;
 	using static PrecomputedMoveData;
+	using static BitBoardUtilities;
 
 	public class MoveGenerator {
 		List<Move> moves;
@@ -15,7 +17,16 @@ namespace Chess {
 		int friendlyColor;
 		int opponentColor;
 
+		
 		int friendlyColorIndex;
+
+		int friendlyKingSquare;
+		int opponentKingSquare;
+
+		ulong opponentThreatMap;
+		ulong verticalAndHorizontalCheckMap;
+		ulong diagonalCheckMap;
+		ulong knightCheckMap;
 
 		void Initialize() {
 			moves = new List<Move>(64);
@@ -26,6 +37,19 @@ namespace Chess {
 			opponentColor = board.OpponentColor;
 
 			friendlyColorIndex = board.WhiteToMove ? Board.WhiteIndex : Board.BlackIndex;
+
+			Dictionary<int, HashSet<int>> kings = board.PieceList.GetValue(Piece.King);
+			friendlyKingSquare = kings[friendlyColor].ToArray()[0];
+			opponentKingSquare = kings[opponentColor].ToArray()[0];
+
+			// Generate the maps
+			ThreatMapGenerator threatMapGenerator = new ThreatMapGenerator();
+			threatMapGenerator.GenerateThreatMaps(board);
+
+			opponentThreatMap = threatMapGenerator.OpponentThreatMap;
+			verticalAndHorizontalCheckMap = threatMapGenerator.VerticalAndHorizontalCheckMap;
+			diagonalCheckMap = threatMapGenerator.DiagonalCheckMap;
+			knightCheckMap = threatMapGenerator.KnightCheckMap;
 		}
 
 		public List<Move> GenerateMoves(Board board) {
@@ -34,7 +58,6 @@ namespace Chess {
 			Initialize();
 
 			GenerateKingMoves();
-
 			GenerateSlidingMoves();
 			GenerateKnightMoves();
 			GeneratePawnMoves();
@@ -43,28 +66,32 @@ namespace Chess {
 		}
 
 		void GenerateKingMoves() {
-			HashSet<int> king = board.PieceList.GetValue(Piece.King)[friendlyColor];
-			int kingSquare = king.ToArray()[0]; // There can only be one king of each color
+			int kingSquare = friendlyKingSquare;
 			for (int i = 0; i < KingMoves[kingSquare].Length; i++) {
 				int targetSquare = KingMoves[kingSquare][i];
 				int targetSquarePiece = board.Square[targetSquare];
 
+				int flag = Move.Flag.None;
+
 				// Skip if square is occupied by friendly piece
 				if (Piece.IsColor(targetSquarePiece, friendlyColor)) continue;
 
-				moves.Add(new Move(kingSquare, targetSquare));
+				// Flag this move as a capture move
+				if (Piece.IsColor(targetSquarePiece, opponentColor)) flag = Move.Flag.Capture;
+
+				moves.Add(new Move(kingSquare, targetSquare, flag));
 
 				// Castle kingside
 				if (targetSquare == f1 || targetSquare == f8) {
 					int castleKingsideSquare = targetSquare + 1;
 					if (board.Square[castleKingsideSquare] == Piece.None) {
-						moves.Add(new Move(kingSquare, castleKingsideSquare, Move.Flag.Castling));
+						moves.Add(new Move(kingSquare, castleKingsideSquare, Move.Flag.Castle));
 					}
 				// Castle queenside
 				} else if (targetSquare == d1 || targetSquare == d8) {
 					int castleQueensideSquare = targetSquare - 1;
 					if (board.Square[castleQueensideSquare] == Piece.None) {
-						moves.Add(new Move(kingSquare, castleQueensideSquare, Move.Flag.Castling));
+						moves.Add(new Move(kingSquare, castleQueensideSquare, Move.Flag.Castle));
 					}
 				}
 			}
@@ -73,34 +100,127 @@ namespace Chess {
 		void GenerateSlidingMoves() {
 			HashSet<int> rooks = board.PieceList.GetValue(Piece.Rook)[friendlyColor];
 			foreach (int rookSquare in rooks) {
-				GenerateSlidingPieceMoves(rookSquare, 0, 4);
+				int startDir = 0;
+				int endDir = 4;
+				// Piece is possibly pinned
+				if (HasSquare(opponentThreatMap, rookSquare)) {
+					if (IsPinned(rookSquare)) {
+						// Rook is pinned diagonally, skip this rook
+						if (IsAlignedDiagonally(rookSquare, friendlyKingSquare)) {
+							continue;
+						}
+						// Pinned vertically or horizontally, limit rook movement 
+						if (IsAlignedVertically(rookSquare, friendlyKingSquare)) {
+							startDir = 0;
+							endDir = 2;
+						} else {
+							startDir = 2;
+							endDir = 4;
+						}
+					}
+				}
+				GenerateSlidingPieceMoves(rookSquare, startDir, endDir);
 			}
 
 			HashSet<int> bishops = board.PieceList.GetValue(Piece.Bishop)[friendlyColor];
 			foreach (int bishopSquare in bishops) {
-				GenerateSlidingPieceMoves(bishopSquare, 4, 8);
+				int startDir = 4;
+				int endDir = 8;
+				// Piece is possibly pinned
+				if (HasSquare(opponentThreatMap, bishopSquare)) {
+					if (IsPinned(bishopSquare)) {
+						// Bishop is pinned vertically or horizontally, skip this bishop
+						if (!IsAlignedDiagonally(bishopSquare, friendlyKingSquare)) {
+							continue;
+						}
+						// Pinned diagonally, limit bishop movement 
+						if (Math.Abs(DirectionOffset(friendlyKingSquare, bishopSquare)) == NorthWest) {
+							startDir = 4;
+							endDir = 6;
+						} else {
+							startDir = 6;
+							endDir = 8;
+						}
+					}
+				}
+				GenerateSlidingPieceMoves(bishopSquare, startDir, endDir);
 			}
 
 			HashSet<int> queens = board.PieceList.GetValue(Piece.Queen)[friendlyColor];
 			foreach (int queenSquare in queens) {
-				GenerateSlidingPieceMoves(queenSquare, 0, 8);
+				int startDir = 0;
+				int endDir = 8;
+				// Piece is possibly pinned
+				if (HasSquare(opponentThreatMap, queenSquare)) {
+					if (IsPinned(queenSquare)) {
+						// Queen is pinned vertically or horizontally, limit movement to vertical or horizontal
+						if (!IsAlignedDiagonally(queenSquare, friendlyKingSquare)) {
+							if (Math.Abs(DirectionOffset(friendlyKingSquare, queenSquare)) == North) {
+								startDir = 0;
+								endDir = 2;
+							} else {
+								startDir = 2;
+								endDir = 4;
+							}
+						// Queen is pinned diagonally, limit movement to diagonal
+						} else {
+							if (Math.Abs(DirectionOffset(friendlyKingSquare, queenSquare)) == NorthWest) {
+								startDir = 4;
+								endDir = 6;
+							} else {
+								startDir = 6;
+								endDir = 8;
+							}
+						}
+					}
+				}
+				GenerateSlidingPieceMoves(queenSquare, startDir, endDir);
 			}
 		}
 
 		void GenerateSlidingPieceMoves(int startSquare, int startDirIndex, int endDirIndex) {
+			ulong slidingCheckMap = 0;
+			slidingCheckMap = endDirIndex <= 4 ? verticalAndHorizontalCheckMap : diagonalCheckMap;
+			slidingCheckMap = startDirIndex == 0 && endDirIndex == 8 ? verticalAndHorizontalCheckMap | diagonalCheckMap : slidingCheckMap;
+
 			for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++) {
 				int currentDirOffset = DirectionOffsets[dirIndex];
 				for (int n = 0; n < NumSquaresToEdge[startSquare][dirIndex]; n++) {
 					int targetSquare = startSquare + currentDirOffset * (n + 1);
 					int targetSquarePiece = board.Square[targetSquare];
 
+					int flag = Move.Flag.None;
+					bool haveToCapture = false;
+
 					// Block by friendly piece, stop looking in this direction
 					if (Piece.IsColor(targetSquarePiece, friendlyColor)) break;
 
-					moves.Add(new Move(startSquare, targetSquare));
+					// Flag this move as a capture move
+					if (targetSquarePiece != Piece.None && Piece.IsColor(targetSquarePiece, opponentColor)) {
+						flag = Move.Flag.Capture;
+						haveToCapture = true;
+					}
+
+					// Possible discovered check
+					if (HasSquare(slidingCheckMap, targetSquare)) {
+						if (IsDiscoveredCheck(targetSquare)) {
+							flag = Move.Flag.Check;
+						}
+					}
+
+					// Check move
+					if (HasSquare(slidingCheckMap, targetSquare)) {
+						if (flag == Move.Flag.Check) {
+							// Double check
+						} else {
+							flag = Move.Flag.Check;
+						}	
+					}
+
+					moves.Add(new Move(startSquare, targetSquare, flag));
 
 					// Block by opponent piece, have to capture
-					if (Piece.IsColor(targetSquarePiece, opponentColor)) break;
+					if (haveToCapture) break;
 				}
 			}
 		}
@@ -108,14 +228,42 @@ namespace Chess {
 		void GenerateKnightMoves() {
 			HashSet<int> knights = board.PieceList.GetValue(Piece.Knight)[friendlyColor];
 			foreach (int knightSquare in knights) {
+				// Piece is pinned, skip this piece
+				if (HasSquare(opponentThreatMap, knightSquare)) {
+					if (IsPinned(knightSquare)) {
+						continue;
+					}
+				}
+
 				for (int knightMoveIndex = 0; knightMoveIndex < KnightMoves[knightSquare].Length; knightMoveIndex++) {
 					int targetSquare = KnightMoves[knightSquare][knightMoveIndex];
 					int targetSquarePiece = board.Square[targetSquare];
 
+					int flag = Move.Flag.None;
+
 					// Skip if same color piece
 					if (Piece.IsColor(targetSquarePiece, friendlyColor)) continue;
 
-					moves.Add(new Move(knightSquare, targetSquare));
+					// Flag this move as a capture move
+					if (Piece.IsColor(targetSquarePiece, opponentColor)) flag = Move.Flag.Capture;
+
+					// Possible discovered check
+					if (HasSquare(verticalAndHorizontalCheckMap, targetSquare) || HasSquare(diagonalCheckMap, targetSquare)) {
+						if (IsDiscoveredCheck(knightSquare)) {
+							flag = Move.Flag.Check;
+						}
+					}
+
+					// Check move
+					if (HasSquare(knightCheckMap, targetSquare)) {
+						if (flag == Move.Flag.Check) {
+							// Double check
+						} else {
+							flag = Move.Flag.Check;
+						}	
+					}
+
+					moves.Add(new Move(knightSquare, targetSquare, flag));
 				}
 			}
 		}
@@ -167,7 +315,7 @@ namespace Chess {
 							if (RankIndex(targetSquare) == promotionRank) {
 								moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.Promote));
 							} else {
-								moves.Add(new Move(pawnSquare, targetSquare));
+								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.Capture));
 							}
 						}
 
@@ -178,6 +326,85 @@ namespace Chess {
 					}
 				}
 			}
+		}
+
+		bool IsPinned(int startSquare) {
+			if (!IsAligned(friendlyKingSquare, startSquare)) return false;
+			int searchDirOffset = -DirectionOffset(friendlyKingSquare, startSquare);
+			return HasAttackingPiece(startSquare, searchDirOffset, opponentColor) && 
+							!HasPieceBetween(startSquare, -searchDirOffset);
+		}
+
+		bool IsDiscoveredCheck(int startSquare) {
+			if (!IsAligned(opponentKingSquare, startSquare)) return false;
+			int searchDirOffset = -DirectionOffset(opponentKingSquare, startSquare);
+			return HasAttackingPiece(startSquare, searchDirOffset, friendlyColor) && 
+							!HasPieceBetween(startSquare, -searchDirOffset);;
+		}
+
+		int DirectionOffset(int firstSquare, int secondSquare) {
+			int rankDiff = Math.Abs(RankIndex(firstSquare) - RankIndex(secondSquare));
+			return Math.Abs(firstSquare - secondSquare) / rankDiff;
+		}
+
+		bool HasAttackingPiece(int startSquare, int searchDirOffset, int searchForColor) {
+			int oppositeColor = searchForColor == Piece.White ? Piece.Black : Piece.White;
+
+			int dirIndex = DirectionIndices[searchDirOffset];
+			for (int n = 0; n < NumSquaresToEdge[startSquare][dirIndex]; n++) {
+				int targetSquare = startSquare + searchDirOffset * (n + 1);
+				int targetSquarePiece = board.Square[targetSquare];
+				int targetSquarePieceType = Piece.PieceType(targetSquarePiece);
+
+				// Opposite color piece, stop the search
+				if (Piece.IsColor(targetSquarePiece, oppositeColor)) break;
+
+				bool isDiagonal = dirIndex >= 4;
+
+				// Search for color piece, check if piece is attacking the opposite color king
+				if (Piece.IsColor(targetSquarePiece, searchForColor)) {
+					if (targetSquarePieceType == Piece.Queen ||
+							isDiagonal && targetSquarePieceType == Piece.Bishop ||
+							!isDiagonal && targetSquarePieceType == Piece.Rook) {
+						return true;
+					}
+				}
+			}
+
+			// Could not find any attacking piece
+			return false;
+		}
+
+		bool HasPieceBetween(int startSquare, int searchDirOffset) {
+			int dirIndex = DirectionIndices[searchDirOffset];
+			for (int n = 0; n < NumSquaresToEdge[startSquare][dirIndex]; n++) {
+				int targetSquare = startSquare + searchDirOffset * (n + 1);
+				int targetSquarePiece = board.Square[targetSquare];
+				int targetSquarePieceType = Piece.PieceType(targetSquarePiece);
+
+				if (targetSquarePieceType == Piece.King) return false;
+				if (targetSquarePieceType != Piece.None) return true;
+			}
+			// Non reachable code
+			return true;
+		}
+
+		bool IsAligned(int firstSquare, int secondSquare) {
+			return (IsAlignedDiagonally(firstSquare, secondSquare) ||
+							IsAlignedVertically(firstSquare, secondSquare) ||
+							IsAlignedHorizontally(firstSquare, secondSquare));
+		}
+
+		bool IsAlignedDiagonally(int firstSquare, int secondSquare) {
+			return Math.Abs(RankIndex(firstSquare) - RankIndex(secondSquare)) == Math.Abs(FileIndex(firstSquare) - FileIndex(secondSquare));
+		}
+
+		bool IsAlignedVertically(int firstSquare, int secondSquare) {
+			return FileIndex(firstSquare) == FileIndex(secondSquare);
+		}
+
+		bool IsAlignedHorizontally(int firstSquare, int secondSquare) {
+			return RankIndex(firstSquare) == RankIndex(secondSquare);
 		}
 	}
 }

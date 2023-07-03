@@ -4,9 +4,11 @@ namespace Chess {
 		public readonly struct Flag {
 			public const int None = 0;
 			public const int EnPassant = 1;
-			public const int Castling = 2;
-			public const int PawnTwoForward = 3;
-			public const int Promote = 4;
+			public const int Capture = 2;
+			public const int Castle = 3;
+			public const int Check = 4;
+			public const int PawnTwoForward = 5;
+			public const int Promote = 6;
 		}
 		readonly ushort moveValue;
 

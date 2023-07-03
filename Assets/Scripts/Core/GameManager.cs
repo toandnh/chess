@@ -8,11 +8,11 @@ namespace Chess.Game {
 
 		public event System.Action<Move> OnMoveMade;
 
-		AudioSource Capture;
-		AudioSource Castle;
-		AudioSource MoveCheck;
-		AudioSource MoveSelf;
-		AudioSource Promote;
+		public AudioSource capture;
+		public AudioSource castle;
+		public AudioSource moveCheck;
+		public AudioSource moveSelf;
+		public AudioSource promote;
 
 		public enum PlayerType {Human, AI}
 
@@ -33,12 +33,6 @@ namespace Chess.Game {
 		void Start() {
 			board = new Board();
 			boardUI = FindObjectOfType<BoardUI>();
-
-			Capture = GetComponent<AudioSource>();
-			Castle = GetComponent<AudioSource>();
-			MoveCheck = GetComponent<AudioSource>();
-			MoveSelf = GetComponent<AudioSource>();
-			Promote = GetComponent<AudioSource>();
 
 			NewGame(whitePlayerType, blackPlayerType);
 		}
@@ -101,7 +95,26 @@ namespace Chess.Game {
 			OnMoveMade?.Invoke(move);
 			
 			boardUI.OnMoveMade(board, move);
-			MoveSelf.Play();
+
+			switch (move.MoveFlag) {
+				case Move.Flag.EnPassant:
+				case Move.Flag.Capture:
+					capture.Play();
+					break;
+				case Move.Flag.Castle:
+					castle.Play();
+					break;
+				case Move.Flag.Check:
+					moveCheck.Play();
+					break;
+				case Move.Flag.None:
+				case Move.Flag.PawnTwoForward:
+					moveSelf.Play();
+					break;
+				case Move.Flag.Promote:
+					promote.Play();
+					break;
+			}
 
 			NotifyPlayerToMove();
 		}
