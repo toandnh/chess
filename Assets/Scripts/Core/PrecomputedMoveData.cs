@@ -17,6 +17,7 @@ namespace Chess {
 		};
 
 		public static readonly int North = 8;
+		public static readonly int East = 1;
 		public static readonly int NorthWest = 7;
 
 		// Store number of moves available in each of 8 directions to the edge of the board
@@ -37,7 +38,7 @@ namespace Chess {
 		// Pawn attack directions for black and white
 		public static readonly byte[][] PawnAttackDirections = {
 			new byte[] { 4, 6 },
-			new byte[] { 7, 5 }
+			new byte[] { 5, 7 }
 		};
 
 		static PrecomputedMoveData() {

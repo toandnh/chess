@@ -96,16 +96,18 @@ namespace Chess.Game {
 			
 			boardUI.OnMoveMade(board, move);
 
-			switch (move.MoveFlag) {
+			// Clear or unset the MSB - check bit
+			int moveFlag = move.MoveFlag & ~(1 << 3);
+			// Get the MSB - check bit
+			bool check = ((move.MoveFlag >> 3) & 1) != 0;
+
+			switch (moveFlag) {
 				case Move.Flag.EnPassant:
 				case Move.Flag.Capture:
 					capture.Play();
 					break;
 				case Move.Flag.Castle:
 					castle.Play();
-					break;
-				case Move.Flag.Check:
-					moveCheck.Play();
 					break;
 				case Move.Flag.None:
 				case Move.Flag.PawnTwoForward:
@@ -115,6 +117,8 @@ namespace Chess.Game {
 					promote.Play();
 					break;
 			}
+
+			if (check) moveCheck.Play();
 
 			NotifyPlayerToMove();
 		}

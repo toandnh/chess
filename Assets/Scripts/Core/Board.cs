@@ -29,8 +29,7 @@ namespace Chess {
 		}
 
 		public void LoadStartPosition() {
-			LoadPosition(FenUtility.StartFenWhite);
-			//LoadPosition(FenUtility.StartFenBlack);
+			LoadPosition(FenUtility.StartFen);
 		}
 
 		public void LoadCustomPosition(string fen) {
@@ -75,7 +74,8 @@ namespace Chess {
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
 
-			int moveFlag = move.MoveFlag;
+			// Clear or unset the MSB - check bit
+			int moveFlag = move.MoveFlag & ~(1 << 3);
 
 			// Update move piece's position in piece lists
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);

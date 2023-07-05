@@ -1,14 +1,17 @@
 namespace Chess {
 	public readonly struct Move {
 
+		// In the form 0000; with the MSB reserved for check flag
+		// e.g. 1010 indicates the move is a capture into a check
 		public readonly struct Flag {
 			public const int None = 0;
 			public const int EnPassant = 1;
 			public const int Capture = 2;
 			public const int Castle = 3;
-			public const int Check = 4;
-			public const int PawnTwoForward = 5;
-			public const int Promote = 6;
+			public const int PawnTwoForward = 4;
+			public const int Promote = 5;
+
+			public const int Check = 8;
 		}
 		readonly ushort moveValue;
 
