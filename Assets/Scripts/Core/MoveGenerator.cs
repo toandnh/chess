@@ -29,7 +29,7 @@ namespace Chess {
 		ulong knightCheckMap;
 		ulong pawnCheckMap;
 
-		ulong moveSquareInCheckMap;
+		ulong squaresInCheckRayMap;
 
 		bool inCheck;
 		bool inDoubleCheck;
@@ -59,10 +59,10 @@ namespace Chess {
 			knightCheckMap = bitMapGenerator.KnightCheckMap;
 			pawnCheckMap = bitMapGenerator.PawnCheckMap;
 
-			moveSquareInCheckMap = bitMapGenerator.MoveSquareInCheckMap;
+			squaresInCheckRayMap = bitMapGenerator.SquaresInCheckRayMap;
 
 			inCheck = bitMapGenerator.InCheck;
-			inDoubleCheck = bitMapGenerator.InCheck && moveSquareInCheckMap == 0;
+			inDoubleCheck = bitMapGenerator.InCheck && squaresInCheckRayMap == 0;
 		}
 
 		public List<Move> GenerateMoves(Board board) {
@@ -209,7 +209,7 @@ namespace Chess {
 					int targetSquarePiece = board.Square[targetSquare];
 
 					// King is in check and this move does not block the check
-					if (inCheck && !HasSquare(moveSquareInCheckMap, targetSquare)) continue;
+					if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
 
 					// Block by friendly piece, stop looking in this direction
 					if (Piece.IsColor(targetSquarePiece, friendlyColor)) break;
@@ -262,7 +262,7 @@ namespace Chess {
 					int targetSquarePiece = board.Square[targetSquare];
 
 					// King is in check and this move does not block the check
-					if (inCheck && !HasSquare(moveSquareInCheckMap, targetSquare)) continue;
+					if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
 
 					// Skip if same color piece
 					if (Piece.IsColor(targetSquarePiece, friendlyColor)) continue;
@@ -325,7 +325,7 @@ namespace Chess {
 
 				// Forward moves
 				if (board.Square[squareOneForward] == Piece.None) {
-					bool canMove = !(inCheck && !HasSquare(moveSquareInCheckMap, squareOneForward));
+					bool canMove = !(inCheck && !HasSquare(squaresInCheckRayMap, squareOneForward));
 					if (canMove) {
 						if (RankIndex(squareOneForward) == promotionRank) {
 							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.Promote));
@@ -340,7 +340,7 @@ namespace Chess {
 					// Pawn on starting square, can move two forward
 					if (rank == startRank) {
 						int squareTwoForward = squareOneForward + pawnOffset;
-						canMove = !(inCheck && !HasSquare(moveSquareInCheckMap, squareTwoForward));
+						canMove = !(inCheck && !HasSquare(squaresInCheckRayMap, squareTwoForward));
 						if (canMove) {
 							if (board.Square[squareTwoForward] == Piece.None) {
 								flag |= Move.Flag.PawnTwoForward;
@@ -362,7 +362,7 @@ namespace Chess {
 						int targetSquarePiece = board.Square[targetSquare];
 
 						// King is in check and this move does not block the check
-						if (inCheck && !HasSquare(moveSquareInCheckMap, targetSquare)) continue;
+						if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
 
 						if (HasSquare(pawnCheckMap, targetSquarePiece)) {
 							flag |= Move.Flag.Check;

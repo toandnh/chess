@@ -25,7 +25,7 @@ namespace Chess {
 		public ulong KnightCheckMap;
 		public ulong PawnCheckMap;
 
-		public ulong MoveSquareInCheckMap;
+		public ulong SquaresInCheckRayMap;
 
 		void Initialize() {
 			OpponentThreatMap = 0;
@@ -35,7 +35,7 @@ namespace Chess {
 			KnightCheckMap = 0;
 			PawnCheckMap = 0;
 
-			MoveSquareInCheckMap = 0;
+			SquaresInCheckRayMap = 0;
 
 			InCheck = false;
 
@@ -89,17 +89,17 @@ namespace Chess {
 			GeneratePawnThreats();
 		}
 
-		ulong GenerateSlidingMoveThreats(int startSquare, int startDirIndex, int endDirIndex, bool generateMoveSquareInCheckMap = true) {
+		ulong GenerateSlidingMoveThreats(int startSquare, int startDirIndex, int endDirIndex, bool generateSquaresInCheckRayMap = true) {
 			ulong threatMap = 0;
 			for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++) {
 				int currentDirOffset = DirectionOffsets[dirIndex];
-				ulong possibleMoveSquareInCheckMap = 1ul << startSquare;
+				ulong possibleSquaresInCheckRayMap = 1ul << startSquare;
 				for (int n = 0; n < NumSquaresToEdge[startSquare][dirIndex]; n++) {
 					int targetSquare = startSquare + currentDirOffset * (n + 1);
 					int targetSquarePiece = board.Square[targetSquare];
 					int targetSquarePieceType = Piece.PieceType(targetSquarePiece);
 
-					possibleMoveSquareInCheckMap |= 1ul << targetSquare;
+					possibleSquaresInCheckRayMap |= 1ul << targetSquare;
 
 					// Mark this square as under attack by opponent
 					threatMap |= 1ul << targetSquare;
@@ -107,14 +107,14 @@ namespace Chess {
 					// Hit a piece
 					if (targetSquarePiece != Piece.None) {
 						// Get the location of the opponent's sliding piece looking at the king
-						if (generateMoveSquareInCheckMap) {
+						if (generateSquaresInCheckRayMap) {
 							if (targetSquarePieceType == Piece.King && Piece.IsColor(targetSquarePiece, friendlyColor)) {
 								// Double check
 								if (InCheck) {
-									MoveSquareInCheckMap = 0;
+									SquaresInCheckRayMap = 0;
 									continue;
 								}
-								MoveSquareInCheckMap = possibleMoveSquareInCheckMap;
+								SquaresInCheckRayMap = possibleSquaresInCheckRayMap;
 								InCheck = true;
 							}
 						}
@@ -138,10 +138,10 @@ namespace Chess {
 				if (HasSquare(KnightAttackBitBoard[knightSquare], friendlyKingSquare)) {
 					// Double check
 					if (InCheck) {
-						MoveSquareInCheckMap = 0;
+						SquaresInCheckRayMap = 0;
 						continue;
 					}
-					MoveSquareInCheckMap |= 1ul << knightSquare;
+					SquaresInCheckRayMap |= 1ul << knightSquare;
 					InCheck = true;
 				}
 			}
@@ -156,10 +156,10 @@ namespace Chess {
 				if (HasSquare(PawnAttackBitBoard[pawnSquare][opponentColorIndex], friendlyKingSquare)) {
 					// Double check
 					if (InCheck) {
-						MoveSquareInCheckMap = 0;
+						SquaresInCheckRayMap = 0;
 						continue;
 					}
-					MoveSquareInCheckMap |= 1ul << pawnSquare;
+					SquaresInCheckRayMap |= 1ul << pawnSquare;
 					InCheck = true;
 				}
 			}
