@@ -34,6 +34,9 @@ namespace Chess {
 		bool inCheck;
 		bool inDoubleCheck;
 
+		bool hasKingSideCastleRight;
+		bool hasQueenSideCastleRight;
+
 		void Initialize() {
 			moves = new List<Move>(64);
 
@@ -47,6 +50,10 @@ namespace Chess {
 			Dictionary<int, HashSet<int>> kings = board.PieceList.GetValue(Piece.King);
 			friendlyKingSquare = kings[friendlyColor].ToArray()[0];
 			opponentKingSquare = kings[opponentColor].ToArray()[0];
+
+			int offset = friendlyColor == Piece.White ? 0 : 2;
+			hasKingSideCastleRight = ((board.CurrentGameState >> offset) & 1) != 0;
+			hasQueenSideCastleRight = ((board.CurrentGameState >> (offset + 1)) & 1) != 0;
 
 			// Generate the maps
 			BitMapGenerator bitMapGenerator = new BitMapGenerator();
@@ -100,16 +107,28 @@ namespace Chess {
 
 				moves.Add(new Move(kingSquare, targetSquare, flag));
 
+				// Cannot castle while in check
+				if (inCheck) continue;
+
 				// Castle kingside
 				if (targetSquare == f1 || targetSquare == f8) {
 					int castleKingsideSquare = targetSquare + 1;
-					if (board.Square[castleKingsideSquare] == Piece.None) {
+
+					// Castle square is under control by opponent, cannot move here
+					if (HasSquare(opponentThreatMap, castleKingsideSquare)) continue;
+
+					if (board.Square[castleKingsideSquare] == Piece.None && hasKingSideCastleRight) {
 						moves.Add(new Move(kingSquare, castleKingsideSquare, Move.Flag.Castle));
 					}
 				// Castle queenside
 				} else if (targetSquare == d1 || targetSquare == d8) {
 					int castleQueensideSquare = targetSquare - 1;
-					if (board.Square[castleQueensideSquare] == Piece.None) {
+
+					// Castle squares is under control by opponent, cannot move here
+					if (HasSquare(opponentThreatMap, castleQueensideSquare)) continue;
+					if (HasSquare(opponentThreatMap, castleQueensideSquare - 1)) continue;
+
+					if (board.Square[castleQueensideSquare] == Piece.None && hasQueenSideCastleRight) {
 						moves.Add(new Move(kingSquare, castleQueensideSquare, Move.Flag.Castle));
 					}
 				}

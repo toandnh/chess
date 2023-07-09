@@ -11,7 +11,8 @@ namespace Chess {
 		public const int WhiteIndex = 0;
 		public const int BlackIndex = 1;
 
-		//
+		// Bits 0-3 store the castle rights;
+		// Bits 4-7 store the en passant file (starting at 1)
 		public uint CurrentGameState;
 
 		public int PromotePiece { get; set; }
@@ -19,6 +20,13 @@ namespace Chess {
 		public bool WhiteToMove;
 		public int ColorToMove;
 		public int OpponentColor;
+
+		const uint CastleRightsMask = 0b00001111;
+
+		const uint WhiteCastleKingSideMask = 0b11111110;
+		const uint WhiteCastleQueenSideMask = 0b11111101;
+		const uint BlackCastleKingSideMask = 0b11111011;
+		const uint BlackCastleQueenSideMask = 0b11110111;
 
 		void Initialize() {
 			Square = new int[64];
@@ -66,6 +74,8 @@ namespace Chess {
 		}
 
 		public void MakeMove(Move move) {
+			uint castleRights = CurrentGameState & CastleRightsMask; 
+
 			CurrentGameState = 0;
 
 			int moveFrom = move.StartSquare;
@@ -129,6 +139,20 @@ namespace Chess {
 			// Update the board representation
 			Square[moveTo] = movePiece;
 			Square[moveFrom] = 0;
+
+			// Update castle rights
+			if (castleRights != 0) {
+				if (moveTo == h1 || moveFrom == h1) {
+					castleRights &= WhiteCastleKingSideMask;
+				} else if (moveTo == a1 || moveFrom == a1) {
+					castleRights &= WhiteCastleQueenSideMask;
+				} else if (moveTo == h8 || moveFrom == h8) {
+					castleRights &= BlackCastleKingSideMask;
+				} else if (moveTo == a8 || moveFrom == a8) {
+					castleRights &= BlackCastleQueenSideMask;
+				}
+			}
+			CurrentGameState |= castleRights;
 
 			// Mark en-passant file
 			if (moveFlag == Move.Flag.PawnTwoForward) {
