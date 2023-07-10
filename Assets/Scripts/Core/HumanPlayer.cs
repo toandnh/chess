@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using UnityEngine;
 
 namespace Chess.Game {
@@ -29,7 +31,9 @@ namespace Chess.Game {
 			HandleInput();
 		}
 
-		public override void NotifyTurnToMove() {}
+		public override void NotifyTurnToMove() {
+			return ;
+		}
 
 		void HandleInput() {
 			Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
@@ -74,7 +78,6 @@ namespace Chess.Game {
 				if (boardUI.CanGetSquareUnderMouse(mousePos, out selectedPieceSquare)) {
 					int index = BoardRepresentation.IndexFromCoord(selectedPieceSquare);
 
-					// If square is menu square
 					int startSquareIndex = boardUI.PromoteStartSquareIndex;
 					int endSquareIndex = startSquareIndex - 8 * 4;
 
@@ -86,6 +89,7 @@ namespace Chess.Game {
 						return ;
 					}
 
+					// If index is one of menu squares
 					for (int squareIndex = startSquareIndex; squareIndex > endSquareIndex; squareIndex -= 8) {
 						if (index == squareIndex) {
 							int pieceIndex = 7 - BoardRepresentation.RankIndex(squareIndex);
@@ -100,8 +104,15 @@ namespace Chess.Game {
 							currentState = InputState.None;
 
 							int flag = Move.Flag.Promote;
+							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];
+							if (MoveGeneratorUtility.IsCheck(board.Square, startSquareIndex, promotePiece, opponentKingSquare)) {
+								flag |= Move.Flag.Check;
+							}
 							Move chosenMove = new Move(startSquareIndex - 8, startSquareIndex, flag);
+
 							ChoseMove(chosenMove);
+
+							break;
 						}
 					}
 				}

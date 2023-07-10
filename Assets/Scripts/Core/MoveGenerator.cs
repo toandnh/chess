@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System;
+
+using static System.Math;
 
 namespace Chess {
 	using static BoardRepresentation;
@@ -173,7 +174,7 @@ namespace Chess {
 							continue;
 						}
 						// Pinned diagonally, limit bishop movement 
-						if (Math.Abs(DirectionOffset(friendlyKingSquare, bishopSquare)) == NorthWest) {
+						if (Abs(DirectionOffset(friendlyKingSquare, bishopSquare)) == NorthWest) {
 							startDir = 4;
 							endDir = 6;
 						} else {
@@ -194,7 +195,7 @@ namespace Chess {
 					if (IsPinned(queenSquare)) {
 						// Queen is pinned vertically or horizontally, limit movement to vertical or horizontal
 						if (!IsAlignedDiagonally(queenSquare, friendlyKingSquare)) {
-							if (Math.Abs(DirectionOffset(friendlyKingSquare, queenSquare)) == North) {
+							if (Abs(DirectionOffset(friendlyKingSquare, queenSquare)) == North) {
 								startDir = 0;
 								endDir = 2;
 							} else {
@@ -203,7 +204,7 @@ namespace Chess {
 							}
 						// Queen is pinned diagonally, limit movement to diagonal
 						} else {
-							if (Math.Abs(DirectionOffset(friendlyKingSquare, queenSquare)) == NorthWest) {
+							if (Abs(DirectionOffset(friendlyKingSquare, queenSquare)) == NorthWest) {
 								startDir = 4;
 								endDir = 6;
 							} else {

@@ -1,4 +1,4 @@
-using System;
+using static System.Math;
 
 namespace Chess {
 	using static BoardRepresentation;
@@ -11,7 +11,7 @@ namespace Chess {
 			int dirOffSet = fromSquare < toSquare ? East : -East;
 
 			// Other directions
-			int rankDiff = Math.Abs(RankIndex(fromSquare) - RankIndex(toSquare));
+			int rankDiff = Abs(RankIndex(fromSquare) - RankIndex(toSquare));
 			dirOffSet = rankDiff != 0 ? (fromSquare - toSquare) / rankDiff : dirOffSet;
 
 			return dirOffSet;
@@ -66,7 +66,7 @@ namespace Chess {
 		}
 
 		public static bool IsAlignedDiagonally(int firstSquare, int secondSquare) {
-			return Math.Abs(RankIndex(firstSquare) - RankIndex(secondSquare)) == Math.Abs(FileIndex(firstSquare) - FileIndex(secondSquare));
+			return Abs(RankIndex(firstSquare) - RankIndex(secondSquare)) == Abs(FileIndex(firstSquare) - FileIndex(secondSquare));
 		}
 
 		public static bool IsAlignedVertically(int firstSquare, int secondSquare) {
