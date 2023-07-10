@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 namespace Chess.Game {
@@ -26,13 +27,13 @@ namespace Chess.Game {
 		MeshRenderer[, ] squareRenderers;
 		SpriteRenderer[, ] squarePieceRenderers;
 
-		MeshRenderer[, ] fileLabelRenderers;
-		MeshRenderer[, ] rankLabelRenderers;
-		SpriteRenderer[, ] squareTextRenderers;
-		SpriteRenderer[, ] squareNumberRenderers;
+		MeshRenderer[] fileLabelRenderers;
+		MeshRenderer[] rankLabelRenderers;
+		SpriteRenderer[] squareTextRenderers;
+		SpriteRenderer[] squareNumberRenderers;
 
-		MeshRenderer[, ] squareMenuRenderers;
-		SpriteRenderer[, ] menuPieceRenderers;
+		MeshRenderer[] squareMenuRenderers;
+		SpriteRenderer[] menuPieceRenderers;
 
 
 		void Awake() {
@@ -45,10 +46,10 @@ namespace Chess.Game {
 			squareRenderers = new MeshRenderer[8, 8];
 			squarePieceRenderers = new SpriteRenderer[8, 8];
 
-			fileLabelRenderers = new MeshRenderer[8, 1];
-			rankLabelRenderers = new MeshRenderer[1, 8];
-			squareTextRenderers = new SpriteRenderer[8, 1];
-			squareNumberRenderers = new SpriteRenderer[1, 8];
+			fileLabelRenderers = new MeshRenderer[8];
+			rankLabelRenderers = new MeshRenderer[8];
+			squareTextRenderers = new SpriteRenderer[8];
+			squareNumberRenderers = new SpriteRenderer[8];
 
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
@@ -79,16 +80,16 @@ namespace Chess.Game {
 				square.position = PositionFromCoord(file, -1, 0);
 				Material squareMaterial = new Material(squareShader);
 
-				fileLabelRenderers[file, 0] = square.gameObject.GetComponent<MeshRenderer>();
-				fileLabelRenderers[file, 0].material = squareMaterial;
-				fileLabelRenderers[file, 0].material.color = boardTheme.labelSquares;
+				fileLabelRenderers[file] = square.gameObject.GetComponent<MeshRenderer>();
+				fileLabelRenderers[file].material = squareMaterial;
+				fileLabelRenderers[file].material.color = boardTheme.labelSquares;
 
 				// Create text sprite renderer for current square
 				SpriteRenderer textRenderer = new GameObject("File").AddComponent<SpriteRenderer>();
 				textRenderer.sprite = textSpriteList[file];
 				textRenderer.transform.parent = square;
 				textRenderer.transform.position = PositionFromCoord(file, -1, pieceDepth);
-				squareTextRenderers[file, 0] = textRenderer;
+				squareTextRenderers[file] = textRenderer;
 			}
 
 			for (int rank = 0; rank < 8; rank++) {
@@ -99,16 +100,16 @@ namespace Chess.Game {
 				square.position = PositionFromCoord(-1, rank, 0);
 				Material squareMaterial = new Material(squareShader);
 
-				rankLabelRenderers[0, rank] = square.gameObject.GetComponent<MeshRenderer>();
-				rankLabelRenderers[0, rank].material = squareMaterial;
-				rankLabelRenderers[0, rank].material.color = boardTheme.labelSquares;
+				rankLabelRenderers[rank] = square.gameObject.GetComponent<MeshRenderer>();
+				rankLabelRenderers[rank].material = squareMaterial;
+				rankLabelRenderers[rank].material.color = boardTheme.labelSquares;
 
 				// Create number sprite renderer for current square
 				SpriteRenderer numberRenderer = new GameObject("Rank").AddComponent<SpriteRenderer>();
 				numberRenderer.sprite = numberSpriteList[rank];
 				numberRenderer.transform.parent = square;
 				numberRenderer.transform.position = PositionFromCoord(-1, rank, pieceDepth);
-				squareNumberRenderers[0, rank] = numberRenderer;
+				squareNumberRenderers[rank] = numberRenderer;
 			}
 
 			ResetSquareColor();
@@ -119,8 +120,8 @@ namespace Chess.Game {
 
 			Shader squareShader = Shader.Find("Unlit/Color");
 
-			squareMenuRenderers = new MeshRenderer[1, 5];
-			menuPieceRenderers = new SpriteRenderer[1, 5];
+			squareMenuRenderers = new MeshRenderer[4];
+			menuPieceRenderers = new SpriteRenderer[4];
 
 			int mask = IsWhiteBottom ? 0b01000 : 0b10000;
 
@@ -138,27 +139,25 @@ namespace Chess.Game {
 				square.position = PositionFromCoord(file, rank, menuDepth);
 				Material squareMaterial = new Material(squareShader);
 
-				squareMenuRenderers[0, index] = square.gameObject.GetComponent<MeshRenderer>();
-				squareMenuRenderers[0, index].material = squareMaterial;
-				squareMenuRenderers[0, index].material.color = boardTheme.menuSquares;
+				squareMenuRenderers[index] = square.gameObject.GetComponent<MeshRenderer>();
+				squareMenuRenderers[index].material = squareMaterial;
+				squareMenuRenderers[index].material.color = boardTheme.menuSquares;
 
 				// Create options sprite
 				SpriteRenderer pieceChoiceRenderer = new GameObject("Menu").AddComponent<SpriteRenderer>();
 				pieceChoiceRenderer.sprite = pieceTheme.GetPieceSprite(mask | pieceType);
 				pieceChoiceRenderer.transform.parent = square;
 				pieceChoiceRenderer.transform.position = PositionFromCoord(file, rank, menuChoiceDepth);
-				menuPieceRenderers[0, index] = pieceChoiceRenderer;
+				menuPieceRenderers[index] = pieceChoiceRenderer;
 
 				rank--;
 			}
 		}
 
 		public void DestroyPromoteMenu() {
-			foreach (MeshRenderer meshRenderer in squareMenuRenderers) {
-				Destroy(meshRenderer);
-			}
-			foreach (SpriteRenderer spriteRenderer in menuPieceRenderers) {
-				Destroy(spriteRenderer);
+			for (int index = 0; index < squareMenuRenderers.Length; index++) {
+				Destroy(squareMenuRenderers[index]);
+				Destroy(menuPieceRenderers[index]);
 			}
 		}
 

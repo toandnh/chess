@@ -100,9 +100,6 @@ namespace Chess.Game {
 							int promotePiece = 5 - pieceIndex;
 							board.PromotePiece = promotePiece;
 
-							boardUI.DestroyPromoteMenu();
-							currentState = InputState.None;
-
 							int flag = Move.Flag.Promote;
 							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];
 							if (MoveGeneratorUtility.IsCheck(board.Square, startSquareIndex, promotePiece, opponentKingSquare)) {
@@ -115,6 +112,10 @@ namespace Chess.Game {
 							break;
 						}
 					}
+
+					// Cancel menu after choose piece or when click outside
+					boardUI.DestroyPromoteMenu();
+					currentState = InputState.None;
 				}
 			}
 		}
