@@ -5,6 +5,7 @@ using System;
 namespace Chess {
 	using static BoardRepresentation;
 	using static PrecomputedMoveData;
+	using static MoveGeneratorUtility;
 	using static BitBoardUtility;
 
 	public class MoveGenerator {
@@ -413,8 +414,8 @@ namespace Chess {
 			int sign = whiteToMove ? 1 : -1;
 			int searchDirOffset = sign * DirectionOffset(friendlyKingSquare, startSquare);
 
-			return HasAttackingPiece(startSquare, searchDirOffset, opponentColor) && 
-							!HasPieceBetween(startSquare, -searchDirOffset);
+			return HasAttackingPiece(board.Square, startSquare, searchDirOffset, opponentColor) && 
+							!HasPieceBetween(board.Square, startSquare, -searchDirOffset);
 		}
 
 		bool IsDiscoveredCheck(int startSquare) {
@@ -423,79 +424,8 @@ namespace Chess {
 			int sign = whiteToMove ? 1 : -1;
 			int searchDirOffset = sign * DirectionOffset(opponentKingSquare, startSquare);
 
-			return HasAttackingPiece(startSquare, searchDirOffset, friendlyColor) && 
-							!HasPieceBetween(startSquare, -searchDirOffset);;
-		}
-
-		int DirectionOffset(int fromSquare, int toSquare) {
-			// Direction from -> to is East or West
-			int dirOffSet = fromSquare < toSquare ? East : -East;
-
-			// Other directions
-			int rankDiff = Math.Abs(RankIndex(fromSquare) - RankIndex(toSquare));
-			dirOffSet = rankDiff != 0 ? (fromSquare - toSquare) / rankDiff : dirOffSet;
-
-			return dirOffSet;
-		}
-
-		bool HasAttackingPiece(int startSquare, int searchDirOffset, int searchForColor) {
-			int oppositeColor = searchForColor == Piece.White ? Piece.Black : Piece.White;
-
-			int dirIndex = DirectionIndices[searchDirOffset];
-			for (int n = 0; n < NumSquaresToEdge[startSquare][dirIndex]; n++) {
-				int targetSquare = startSquare + searchDirOffset * (n + 1);
-				int targetSquarePiece = board.Square[targetSquare];
-				int targetSquarePieceType = Piece.PieceType(targetSquarePiece);
-
-				// Opposite color piece, stop the search
-				if (Piece.IsColor(targetSquarePiece, oppositeColor)) break;
-
-				bool isDiagonal = dirIndex >= 4;
-
-				// Search for color piece, check if piece is attacking the opposite color king
-				if (Piece.IsColor(targetSquarePiece, searchForColor)) {
-					if (targetSquarePieceType == Piece.Queen ||
-							isDiagonal && targetSquarePieceType == Piece.Bishop ||
-							!isDiagonal && targetSquarePieceType == Piece.Rook) {
-						return true;
-					}
-				}
-			}
-
-			// Could not find any attacking piece
-			return false;
-		}
-
-		bool HasPieceBetween(int startSquare, int searchDirOffset) {
-			int dirIndex = DirectionIndices[searchDirOffset];
-			for (int n = 0; n < NumSquaresToEdge[startSquare][dirIndex]; n++) {
-				int targetSquare = startSquare + searchDirOffset * (n + 1);
-				int targetSquarePiece = board.Square[targetSquare];
-				int targetSquarePieceType = Piece.PieceType(targetSquarePiece);
-
-				if (targetSquarePieceType == Piece.King) return false;
-				if (targetSquarePieceType != Piece.None) return true;
-			}
-			// Non reachable code
-			return true;
-		}
-
-		bool IsAligned(int firstSquare, int secondSquare) {
-			return (IsAlignedDiagonally(firstSquare, secondSquare) ||
-							IsAlignedVertically(firstSquare, secondSquare) ||
-							IsAlignedHorizontally(firstSquare, secondSquare));
-		}
-
-		bool IsAlignedDiagonally(int firstSquare, int secondSquare) {
-			return Math.Abs(RankIndex(firstSquare) - RankIndex(secondSquare)) == Math.Abs(FileIndex(firstSquare) - FileIndex(secondSquare));
-		}
-
-		bool IsAlignedVertically(int firstSquare, int secondSquare) {
-			return FileIndex(firstSquare) == FileIndex(secondSquare);
-		}
-
-		bool IsAlignedHorizontally(int firstSquare, int secondSquare) {
-			return RankIndex(firstSquare) == RankIndex(secondSquare);
+			return HasAttackingPiece(board.Square, startSquare, searchDirOffset, friendlyColor) && 
+							!HasPieceBetween(board.Square, startSquare, -searchDirOffset);;
 		}
 	}
 }
