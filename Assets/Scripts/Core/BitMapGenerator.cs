@@ -114,6 +114,13 @@ namespace Chess {
 									SquaresInCheckRayMap = 0;
 									continue;
 								}
+
+								// King cannot move forward or backward in this direction
+								if (++n < NumSquaresToEdge[startSquare][dirIndex]) {
+									int squareBehindKing = startSquare + currentDirOffset * (n + 1);
+									threatMap |= 1ul << squareBehindKing;
+								}
+
 								SquaresInCheckRayMap = possibleSquaresInCheckRayMap;
 								InCheck = true;
 							}

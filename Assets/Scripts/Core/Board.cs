@@ -12,7 +12,7 @@ namespace Chess {
 		public const int BlackIndex = 1;
 
 		// Bits 0-3 store the castle rights;
-		// Bits 4-7 store the en passant file (starting at 1)
+		// Bits 4-7 store the en passant square (starting at 1)
 		public uint CurrentGameState;
 
 		public int PromotePiece { get; set; }

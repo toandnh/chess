@@ -15,8 +15,8 @@ namespace Chess {
 		}
 		readonly ushort moveValue;
 
-		const ushort startSquareMask = 0b000000000111111;
-		const ushort targetSquareMask = 0b000111111000000;
+		const ushort StartSquareMask = 0b0000000000111111;
+		const ushort TargetSquareMask = 0b0000111111000000;
 
 		public Move(ushort moveValue) {
 			this.moveValue = moveValue;
@@ -32,13 +32,13 @@ namespace Chess {
 
 		public int StartSquare {
 			get {
-				return moveValue & startSquareMask;
+				return moveValue & StartSquareMask;
 			}
 		}
 
 		public int TargetSquare {
 			get {
-				return (moveValue & targetSquareMask) >> 6;
+				return (moveValue & TargetSquareMask) >> 6;
 			}
 		}
 
