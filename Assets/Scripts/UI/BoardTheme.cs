@@ -5,14 +5,16 @@ namespace Chess.Game {
 	public class BoardTheme : ScriptableObject {
 		public Color labelSquares;
 		public Color menuSquares;
+		public Color selected;
+		public Color highlighted;
+		public Color legal;
+
 		public SquareColors lightSquares;
 		public SquareColors darkSquares;
 
 		[System.Serializable]
 		public struct SquareColors {
 			public Color normal;
-			public Color selected;
-			public Color highlighted;
 		}
 	}
 }

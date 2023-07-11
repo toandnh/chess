@@ -12,20 +12,26 @@ namespace Chess.Game {
 		public Sprite[] numberSpriteList;
 
 		public bool IsWhiteBottom = true;
+		public bool showLegalMoves = true;
 		public bool PromoteMenuOnScreen = false;
 
 		public int PromoteStartSquareIndex { get; set; }
 
-		const float pieceDepth = -0.1f;
-		const float pieceDragDepth = -0.2f;
+		const float squareDepth = 0f;
+		const float highlightSquareDepth = -0.1f;
+		const float pieceDepth = -0.2f;
+		const float pieceDragDepth = -0.3f;
 
-		const float menuDepth = -0.3f;
-		const float menuChoiceDepth = -0.4f;
+		const float menuDepth = -0.4f;
+		const float menuChoiceDepth = -0.5f;
 
 		Move lastMove;
+		MoveGenerator moveGenerator;
 
 		MeshRenderer[, ] squareRenderers;
 		SpriteRenderer[, ] squarePieceRenderers;
+
+		MeshRenderer[, ] highlightSquareRenderers;
 
 		MeshRenderer[] fileLabelRenderers;
 		MeshRenderer[] rankLabelRenderers;
@@ -37,14 +43,17 @@ namespace Chess.Game {
 
 
 		void Awake() {
-			CreateBoard();
+			moveGenerator = new MoveGenerator();
+			CreateBoardUI();
 		}
 
-		void CreateBoard() {
+		void CreateBoardUI() {
 			Shader squareShader = Shader.Find("Unlit/Color");
 
 			squareRenderers = new MeshRenderer[8, 8];
 			squarePieceRenderers = new SpriteRenderer[8, 8];
+
+			highlightSquareRenderers = new MeshRenderer[8, 8];
 
 			fileLabelRenderers = new MeshRenderer[8];
 			rankLabelRenderers = new MeshRenderer[8];
@@ -53,21 +62,37 @@ namespace Chess.Game {
 
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
+					Material squareMaterial = new Material(squareShader);
+
+					Coord squareCoord = new Coord(file, rank);
+
 					// Create square
 					Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
 					square.parent = transform;
 					square.name = BoardRepresentation.SquareNameFromCoord(file, rank);
-					square.position = PositionFromCoord(file, rank, 0);
-					Material squareMaterial = new Material(squareShader);
+					square.position = PositionFromCoord(file, rank, squareDepth);
 
 					squareRenderers[file, rank] = square.gameObject.GetComponent<MeshRenderer>();
 					squareRenderers[file, rank].material = squareMaterial;
+
+					squareRenderers[file, rank].material.color = (squareCoord.IsLightSquare()) ? boardTheme.lightSquares.normal : boardTheme.darkSquares.normal;
+
+					// Create highlight square - for highlighting previous, legal moves
+					Transform highlightSquare = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
+					highlightSquare.parent = transform;
+					highlightSquare.name = BoardRepresentation.SquareNameFromCoord(file, rank);
+					highlightSquare.position = PositionFromCoord(file, rank, highlightSquareDepth);
+					highlightSquare.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
+
+					highlightSquareRenderers[file, rank] = highlightSquare.gameObject.GetComponent<MeshRenderer>();
+					highlightSquareRenderers[file, rank].material = squareMaterial;
+
+					highlightSquareRenderers[file, rank].material.color = (squareCoord.IsLightSquare()) ? boardTheme.lightSquares.normal : boardTheme.darkSquares.normal;
 
 					// Create piece sprite renderer for current square
 					SpriteRenderer pieceRenderer = new GameObject("Piece").AddComponent<SpriteRenderer>();
 					pieceRenderer.transform.parent = square;
 					pieceRenderer.transform.position = PositionFromCoord(file, rank, pieceDepth);
-					//pieceRenderer.transform.localScale = Vector3.one * 100 / (2000 / 6f);
 					squarePieceRenderers[file, rank] = pieceRenderer;
 				}
 			}
@@ -111,8 +136,6 @@ namespace Chess.Game {
 				numberRenderer.transform.position = PositionFromCoord(-1, rank, pieceDepth);
 				squareNumberRenderers[rank] = numberRenderer;
 			}
-
-			ResetSquareColor();
 		}
 
 		public void CreatePromoteMenu(int startSquare, int colorIndex) {
@@ -169,8 +192,20 @@ namespace Chess.Game {
 		}
 
 		void HighlightMove(Move move) {
-			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.lightSquares.highlighted, boardTheme.darkSquares.highlighted);
-			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.lightSquares.highlighted, boardTheme.darkSquares.highlighted);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.highlighted, boardTheme.highlighted);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.highlighted, boardTheme.highlighted);
+		}
+
+		public void HighLightLegalMove(Board board, Coord fromCoord) {
+			if (!showLegalMoves) return ;
+
+			List<Move> moves = moveGenerator.GenerateMoves(board);
+			foreach (Move move in moves) {
+				if (move.StartSquare == BoardRepresentation.IndexFromCoord(fromCoord)) {
+					Coord coord = BoardRepresentation.CoordFromIndex(move.TargetSquare);
+					SetSquareColor(coord, boardTheme.legal, boardTheme.legal);
+				}
+			}
 		}
 
 		public void SetWhitePerspective(bool whitePov) {
@@ -208,7 +243,7 @@ namespace Chess.Game {
 		}
 
 		public void SelectSquare(Coord coord) {
-			SetSquareColor(coord, boardTheme.lightSquares.selected, boardTheme.darkSquares.selected);
+			SetSquareColor(coord, boardTheme.selected, boardTheme.selected);
 		}
 
 		public void DeselectSquare(Coord coord) {
@@ -228,7 +263,7 @@ namespace Chess.Game {
 		}
 
 		void SetSquareColor(Coord square, Color lightCol, Color darkCol) {
-			squareRenderers[square.fileIndex, square.rankIndex].material.color = (square.IsLightSquare()) ? lightCol : darkCol;
+			highlightSquareRenderers[square.fileIndex, square.rankIndex].material.color = (square.IsLightSquare()) ? lightCol : darkCol;
 		}
 
 		public void ResetPiecePosition(Coord coord) {

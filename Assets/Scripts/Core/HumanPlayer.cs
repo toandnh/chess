@@ -68,6 +68,7 @@ namespace Chess.Game {
 					if (Piece.IsColor(board.Square[index], board.ColorToMove)) {
 						currentState = InputState.DraggingPiece;
 						boardUI.SelectSquare(selectedPieceSquare);
+						boardUI.HighLightLegalMove(board, selectedPieceSquare); 
 					}
 				}
 			}
