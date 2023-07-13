@@ -19,8 +19,8 @@ namespace Chess.Game {
 
 		State gameState;
 
-		public PlayerType whitePlayerType;
-		public PlayerType blackPlayerType;
+		public PlayerType WhitePlayerType;
+		public PlayerType BlackPlayerType;
 
 		Player whitePlayer;
 		Player blackPlayer;
@@ -35,7 +35,7 @@ namespace Chess.Game {
 			board = new Board();
 			boardUI = FindObjectOfType<BoardUI>();
 
-			NewGame(whitePlayerType, blackPlayerType);
+			NewGame(WhitePlayerType, BlackPlayerType);
 		}
 
 		void Update() {

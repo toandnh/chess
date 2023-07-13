@@ -21,12 +21,12 @@ namespace Chess {
 		public int ColorToMove;
 		public int OpponentColor;
 
-		const uint CastleRightsMask = 0b00001111;
+		const uint castleRightsMask = 0b00001111;
 
-		const uint WhiteCastleKingSideMask = 0b11111110;
-		const uint WhiteCastleQueenSideMask = 0b11111101;
-		const uint BlackCastleKingSideMask = 0b11111011;
-		const uint BlackCastleQueenSideMask = 0b11110111;
+		const uint whiteCastleKingSideMask = 0b11111110;
+		const uint whiteCastleQueenSideMask = 0b11111101;
+		const uint blackCastleKingSideMask = 0b11111011;
+		const uint blackCastleQueenSideMask = 0b11110111;
 
 		void Initialize() {
 			Square = new int[64];
@@ -74,7 +74,7 @@ namespace Chess {
 		}
 
 		public void MakeMove(Move move) {
-			uint castleRights = CurrentGameState & CastleRightsMask; 
+			uint castleRights = CurrentGameState & castleRightsMask; 
 
 			CurrentGameState = 0;
 
@@ -143,13 +143,13 @@ namespace Chess {
 			// Update castle rights
 			if (castleRights != 0) {
 				if (moveTo == h1 || moveFrom == h1) {
-					castleRights &= WhiteCastleKingSideMask;
+					castleRights &= whiteCastleKingSideMask;
 				} else if (moveTo == a1 || moveFrom == a1) {
-					castleRights &= WhiteCastleQueenSideMask;
+					castleRights &= whiteCastleQueenSideMask;
 				} else if (moveTo == h8 || moveFrom == h8) {
-					castleRights &= BlackCastleKingSideMask;
+					castleRights &= blackCastleKingSideMask;
 				} else if (moveTo == a8 || moveFrom == a8) {
-					castleRights &= BlackCastleQueenSideMask;
+					castleRights &= blackCastleQueenSideMask;
 				}
 			}
 			CurrentGameState |= castleRights;

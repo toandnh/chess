@@ -11,11 +11,12 @@ namespace Chess.Game {
 		public Sprite[] textSpriteList;
 		public Sprite[] numberSpriteList;
 
-		public bool IsWhiteBottom = true;
-		public bool showLegalMoves = true;
 		public bool PromoteMenuOnScreen = false;
 
 		public int PromoteStartSquareIndex { get; set; }
+
+		bool isWhiteBottom = true;
+		bool showLegalMoves = false;
 
 		const float squareDepth = 0f;
 		const float highlightSquareDepth = -0.1f;
@@ -82,7 +83,7 @@ namespace Chess.Game {
 					highlightSquare.parent = transform;
 					highlightSquare.name = BoardRepresentation.SquareNameFromCoord(file, rank);
 					highlightSquare.position = PositionFromCoord(file, rank, highlightSquareDepth);
-					highlightSquare.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
+					highlightSquare.transform.localScale = new Vector3(0.9f, 0.9f, 1f);
 
 					highlightSquareRenderers[file, rank] = highlightSquare.gameObject.GetComponent<MeshRenderer>();
 					highlightSquareRenderers[file, rank].material = squareMaterial;
@@ -146,7 +147,7 @@ namespace Chess.Game {
 			squareMenuRenderers = new MeshRenderer[4];
 			menuPieceRenderers = new SpriteRenderer[4];
 
-			int mask = IsWhiteBottom ? 0b01000 : 0b10000;
+			int mask = isWhiteBottom ? 0b01000 : 0b10000;
 
 			int file = BoardRepresentation.FileIndex(startSquare);
 			int rank = BoardRepresentation.RankIndex(startSquare);
@@ -208,11 +209,6 @@ namespace Chess.Game {
 			}
 		}
 
-		public void SetWhitePerspective(bool whitePov) {
-			IsWhiteBottom = whitePov;
-			ResetSquarePosition();
-		}
-
 		public void UpdatePosition(Board board) {
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
@@ -232,7 +228,7 @@ namespace Chess.Game {
 			int file = (int) (mouseWorld.x + 7);
 			int rank = (int) (mouseWorld.y + 4);
 
-			if (!IsWhiteBottom) {
+			if (!isWhiteBottom) {
 				file = 7 - file;
 				rank = 7 - rank;
 			}
@@ -285,7 +281,7 @@ namespace Chess.Game {
 		}
 
 		public Vector3 PositionFromCoord(int file, int rank, float depth = 0) {
-			if (IsWhiteBottom) {
+			if (isWhiteBottom) {
 				return new Vector3(-6.5f + file, -3.5f + rank, depth);
 			} else {
 				return new Vector3(-6.5f + 7 - file, -3.5f + 7 - rank, depth); 
@@ -294,6 +290,15 @@ namespace Chess.Game {
 
 		public Vector3 PositionFromCoord(Coord coord, float depth = 0) {
 			return PositionFromCoord(coord.fileIndex, coord.rankIndex, depth);
+		}
+
+		public void SetWhitePerspective(bool whitePov) {
+			isWhiteBottom = whitePov;
+			ResetSquarePosition();
+		}
+
+		public void ToggleLegalMoves(bool show) {
+			showLegalMoves = show;
 		}
 	}
 }
