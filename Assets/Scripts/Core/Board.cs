@@ -87,6 +87,12 @@ namespace Chess {
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
 
+			// Capture move, outside the switch clause because of capture-into-promote moves
+			int targetPieceType = Piece.PieceType(Square[moveTo]);
+			if (targetPieceType != Piece.None) {
+				PieceList.Remove(targetPieceType, OpponentColor, moveTo);
+			}
+
 			// Update move piece's position in piece lists
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
 
@@ -103,9 +109,6 @@ namespace Chess {
 
 					break;
 				case Move.Flag.Capture:
-					int targetPieceType = Piece.PieceType(Square[moveTo]);
-					PieceList.Remove(targetPieceType, OpponentColor, moveTo);
-
 					break;
 				case Move.Flag.Castle:
 					bool kingside = moveTo == g1 || moveTo == g8;
