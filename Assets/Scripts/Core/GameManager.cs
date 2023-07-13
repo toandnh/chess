@@ -91,6 +91,11 @@ namespace Chess.Game {
 		}
 
 		void OnMoveChosen(Move move) {
+			bool captureIntoPromote = false;
+			if (board.Square[move.TargetSquare] != 0) {
+				captureIntoPromote = true;
+			}
+
 			board.MakeMove(move);
 
 			OnMoveMade?.Invoke(move);
@@ -115,6 +120,7 @@ namespace Chess.Game {
 					moveSelf.Play();
 					break;
 				case Move.Flag.Promote:
+					if (captureIntoPromote) capture.Play();
 					promote.Play();
 					break;
 			}

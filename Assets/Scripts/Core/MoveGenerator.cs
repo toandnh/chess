@@ -340,7 +340,7 @@ namespace Chess {
 				int rank = RankIndex(pawnSquare);
 				int promotionRank = whiteToMove ? 7 : 0;
 
-				int flag = Move.Flag.None;
+				int flag;
 
 				int squareOneForward = pawnSquare + pawnOffset;
 
@@ -351,6 +351,7 @@ namespace Chess {
 						if (RankIndex(squareOneForward) == promotionRank) {
 							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.Promote));
 						} else {
+							flag = Move.Flag.None;
 							if (HasSquare(pawnCheckMap, squareOneForward)) {
 								flag |= Move.Flag.Check;
 							}
@@ -364,6 +365,7 @@ namespace Chess {
 						canMove = !(inCheck && !HasSquare(squaresInCheckRayMap, squareTwoForward));
 						if (canMove) {
 							if (board.Square[squareTwoForward] == Piece.None) {
+								flag = Move.Flag.None;
 								flag |= Move.Flag.PawnTwoForward;
 								if (HasSquare(pawnCheckMap, squareTwoForward)) {
 									flag |= Move.Flag.Check;
@@ -385,6 +387,8 @@ namespace Chess {
 						// King is in check and this move does not block the check
 						if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
 
+						flag = Move.Flag.None;
+
 						if (HasSquare(pawnCheckMap, targetSquarePiece)) {
 							flag |= Move.Flag.Check;
 						}
@@ -401,8 +405,9 @@ namespace Chess {
 
 						// En-passant capture
 						if (targetSquare == enPassantSquare) {
+							flag &= Move.Flag.Capture;
 							flag |= Move.Flag.EnPassant;
-							moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.EnPassant));
+							moves.Add(new Move(pawnSquare, targetSquare, flag));
 						}
 					}
 				}

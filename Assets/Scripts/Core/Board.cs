@@ -125,9 +125,8 @@ namespace Chess {
 					PieceList.Remove(movePieceType, ColorToMove, moveTo);
 
 					movePiece = ColorToMove | PromotePiece;
-					movePieceType = Piece.PieceType(movePiece);
 
-					PieceList.Add(movePieceType, ColorToMove, moveTo);
+					PieceList.Add(PromotePiece, ColorToMove, moveTo);
 
 					PromotePiece = -1;
 
