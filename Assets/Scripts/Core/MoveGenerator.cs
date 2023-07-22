@@ -229,11 +229,11 @@ namespace Chess {
 					int targetSquare = startSquare + currentDirOffset * (n + 1);
 					int targetSquarePiece = board.Square[targetSquare];
 
-					// King is in check and this move does not block the check
-					if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
-
 					// Block by friendly piece, stop looking in this direction
 					if (Piece.IsColor(targetSquarePiece, friendlyColor)) break;
+
+					// King is in check and this move does not block the check
+					if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
 
 					int flag = Move.Flag.None;
 					bool haveToCapture = false;
