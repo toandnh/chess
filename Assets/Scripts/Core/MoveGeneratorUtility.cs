@@ -12,7 +12,7 @@ namespace Chess {
 
 			// Other directions
 			int rankDiff = Abs(RankIndex(fromSquare) - RankIndex(toSquare));
-			dirOffSet = rankDiff != 0 ? (fromSquare - toSquare) / rankDiff : dirOffSet;
+			dirOffSet = rankDiff != 0 ? (toSquare - fromSquare) / rankDiff : dirOffSet;
 
 			return dirOffSet;
 		}
@@ -77,21 +77,29 @@ namespace Chess {
 			return RankIndex(firstSquare) == RankIndex(secondSquare);
 		}
 
-		public static bool IsCheck(int[] board, int startSquare, int pieceType, int kingSquare) {
+		public static bool IsCheckAfterPromotion(int[] board, int startSquare, int pieceType, int kingSquare) {
 			bool isCheck = false;
+
+			int dirOffset = DirectionOffset(startSquare, kingSquare);
+			int squareOffset = dirOffset > 0 ? 8 : -8;
+
 			if (pieceType == Piece.Queen || pieceType == Piece.Rook) {
-				if (IsAlignedVertically(startSquare, kingSquare) || IsAlignedHorizontally(startSquare, kingSquare)) {
-					isCheck |= !HasPieceBetween(board, startSquare, DirectionOffset(startSquare, kingSquare));
+				// Since the pawn is still on the board, we need to ignore it when checking for vertical check
+				if (IsAlignedVertically(startSquare, kingSquare)) {
+					isCheck |= !HasPieceBetween(board, startSquare + squareOffset, dirOffset);
+				} else if (IsAlignedHorizontally(startSquare, kingSquare)) {
+					isCheck |= !HasPieceBetween(board, startSquare, dirOffset);
 				}
-			} 
+			}
 			if (pieceType == Piece.Queen || pieceType == Piece.Bishop) {
 				if (IsAlignedDiagonally(startSquare, kingSquare)) {
-					isCheck |= !HasPieceBetween(board, startSquare, DirectionOffset(startSquare, kingSquare));
+					isCheck |= !HasPieceBetween(board, startSquare, dirOffset);
 				}
 			}
 			if (pieceType == Piece.Knight) {
 				isCheck |= HasSquare(KnightAttackBitBoard[kingSquare], startSquare);
 			}
+
 			return isCheck;
 		}
 	}

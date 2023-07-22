@@ -29,9 +29,10 @@ namespace Chess.Game {
 		Board board;
 		BoardUI boardUI;
 
-		//string testPromotionFen = "3k4/6P1/5K2/8/8/8/8/8 w - - 0 1";
+		string testWhitePromotionFen = "3k4/6P1/5K2/8/8/8/8/8 w - - 0 1";
+		string testBlackPromotionFen = "8/8/8/8/8/5K2/6p1/3k4 w - - 0 1";
 
-		void Start() {
+		public void Start() {
 			board = new Board();
 			boardUI = FindObjectOfType<BoardUI>();
 
@@ -50,11 +51,11 @@ namespace Chess.Game {
 		}
 
 		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
-			board.LoadStartPosition();
-			//board.LoadCustomPosition(testPromotionFen);
+			//board.LoadStartPosition();
+			board.LoadCustomPosition(testBlackPromotionFen);
 
 			boardUI.UpdatePosition(board);
-			boardUI.ResetSquareColor();
+			boardUI.ResetSquareColor(false);
 
 			CreatePlayer(ref whitePlayer, whitePlayerType);
 			CreatePlayer(ref blackPlayer, blackPlayerType);

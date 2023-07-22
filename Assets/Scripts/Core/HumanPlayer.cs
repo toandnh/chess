@@ -80,20 +80,34 @@ namespace Chess.Game {
 					int index = BoardRepresentation.IndexFromCoord(selectedPieceSquare);
 
 					int startSquareIndex = boardUI.PromoteStartSquareIndex;
-					int endSquareIndex = startSquareIndex - 8 * 4;
+					int endSquareIndex = startSquareIndex - 8 * 3;
 
-					// Cancel move
-					if (index == endSquareIndex) {
-						board.PromotePiece = -1;
-						boardUI.DestroyPromoteMenu();
-						currentState = InputState.None;
-						return ;
+					// Promote at the bottom of the board
+					bool startFromBottom = (!board.WhiteToMove || !boardUI.IsWhiteBottom) && (board.WhiteToMove || boardUI.IsWhiteBottom);
+
+					if (startFromBottom) {
+						endSquareIndex = startSquareIndex + 8 * 3;
+
+						// Swap start and end index
+						int temp = startSquareIndex;
+						startSquareIndex = endSquareIndex;
+						endSquareIndex = temp;
 					}
 
 					// If index is one of menu squares
-					for (int squareIndex = startSquareIndex; squareIndex > endSquareIndex; squareIndex -= 8) {
+					for (int squareIndex = startSquareIndex; squareIndex >= endSquareIndex; squareIndex -= 8) {
 						if (index == squareIndex) {
 							int pieceIndex = 7 - BoardRepresentation.RankIndex(squareIndex);
+
+							int fromSquare = startSquareIndex - 8;
+							int toSquare = startSquareIndex;
+
+							if (startFromBottom) {
+								pieceIndex = 7 - pieceIndex;
+
+								fromSquare = endSquareIndex + 8;
+								toSquare = endSquareIndex;
+							}
 
 							// Map the location of the pieces in the menu to its number representation
 							// E.g. The rook appears second in the menu, and its number representation is Piece.Rook = 4; 5 - 1 = 4
@@ -103,10 +117,10 @@ namespace Chess.Game {
 
 							int flag = Move.Flag.Promote;
 							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];
-							if (MoveGeneratorUtility.IsCheck(board.Square, startSquareIndex, promotePiece, opponentKingSquare)) {
+							if (MoveGeneratorUtility.IsCheckAfterPromotion(board.Square, toSquare, promotePiece, opponentKingSquare)) {
 								flag |= Move.Flag.Check;
 							}
-							Move chosenMove = new Move(startSquareIndex - 8, startSquareIndex, flag);
+							Move chosenMove = new Move(fromSquare, toSquare, flag);
 
 							ChoseMove(chosenMove);
 
@@ -115,6 +129,7 @@ namespace Chess.Game {
 					}
 
 					// Cancel menu after choose piece or when click outside
+					//board.PromotePiece = -1;
 					boardUI.DestroyPromoteMenu();
 					currentState = InputState.None;
 				}
