@@ -13,20 +13,26 @@ namespace Chess.Game {
 		}
 
 		public void OnMoveMade(Board board, BoardUI boardUI) {
-			ResetCapture();
+			Transform captures;
 
-			// White bottom
-			if (boardUI.IsWhiteBottom) {
-				blackCaptures = GameObject.Find("Player Captures").transform;
-				whiteCaptures = GameObject.Find("Opponent Captures").transform;
+			// White bottom;
+			// this function is called at the end of the game loop, 
+			// hence, the turn is reversed
+			if (boardUI.IsWhiteBottom && !board.WhiteToMove || !boardUI.IsWhiteBottom && board.WhiteToMove) {
+				captures = whiteCaptures;
 
-			// Black bottom
+				// Black bottom
 			} else {
-				// Already initialized
+				captures = blackCaptures;
+			}
+
+			while (captures.transform.childCount > 0) {
+				DestroyImmediate(captures.transform.GetChild(0).gameObject);
 			}
 
 			// Function called at the end of game loop, so the turn is reversed
 			int colorIndex = board.WhiteToMove ? Board.BlackIndex : Board.WhiteIndex;
+			int color = board.WhiteToMove ? Piece.White : Piece.Black;
 			float xPosition = -550;
 			for (int pieceType = 1; pieceType < board.Captures[colorIndex].Length; pieceType++) {
 				int numPieces = board.Captures[colorIndex][pieceType];
@@ -39,11 +45,11 @@ namespace Chess.Game {
 					xPosition += 30;
 
 					SpriteRenderer pieceRenderer = new GameObject("Piece").AddComponent<SpriteRenderer>();
-					pieceRenderer.transform.parent = whiteCaptures;
+					pieceRenderer.transform.parent = captures;
 					pieceRenderer.transform.localPosition = new Vector3(xPosition, 0, depth);
 					pieceRenderer.transform.localScale = new Vector3(100, 100, 1);
 
-					pieceRenderer.sprite = pieceTheme.GetPieceSprite(pieceType);
+					pieceRenderer.sprite = pieceTheme.GetPieceSprite(pieceType | color);
 				}
 			}
 		}
