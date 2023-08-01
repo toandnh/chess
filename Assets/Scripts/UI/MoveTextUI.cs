@@ -19,7 +19,7 @@ namespace Chess.Game {
 			UpdateMoveText(board);
 		}
 
-		public void UpdateMoveText(Board board) {
+		void UpdateMoveText(Board board) {
 			bool whiteToMove = board.WhiteToMove;
 			int currentIndex = board.Text[0].Count - 1;
 
@@ -139,6 +139,12 @@ namespace Chess.Game {
 			}
 
 			scrollRect.verticalNormalizedPosition = 0;
+		}
+		
+		public void ResetMoveText() {
+			while (content.childCount > 0) {
+				DestroyImmediate(content.GetChild(0).gameObject);
+			}
 		}
 	}
 }

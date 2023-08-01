@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace Chess.Game {
 	public class GameManager : MonoBehaviour {
 		public enum State { Playing }
 
-		public event System.Action<Move> OnMoveMade;
+		public event Action<Move> OnMoveMade;
 
 		public AudioSource capture;
 		public AudioSource castle;
@@ -29,14 +30,17 @@ namespace Chess.Game {
 		Board board;
 		BoardUI boardUI;
 		MoveTextUI moveTextUI;
+		CaptureUI captureUI;
 
 		//string testWhitePromotionFen = "3k4/6P1/5K2/8/8/8/8/8 w - - 0 1";
 		//string testBlackPromotionFen = "8/8/8/8/8/5K2/6p1/3k4 w - - 0 1";
 
 		public void Start() {
 			board = new Board();
+			
 			boardUI = FindObjectOfType<BoardUI>();
 			moveTextUI = FindObjectOfType<MoveTextUI>();
+			captureUI = FindObjectOfType<CaptureUI>();
 
 			NewGame(WhitePlayerType, BlackPlayerType);
 		}
@@ -58,6 +62,9 @@ namespace Chess.Game {
 
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor(false);
+
+			moveTextUI.ResetMoveText();
+			captureUI.ResetCapture();
 
 			CreatePlayer(ref whitePlayer, whitePlayerType);
 			CreatePlayer(ref blackPlayer, blackPlayerType);
@@ -105,6 +112,12 @@ namespace Chess.Game {
 			
 			boardUI.OnMoveMade(board, move);
 			moveTextUI.OnMoveMade(board);
+
+			// Since the variable captureIntoPromote is not used with promote flag, it simply means capture 
+			if (captureIntoPromote) {
+				captureUI.OnMoveMade(board, boardUI);
+			}
+			
 
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);

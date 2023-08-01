@@ -7,9 +7,11 @@ namespace Chess {
 	public class Board {
 		public int[] Square;
 
+		public PieceList PieceList;
+
 		public List<List<string>> Text;
 
-		public PieceList PieceList;
+		public int[][] Captures;
 
 		public const int WhiteIndex = 0;
 		public const int BlackIndex = 1;
@@ -21,6 +23,7 @@ namespace Chess {
 		public int PromotePiece { get; set; }
 
 		public bool WhiteToMove;
+
 		public int ColorToMove;
 		public int OpponentColor;
 
@@ -31,16 +34,18 @@ namespace Chess {
 		const uint blackCastleKingSideMask = 0b11111011;
 		const uint blackCastleQueenSideMask = 0b11110111;
 
-		const int longestGameEverInMoves = 269;
-
 		void Initialize() {
 			Square = new int[64];
+
+			PieceList = new PieceList();
 
 			Text = new List<List<string>>();
 			Text.Add(new List<string>());
 			Text.Add(new List<string>());
 
-			PieceList = new PieceList();
+			Captures = new int[2][];
+			Captures[WhiteIndex] = new int[6];
+			Captures[BlackIndex] = new int[6];
 
 			PromotePiece = -1;
 		}
@@ -93,6 +98,7 @@ namespace Chess {
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
 
+			// Pawns (pieceType == 1) have no symbols
 			string moveText = movePieceType == 1 ? "" : MoveText.GetPieceText(movePiece).ToString();
 
 			// Clear or unset the MSB - check bit
@@ -101,12 +107,18 @@ namespace Chess {
 			// Capture move, outside the switch clause because of capture-into-promote moves
 			int targetPieceType = Piece.PieceType(Square[moveTo]);
 			if (targetPieceType != Piece.None) {
+				// Remove from piece list
 				PieceList.Remove(targetPieceType, OpponentColor, moveTo);
+
+				// Build notations
 				if (movePieceType == 1) {
 					// Pawn capture pawn
 					moveText += FileNames[FileIndex(moveFrom)].ToString();
 				}
 				moveText = moveText + 'x';
+
+				// Update captures list
+				Captures[WhiteToMove ? WhiteIndex : BlackIndex][targetPieceType]++;
 			}
 
 			// Record the move

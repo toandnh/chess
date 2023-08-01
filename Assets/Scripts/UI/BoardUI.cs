@@ -17,7 +17,6 @@ namespace Chess.Game {
 
 		public bool IsWhiteBottom = true;
 
-
 		bool showLegalMoves = false;
 
 		const float squareDepth = 0f;
