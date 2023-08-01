@@ -77,7 +77,6 @@ namespace Chess.Game {
 		}
 
 		void HandleMenuPieceSelection(Vector2 mousePos) {
-			// TODO: promote after capture (fromSquare not vertically aligned)
 			if (Input.GetMouseButtonDown(0)) {
 				if (boardUI.CanGetSquareUnderMouse(mousePos, out selectedPieceSquare)) {
 					int index = BoardRepresentation.IndexFromCoord(selectedPieceSquare);
@@ -138,7 +137,6 @@ namespace Chess.Game {
 					}
 
 					// Cancel menu after choose piece or when click outside
-					//board.PromotePiece = -1;
 					boardUI.DestroyPromoteMenu();
 					currentState = InputState.None;
 				}
