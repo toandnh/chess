@@ -417,8 +417,7 @@ namespace Chess {
 		bool IsPinned(int startSquare) {
 			if (!IsAligned(friendlyKingSquare, startSquare)) return false;
 
-			int sign = whiteToMove ? 1 : -1;
-			int searchDirOffset = sign * DirectionOffset(friendlyKingSquare, startSquare);
+			int searchDirOffset = (-1) * DirectionOffset(startSquare, friendlyKingSquare);
 
 			return HasAttackingPiece(board.Square, startSquare, searchDirOffset, opponentColor) && 
 							!HasPieceBetween(board.Square, startSquare, -searchDirOffset);
@@ -427,8 +426,7 @@ namespace Chess {
 		bool IsDiscoveredCheck(int startSquare) {
 			if (!IsAligned(opponentKingSquare, startSquare)) return false;
 
-			int sign = whiteToMove ? 1 : -1;
-			int searchDirOffset = sign * DirectionOffset(opponentKingSquare, startSquare);
+			int searchDirOffset = (-1) * DirectionOffset(startSquare, opponentKingSquare);
 
 			return HasAttackingPiece(board.Square, startSquare, searchDirOffset, friendlyColor) && 
 							!HasPieceBetween(board.Square, startSquare, -searchDirOffset);;

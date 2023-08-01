@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Chess {
 	using static BoardRepresentation;
 
 	public class Board {
 		public int[] Square;
+
+		public List<List<string>> Text;
 
 		public PieceList PieceList;
 
@@ -28,8 +31,14 @@ namespace Chess {
 		const uint blackCastleKingSideMask = 0b11111011;
 		const uint blackCastleQueenSideMask = 0b11110111;
 
+		const int longestGameEverInMoves = 269;
+
 		void Initialize() {
 			Square = new int[64];
+
+			Text = new List<List<string>>();
+			Text.Add(new List<string>());
+			Text.Add(new List<string>());
 
 			PieceList = new PieceList();
 
@@ -84,6 +93,8 @@ namespace Chess {
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
 
+			string moveText = movePieceType == 1 ? "" : MoveText.GetPieceText(movePiece).ToString();
+
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
 
@@ -91,7 +102,16 @@ namespace Chess {
 			int targetPieceType = Piece.PieceType(Square[moveTo]);
 			if (targetPieceType != Piece.None) {
 				PieceList.Remove(targetPieceType, OpponentColor, moveTo);
+				if (movePieceType == 1) {
+					// Pawn capture pawn
+					moveText += FileNames[FileIndex(moveFrom)].ToString();
+				}
+				moveText = moveText + 'x';
 			}
+
+			// Record the move
+			int colorToMoveIndex = WhiteToMove ? WhiteIndex : BlackIndex;
+			moveText += MoveText.GetSquareText(moveTo);
 
 			// Update move piece's position in piece lists
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
@@ -112,6 +132,8 @@ namespace Chess {
 					break;
 				case Move.Flag.Castle:
 					bool kingside = moveTo == g1 || moveTo == g8;
+
+					moveText = kingside ? "O-O" : "O-O-O";
 
 					int castlingRookFromIndex = kingside ? moveTo + 1 : moveTo - 2;
 					int castlingRookToIndex = kingside ? moveTo - 1 : moveTo + 1;
@@ -142,7 +164,21 @@ namespace Chess {
 			Square[moveTo] = movePiece;
 			Square[moveFrom] = 0;
 
+			// Add to moveText list
+			Text[colorToMoveIndex].Add(moveText);
+
 			// Update castle rights
+			// King move
+			if (movePieceType == Piece.King) {
+				if (WhiteToMove) {
+					castleRights &= whiteCastleKingSideMask;
+					castleRights &= whiteCastleQueenSideMask;
+				} else {
+					castleRights &= blackCastleKingSideMask;
+					castleRights &= blackCastleQueenSideMask;
+				}
+			}
+			// Move into or out of the corner squares
 			if (castleRights != 0) {
 				if (moveTo == h1 || moveFrom == h1) {
 					castleRights &= whiteCastleKingSideMask;

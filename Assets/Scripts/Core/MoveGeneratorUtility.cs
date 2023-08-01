@@ -38,6 +38,8 @@ namespace Chess {
 							!isDiagonal && targetSquarePieceType == Piece.Rook) {
 						return true;
 					}
+					// Found an opponent piece but not the piece is not attacking the king 
+					return false;
 				}
 			}
 

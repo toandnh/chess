@@ -78,7 +78,7 @@ namespace Chess.Game {
 					squareRenderers[file, rank] = square.gameObject.GetComponent<MeshRenderer>();
 					squareRenderers[file, rank].material = squareMaterial;
 
-					squareRenderers[file, rank].material.color = (squareCoord.IsLightSquare()) ? boardTheme.lightSquares.normal : boardTheme.darkSquares.normal;
+					squareRenderers[file, rank].material.color = (squareCoord.IsLightSquare()) ? boardTheme.LightSquares.Normal : boardTheme.DarkSquares.Normal;
 
 					// Create highlight square - for highlighting previous, legal moves
 					Transform highlightSquare = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
@@ -90,7 +90,7 @@ namespace Chess.Game {
 					highlightSquareRenderers[file, rank] = highlightSquare.gameObject.GetComponent<MeshRenderer>();
 					highlightSquareRenderers[file, rank].material = squareMaterial;
 
-					highlightSquareRenderers[file, rank].material.color = (squareCoord.IsLightSquare()) ? boardTheme.lightSquares.normal : boardTheme.darkSquares.normal;
+					highlightSquareRenderers[file, rank].material.color = (squareCoord.IsLightSquare()) ? boardTheme.LightSquares.Normal : boardTheme.DarkSquares.Normal;
 
 					// Create piece sprite renderer for current square
 					SpriteRenderer pieceRenderer = new GameObject("Piece").AddComponent<SpriteRenderer>();
@@ -110,7 +110,7 @@ namespace Chess.Game {
 
 				fileLabelRenderers[file] = square.gameObject.GetComponent<MeshRenderer>();
 				fileLabelRenderers[file].material = squareMaterial;
-				fileLabelRenderers[file].material.color = boardTheme.labelSquares;
+				fileLabelRenderers[file].material.color = boardTheme.LabelSquares;
 
 				// Create text sprite renderer for current square
 				SpriteRenderer textRenderer = new GameObject("File").AddComponent<SpriteRenderer>();
@@ -130,7 +130,7 @@ namespace Chess.Game {
 
 				rankLabelRenderers[rank] = square.gameObject.GetComponent<MeshRenderer>();
 				rankLabelRenderers[rank].material = squareMaterial;
-				rankLabelRenderers[rank].material.color = boardTheme.labelSquares;
+				rankLabelRenderers[rank].material.color = boardTheme.LabelSquares;
 
 				// Create number sprite renderer for current square
 				SpriteRenderer numberRenderer = new GameObject("Rank").AddComponent<SpriteRenderer>();
@@ -170,7 +170,7 @@ namespace Chess.Game {
 
 				squareMenuRenderers[index] = square.gameObject.GetComponent<MeshRenderer>();
 				squareMenuRenderers[index].material = squareMaterial;
-				squareMenuRenderers[index].material.color = boardTheme.menuSquares;
+				squareMenuRenderers[index].material.color = boardTheme.MenuSquares;
 
 				// Create options sprite
 				SpriteRenderer pieceChoiceRenderer = new GameObject("Menu").AddComponent<SpriteRenderer>();
@@ -198,8 +198,8 @@ namespace Chess.Game {
 		}
 
 		void HighlightMove(Move move) {
-			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.highlighted, boardTheme.highlighted);
-			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.highlighted, boardTheme.highlighted);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.StartSquare), boardTheme.Highlighted, boardTheme.Highlighted);
+			SetSquareColor(BoardRepresentation.CoordFromIndex(move.TargetSquare), boardTheme.Highlighted, boardTheme.Highlighted);
 		}
 
 		public void HighLightLegalMove(Board board, Coord fromCoord) {
@@ -209,7 +209,7 @@ namespace Chess.Game {
 			foreach (Move move in moves) {
 				if (move.StartSquare == BoardRepresentation.IndexFromCoord(fromCoord)) {
 					Coord coord = BoardRepresentation.CoordFromIndex(move.TargetSquare);
-					SetSquareColor(coord, boardTheme.legal, boardTheme.legal);
+					SetSquareColor(coord, boardTheme.Legal, boardTheme.Legal);
 				}
 			}
 		}
@@ -244,7 +244,7 @@ namespace Chess.Game {
 		}
 
 		public void SelectSquare(Coord coord) {
-			SetSquareColor(coord, boardTheme.selected, boardTheme.selected);
+			SetSquareColor(coord, boardTheme.Selected, boardTheme.Selected);
 		}
 
 		public void DeselectSquare(Coord coord) {
@@ -254,7 +254,7 @@ namespace Chess.Game {
 		public void ResetSquareColor(bool highlight = true) {
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
-					SetSquareColor(new Coord(file, rank), boardTheme.lightSquares.normal, boardTheme.darkSquares.normal);
+					SetSquareColor(new Coord(file, rank), boardTheme.LightSquares.Normal, boardTheme.DarkSquares.Normal);
 				}
 			}
 

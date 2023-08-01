@@ -28,6 +28,7 @@ namespace Chess.Game {
 
 		Board board;
 		BoardUI boardUI;
+		MoveTextUI moveTextUI;
 
 		//string testWhitePromotionFen = "3k4/6P1/5K2/8/8/8/8/8 w - - 0 1";
 		//string testBlackPromotionFen = "8/8/8/8/8/5K2/6p1/3k4 w - - 0 1";
@@ -35,6 +36,7 @@ namespace Chess.Game {
 		public void Start() {
 			board = new Board();
 			boardUI = FindObjectOfType<BoardUI>();
+			moveTextUI = FindObjectOfType<MoveTextUI>();
 
 			NewGame(WhitePlayerType, BlackPlayerType);
 		}
@@ -73,7 +75,7 @@ namespace Chess.Game {
 			if (playerType == PlayerType.Human) {
 				player = new HumanPlayer(board);
 			} else {
-
+				//
 			}
 			player.OnMoveChosen += OnMoveChosen;
 		}
@@ -102,6 +104,7 @@ namespace Chess.Game {
 			OnMoveMade?.Invoke(move);
 			
 			boardUI.OnMoveMade(board, move);
+			moveTextUI.OnMoveMade(board);
 
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);

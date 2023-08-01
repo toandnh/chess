@@ -19,12 +19,13 @@ namespace Chess {
 
 		static Dictionary<char, int> pieceTypeFromSymbol = new Dictionary<char, int>() {
 			['p'] = Piece.Pawn,
-			['r'] = Piece.Rook,
 			['n'] = Piece.Knight,
 			['b'] = Piece.Bishop,
-			['k'] = Piece.King,
-			['q'] = Piece.Queen
+			['r'] = Piece.Rook,
+			['q'] = Piece.Queen,
+			['k'] = Piece.King
 		};
+
 		public const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 		public static LoadedPositionInfo PositionFromFen(string fen) {
