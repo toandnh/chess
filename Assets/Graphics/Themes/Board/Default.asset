@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 534143ced25fd494c92dc8a999c14cc5, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
-  labelSquares: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0}
-  lightSquares:
-    normal: {r: 0.9882353, g: 0.95686275, b: 0.88235295, a: 0}
-    selected: {r: 0.86664754, g: 0.8867924, b: 0.37981486, a: 0}
-    highlighted: {r: 0.8666667, g: 0.8862745, b: 0.38039216, a: 0}
-  darkSquares:
-    normal: {r: 0.019607844, g: 0.44313726, b: 0.21568628, a: 0}
-    selected: {r: 0.8666667, g: 0.8862745, b: 0.39215687, a: 0}
-    highlighted: {r: 0.8666667, g: 0.8862745, b: 0.39215687, a: 0}
+  LabelSquares: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0}
+  MenuSquares: {r: 1, g: 1, b: 1, a: 0}
+  Selected: {r: 0.9056604, g: 0.77647567, b: 0.2597365, a: 0}
+  Highlighted: {r: 0.90588236, g: 0.7764706, b: 0.25882354, a: 0}
+  Legal: {r: 0.5660378, g: 0.19437522, b: 0.19437522, a: 0}
+  MoveTextLight: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0.39215687}
+  MoveTextDark: {r: 0.21698111, g: 0.20142397, b: 0.20142397, a: 0.39215687}
+  LightSquares:
+    Normal: {r: 0.9882353, g: 0.95686275, b: 0.88235295, a: 0}
+  DarkSquares:
+    Normal: {r: 0.019607844, g: 0.44313726, b: 0.21568628, a: 0}
