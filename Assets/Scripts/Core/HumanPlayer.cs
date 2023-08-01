@@ -21,6 +21,8 @@ namespace Chess.Game {
 		BoardUI boardUI;
 		Coord selectedPieceSquare;
 
+		int promoteFromSquareIndex = -1;
+
 		public HumanPlayer(Board board) {
 			this.board = board;
 			boardUI = GameObject.FindObjectOfType<BoardUI>();
@@ -75,6 +77,7 @@ namespace Chess.Game {
 		}
 
 		void HandleMenuPieceSelection(Vector2 mousePos) {
+			// TODO: promote after capture (fromSquare not vertically aligned)
 			if (Input.GetMouseButtonDown(0)) {
 				if (boardUI.CanGetSquareUnderMouse(mousePos, out selectedPieceSquare)) {
 					int index = BoardRepresentation.IndexFromCoord(selectedPieceSquare);
@@ -107,6 +110,12 @@ namespace Chess.Game {
 
 								fromSquare = endSquareIndex + 8;
 								toSquare = endSquareIndex;
+							}
+
+							// Promote after capture
+							if (promoteFromSquareIndex != -1) {
+								fromSquare = promoteFromSquareIndex;
+								promoteFromSquareIndex = -1;
 							}
 
 							// Map the location of the pieces in the menu to its number representation
@@ -205,6 +214,9 @@ namespace Chess.Game {
 					boardUI.CreatePromoteMenu(chosenMove.TargetSquare, board.ColorToMove);
 					boardUI.PromoteStartSquareIndex = targetIndex;
 					currentState = InputState.PromotePiece;
+					if (!MoveGeneratorUtility.IsAlignedVertically(chosenMove.StartSquare, chosenMove.TargetSquare)) {
+						promoteFromSquareIndex = chosenMove.StartSquare;
+					}
 					return ;
 				}
 
