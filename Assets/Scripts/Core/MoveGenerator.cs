@@ -130,7 +130,9 @@ namespace Chess {
 					if (HasSquare(opponentThreatMap, castleQueensideSquare)) continue;
 					if (HasSquare(opponentThreatMap, castleQueensideSquare - 1)) continue;
 
-					if (board.Square[castleQueensideSquare] == Piece.None && hasQueenSideCastleRight) {
+					if (board.Square[castleQueensideSquare] == Piece.None && 
+							board.Square[castleQueensideSquare -1] == Piece.None && 
+							hasQueenSideCastleRight) {
 						moves.Add(new Move(kingSquare, castleQueensideSquare, Move.Flag.Castle));
 					}
 				}
