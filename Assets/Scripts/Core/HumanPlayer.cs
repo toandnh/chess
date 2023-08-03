@@ -121,7 +121,7 @@ namespace Chess.Game {
 							// E.g. The rook appears second in the menu, and its number representation is Piece.Rook = 4; 5 - 1 = 4
 							// See Piece class for more information on number representation of pieces
 							int promotePiece = 5 - pieceIndex;
-							board.PromotePiece = promotePiece;
+							board.PromotePieceType = promotePiece;
 
 							int flag = Move.Flag.Promote;
 							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];

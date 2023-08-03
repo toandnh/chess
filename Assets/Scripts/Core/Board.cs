@@ -20,7 +20,7 @@ namespace Chess {
 		// Bits 4-7 store the en passant square (starting at 1)
 		public uint CurrentGameState;
 
-		public int PromotePiece { get; set; }
+		public int PromotePieceType { get; set; }
 
 		public bool WhiteToMove;
 
@@ -47,7 +47,7 @@ namespace Chess {
 			Captures[WhiteIndex] = new int[6];
 			Captures[BlackIndex] = new int[6];
 
-			PromotePiece = -1;
+			PromotePieceType = -1;
 		}
 
 		public void LoadStartPosition() {
@@ -161,11 +161,13 @@ namespace Chess {
 				case Move.Flag.Promote:
 					PieceList.Remove(movePieceType, ColorToMove, moveTo);
 
-					movePiece = ColorToMove | PromotePiece;
+					movePiece = ColorToMove | PromotePieceType;
 
-					PieceList.Add(PromotePiece, ColorToMove, moveTo);
+					PieceList.Add(PromotePieceType, ColorToMove, moveTo);
 
-					PromotePiece = -1;
+					moveText = MoveText.GetSquareText(moveTo) + MoveText.GetPieceText(movePiece);
+
+					PromotePieceType = -1;
 
 					break;
 				default:
