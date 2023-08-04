@@ -120,12 +120,12 @@ namespace Chess.Game {
 							// Map the location of the pieces in the menu to its number representation
 							// E.g. The rook appears second in the menu, and its number representation is Piece.Rook = 4; 5 - 1 = 4
 							// See Piece class for more information on number representation of pieces
-							int promotePiece = 5 - pieceIndex;
-							board.PromotePieceType = promotePiece;
+							int promotePieceType = 5 - pieceIndex;
+							board.CurrentGameState |= (uint) promotePieceType << 8;
 
 							int flag = Move.Flag.Promote;
 							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];
-							if (MoveGeneratorUtility.IsCheckAfterPromotion(board.Square, toSquare, promotePiece, opponentKingSquare)) {
+							if (MoveGeneratorUtility.IsCheckAfterPromotion(board.Square, toSquare, promotePieceType, opponentKingSquare)) {
 								flag |= Move.Flag.Check;
 							}
 							Move chosenMove = new Move(fromSquare, toSquare, flag);

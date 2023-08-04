@@ -17,22 +17,23 @@ namespace Chess {
 		public const int BlackIndex = 1;
 
 		// Bits 0-3 store the castle rights;
-		// Bits 4-7 store the en passant square (starting at 1)
+		// Bits 4-7 store the en passant square (starting at 1);
+		// Bits 8-10 store the promote piece type;
 		public uint CurrentGameState;
-
-		public int PromotePieceType { get; set; }
 
 		public bool WhiteToMove;
 
 		public int ColorToMove;
 		public int OpponentColor;
 
-		const uint castleRightsMask = 0b00001111;
+		const uint castleRightsMask = 0b00000001111;
 
-		const uint whiteCastleKingSideMask = 0b11111110;
-		const uint whiteCastleQueenSideMask = 0b11111101;
-		const uint blackCastleKingSideMask = 0b11111011;
-		const uint blackCastleQueenSideMask = 0b11110111;
+		const uint whiteCastleKingSideMask = 0b00011111110;
+		const uint whiteCastleQueenSideMask = 0b00011111101;
+		const uint blackCastleKingSideMask = 0b00011111011;
+		const uint blackCastleQueenSideMask = 0b00011110111;
+
+		const uint promotePieceTypeMask = 0b11100000000;
 
 		void Initialize() {
 			Square = new int[64];
@@ -46,8 +47,6 @@ namespace Chess {
 			Captures = new int[2][];
 			Captures[WhiteIndex] = new int[6];
 			Captures[BlackIndex] = new int[6];
-
-			PromotePieceType = -1;
 		}
 
 		public void LoadStartPosition() {
@@ -89,6 +88,8 @@ namespace Chess {
 
 		public void MakeMove(Move move) {
 			uint castleRights = CurrentGameState & castleRightsMask; 
+
+			uint promotePieceType = (CurrentGameState & promotePieceTypeMask) >> 8; 
 
 			CurrentGameState = 0;
 
@@ -133,7 +134,6 @@ namespace Chess {
 				case Move.Flag.EnPassant:
 					int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
 
-					CurrentGameState |= (ushort) (Square[epPawnSquare] << 8);
 					Square[epPawnSquare] = Piece.None;
 
 					// Remove opponent's pawn from the list
@@ -161,13 +161,11 @@ namespace Chess {
 				case Move.Flag.Promote:
 					PieceList.Remove(movePieceType, ColorToMove, moveTo);
 
-					movePiece = ColorToMove | PromotePieceType;
+					movePiece = ColorToMove | (int) promotePieceType;
 
-					PieceList.Add(PromotePieceType, ColorToMove, moveTo);
+					PieceList.Add((int) promotePieceType, ColorToMove, moveTo);
 
 					moveText = MoveText.GetSquareText(moveTo) + MoveText.GetPieceText(movePiece);
-
-					PromotePieceType = -1;
 
 					break;
 				default:
@@ -213,6 +211,10 @@ namespace Chess {
 			}
 
 			UpdateSideToMove(!WhiteToMove);
+		}
+
+		public void UnmakeMove(Move move) {
+			//
 		}
 
 		void UpdateSideToMove(bool whiteToMove) {
