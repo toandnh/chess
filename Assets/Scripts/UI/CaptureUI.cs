@@ -26,9 +26,7 @@ namespace Chess.Game {
 				captures = blackCaptures;
 			}
 
-			while (captures.transform.childCount > 0) {
-				DestroyImmediate(captures.transform.GetChild(0).gameObject);
-			}
+			ResetCapture(captures);
 
 			// Function called at the end of game loop, so the turn is reversed
 			int colorIndex = board.WhiteToMove ? Board.BlackIndex : Board.WhiteIndex;
@@ -55,11 +53,13 @@ namespace Chess.Game {
 		}
 
 		public void ResetCapture() {
-			while (whiteCaptures.transform.childCount > 0) {
-				DestroyImmediate(whiteCaptures.transform.GetChild(0).gameObject);
-			}
-			while (blackCaptures.transform.childCount > 0) {
-				DestroyImmediate(blackCaptures.transform.GetChild(0).gameObject);
+			ResetCapture(whiteCaptures);
+			ResetCapture(blackCaptures);
+		}
+
+		public void ResetCapture(Transform captures) {
+			while (captures.transform.childCount > 0) {
+				DestroyImmediate(captures.transform.GetChild(0).gameObject);
 			}
 		}
 	}
