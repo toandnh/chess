@@ -17,8 +17,9 @@ namespace Chess {
 		public const int BlackIndex = 1;
 
 		// Bits 0-3 store the castle rights;
-		// Bits 4-7 store the en passant square (starting at 1);
+		// Bits 4-7 store the en passant file (starting at 1);
 		// Bits 8-10 store the promote piece type;
+		// TODO: Bits 11-13 store the captured piece type.
 		public uint CurrentGameState;
 
 		public bool WhiteToMove;
@@ -26,14 +27,16 @@ namespace Chess {
 		public int ColorToMove;
 		public int OpponentColor;
 
-		const uint castleRightsMask = 0b00000001111;
+		// & masks
+		const uint castleRightsMask = 0b00000000001111;
+		const uint promotePieceTypeMask = 0b00011100000000;
+		const uint capturedPieceTypeMask = 0b11100000000000;
 
-		const uint whiteCastleKingSideMask = 0b00011111110;
-		const uint whiteCastleQueenSideMask = 0b00011111101;
-		const uint blackCastleKingSideMask = 0b00011111011;
-		const uint blackCastleQueenSideMask = 0b00011110111;
-
-		const uint promotePieceTypeMask = 0b11100000000;
+		// | masks
+		const uint whiteCastleKingSideMask = 0b11111111111110;
+		const uint whiteCastleQueenSideMask = 0b11111111111101;
+		const uint blackCastleKingSideMask = 0b11111111111011;
+		const uint blackCastleQueenSideMask = 0b11111111110111;
 
 		void Initialize() {
 			Square = new int[64];
@@ -120,6 +123,8 @@ namespace Chess {
 
 				// Update captures list
 				Captures[WhiteToMove ? WhiteIndex : BlackIndex][targetPieceType]++;
+
+				CurrentGameState |= (uint) targetPieceType << 11;
 			}
 
 			// Record the move
@@ -161,7 +166,7 @@ namespace Chess {
 				case Move.Flag.Promote:
 					PieceList.Remove(movePieceType, ColorToMove, moveTo);
 
-					movePiece = ColorToMove | (int) promotePieceType;
+					movePiece = (int) promotePieceType | ColorToMove;
 
 					PieceList.Add((int) promotePieceType, ColorToMove, moveTo);
 
@@ -207,14 +212,99 @@ namespace Chess {
 			// Mark en-passant file
 			if (moveFlag == Move.Flag.PawnTwoForward) {
 				int file = BoardRepresentation.FileIndex(moveFrom) + 1;
-				CurrentGameState |= (ushort) (file << 4);
+				CurrentGameState |= (uint) (file << 4);
 			}
+
+			// Reset the promote piece type
+			CurrentGameState &= ~promotePieceTypeMask;
 
 			UpdateSideToMove(!WhiteToMove);
 		}
 
 		public void UnmakeMove(Move move) {
-			//
+			int friendlyColor = OpponentColor;
+			int opponentColor = ColorToMove;
+
+			uint castleRights = CurrentGameState & castleRightsMask;
+
+			uint capturedPieceType = (CurrentGameState & capturedPieceTypeMask) >> 11;
+			int capturedPiece = capturedPieceType != 0 ? (int) capturedPieceType | opponentColor : 0;
+
+			CurrentGameState = 0;
+
+			int moveFrom = move.TargetSquare;
+			int moveTo = move.StartSquare;
+
+			int movePiece = Square[moveFrom];
+			int movePieceType = Piece.PieceType(movePiece);
+
+			// Clear or unset the MSB - check bit
+			int moveFlag = move.MoveFlag & ~(1 << 3);
+
+			// Capture move
+			if (capturedPieceType != 0) {
+				PieceList.Add((int) capturedPieceType, opponentColor, moveFrom);
+			}
+
+			PieceList.Update(movePieceType, friendlyColor, moveFrom, moveTo);
+
+			// Special moves
+			switch (moveFlag) {
+				case Move.Flag.EnPassant:
+					int epPawnSquare = moveFrom + (WhiteToMove ? -8 : 8);
+
+					Square[epPawnSquare] = Piece.Pawn | opponentColor;
+
+					// Add opponent's pawn back to the list
+					PieceList.Add(movePieceType, opponentColor, epPawnSquare);
+
+					break;
+				case Move.Flag.Castle:
+					bool kingside = moveFrom == g1 || moveFrom == g8;
+
+					int castlingRookFromIndex = kingside ? moveFrom - 1 : moveFrom + 1;
+					int castlingRookToIndex = kingside ? moveFrom + 1 : moveFrom - 2;
+
+					Square[castlingRookFromIndex] = Piece.None;
+					Square[castlingRookToIndex] = Piece.Rook | friendlyColor;
+
+					PieceList.Update(Piece.Rook, friendlyColor, castlingRookFromIndex, castlingRookToIndex);
+
+					break;
+				case Move.Flag.Promote:
+					// Remove promoted piece
+					PieceList.Remove(movePiece, friendlyColor, moveTo);
+
+					movePiece = Piece.Pawn | friendlyColor;
+
+					// Add the pawn back
+					PieceList.Add(movePiece, friendlyColor, moveTo);
+
+					break;
+			}
+
+			// Update the board representation
+			Square[moveTo] = movePiece;
+			Square[moveFrom] = capturedPiece;
+
+			// Update castle rights
+			if (moveFlag == Move.Flag.Castle) {
+				bool kingside = moveFrom == g1 || moveFrom == g8;
+				if (friendlyColor == Piece.White) {
+					castleRights &= kingside ? ~whiteCastleKingSideMask : ~whiteCastleQueenSideMask;
+				} else {
+					castleRights &= kingside ? ~blackCastleKingSideMask : ~blackCastleQueenSideMask;
+				}
+			}
+			CurrentGameState |= castleRights;
+
+			// Mark en-passant file
+			if (moveFlag == Move.Flag.EnPassant) {
+				int file = BoardRepresentation.FileIndex(moveFrom) + 1;
+				CurrentGameState |= (uint) (file << 4);
+			}
+
+			UpdateSideToMove(!WhiteToMove);
 		}
 
 		void UpdateSideToMove(bool whiteToMove) {

@@ -121,6 +121,8 @@ namespace Chess.Game {
 							// E.g. The rook appears second in the menu, and its number representation is Piece.Rook = 4; 5 - 1 = 4
 							// See Piece class for more information on number representation of pieces
 							int promotePieceType = 5 - pieceIndex;
+
+							// Set the promote piece type
 							board.CurrentGameState |= (uint) promotePieceType << 8;
 
 							int flag = Move.Flag.Promote;

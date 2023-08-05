@@ -323,7 +323,7 @@ namespace Chess {
 			int startRank = whiteToMove ? 1 : 6;
 
 			int enPassantSquare = -1;
-			int enPassantFile = ((int) (board.CurrentGameState >> 4) & 15) - 1;
+			int enPassantFile = ((int) (board.CurrentGameState >> 4) & 0b1111) - 1;
 			if (enPassantFile != -1) {
 				enPassantSquare = 8 * (whiteToMove ? 5 : 2) + enPassantFile;
 			}
