@@ -27,7 +27,9 @@ namespace Chess.Game {
 		Player blackPlayer;
 		Player playerToMove;
 
+		MoveText moveText;
 		Board board;
+
 		BoardUI boardUI;
 		MoveTextUI moveTextUI;
 		CaptureUI captureUI;
@@ -36,6 +38,7 @@ namespace Chess.Game {
 		//string testBlackPromotionFen = "8/8/8/8/8/5K2/6p1/3k4 w - - 0 1";
 
 		public void Start() {
+			moveText = new MoveText();
 			board = new Board();
 			
 			boardUI = FindObjectOfType<BoardUI>();
@@ -57,6 +60,7 @@ namespace Chess.Game {
 		}
 
 		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
+			moveText.ResetMoveText();
 			board.LoadStartPosition();
 			//board.LoadCustomPosition(testBlackPromotionFen);
 
@@ -106,19 +110,19 @@ namespace Chess.Game {
 				captureIntoPromote = true;
 			}
 
+			moveText.GenerateMoveText(move, board);
 			board.MakeMove(move);
 
 			OnMoveMade?.Invoke(move);
 			
 			boardUI.OnMoveMade(board, move);
-			moveTextUI.OnMoveMade(board);
+			moveTextUI.OnMoveMade(moveText, board.WhiteToMove);
 
 			// Since the variable captureIntoPromote is not used with promote flag, it simply means capture 
 			if (captureIntoPromote) {
 				captureUI.OnMoveMade(board, boardUI);
 			}
 			
-
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
 			// Get the MSB - check bit

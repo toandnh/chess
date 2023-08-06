@@ -2650,7 +2650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c492b884d472b214684b86bf9b2e50be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardTheme: {fileID: 11400000, guid: b82148fd55e5df444a5d0b4d4d4cb8d0, type: 2}
+  moveTextTheme: {fileID: 11400000, guid: b7c03b7f7daaf2448ae21e488118eb8b, type: 2}
 --- !u!114 &877292623
 MonoBehaviour:
   m_ObjectHideFlags: 0

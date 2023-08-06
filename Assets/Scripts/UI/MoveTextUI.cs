@@ -5,7 +5,7 @@ using TMPro;
 
 namespace Chess.Game {
 	public class MoveTextUI : MonoBehaviour {
-		public BoardTheme boardTheme;
+		public MoveTextTheme moveTextTheme;
 
 		Transform content;
 		ScrollRect scrollRect;
@@ -15,13 +15,18 @@ namespace Chess.Game {
 			scrollRect = GameObject.Find("Scroll View").GetComponent<ScrollRect>();
 		}
 
-		public void OnMoveMade(Board board) {
-			UpdateMoveText(board);
+		public void OnMoveMade(MoveText moveText, bool whiteToMove) {
+			UpdateMoveText(moveText, whiteToMove);
 		}
 
-		void UpdateMoveText(Board board) {
-			bool whiteToMove = board.WhiteToMove;
-			int currentIndex = board.Text[0].Count - 1;
+		public void ResetMoveText() {
+			while (content.childCount > 0) {
+				DestroyImmediate(content.GetChild(0).gameObject);
+			}
+		}
+
+		void UpdateMoveText(MoveText moveText, bool whiteToMove) {
+			int currentIndex = moveText.Text[0].Count - 1;
 
 			GameObject panel;
 			RectTransform rectTransform;
@@ -52,7 +57,7 @@ namespace Chess.Game {
 				rectTransform.localScale = new Vector2(1, 1);
 
 				Image image = panel.GetComponent<Image>();
-				image.color = currentIndex % 2 == 0 ? boardTheme.MoveTextLight : boardTheme.MoveTextDark;
+				image.color = currentIndex % 2 == 0 ? moveTextTheme.Light.Normal : moveTextTheme.Dark.Normal;
 
 				// TextMeshPro
 				// Move number
@@ -105,7 +110,7 @@ namespace Chess.Game {
 				text = textWhite.GetComponent<TextMeshProUGUI>();
 				text.fontStyle = FontStyles.Bold;
 				text.fontSize = 40;
-				text.text = board.Text[Board.WhiteIndex][currentIndex];
+				text.text = moveText.Text[Board.WhiteIndex][currentIndex];
 			
 			// Black's turn
 			} else {
@@ -135,16 +140,10 @@ namespace Chess.Game {
 				text = textBlack.GetComponent<TextMeshProUGUI>();
 				text.fontStyle = FontStyles.Bold;
 				text.fontSize = 40;
-				text.text = board.Text[Board.BlackIndex][currentIndex];
+				text.text = moveText.Text[Board.BlackIndex][currentIndex];
 			}
 
 			scrollRect.verticalNormalizedPosition = 0;
-		}
-		
-		public void ResetMoveText() {
-			while (content.childCount > 0) {
-				DestroyImmediate(content.GetChild(0).gameObject);
-			}
 		}
 	}
 }

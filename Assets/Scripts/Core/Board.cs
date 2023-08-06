@@ -9,8 +9,6 @@ namespace Chess {
 
 		public PieceList PieceList;
 
-		public List<List<string>> Text;
-
 		public int[][] Captures;
 
 		public const int WhiteIndex = 0;
@@ -29,8 +27,8 @@ namespace Chess {
 
 		// & masks
 		const uint castleRightsMask = 0b00000000001111;
-		const uint promotePieceTypeMask = 0b00011100000000;
 		const uint capturedPieceTypeMask = 0b11100000000000;
+		public const uint PromotePieceTypeMask = 0b00011100000000;
 
 		// | masks
 		const uint whiteCastleKingSideMask = 0b11111111111110;
@@ -42,10 +40,6 @@ namespace Chess {
 			Square = new int[64];
 
 			PieceList = new PieceList();
-
-			Text = new List<List<string>>();
-			Text.Add(new List<string>());
-			Text.Add(new List<string>());
 
 			Captures = new int[2][];
 			Captures[WhiteIndex] = new int[6];
@@ -92,7 +86,7 @@ namespace Chess {
 		public void MakeMove(Move move) {
 			uint castleRights = CurrentGameState & castleRightsMask; 
 
-			uint promotePieceType = (CurrentGameState & promotePieceTypeMask) >> 8; 
+			uint promotePieceType = (CurrentGameState & PromotePieceTypeMask) >> 8; 
 
 			CurrentGameState = 0;
 
@@ -101,9 +95,6 @@ namespace Chess {
 
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
-
-			// Pawns (pieceType == 1) have no symbols
-			string moveText = movePieceType == 1 ? "" : MoveText.GetPieceText(movePiece).ToString();
 
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
@@ -114,22 +105,11 @@ namespace Chess {
 				// Remove from piece list
 				PieceList.Remove(targetPieceType, OpponentColor, moveTo);
 
-				// Build notations
-				if (movePieceType == 1) {
-					// Pawn capture pawn
-					moveText += FileNames[FileIndex(moveFrom)].ToString();
-				}
-				moveText = moveText + 'x';
-
 				// Update captures list
 				Captures[WhiteToMove ? WhiteIndex : BlackIndex][targetPieceType]++;
 
 				CurrentGameState |= (uint) targetPieceType << 11;
 			}
-
-			// Record the move
-			int colorToMoveIndex = WhiteToMove ? WhiteIndex : BlackIndex;
-			moveText += MoveText.GetSquareText(moveTo);
 
 			// Update move piece's position in piece lists
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
@@ -150,8 +130,6 @@ namespace Chess {
 				case Move.Flag.Castle:
 					bool kingside = moveTo == g1 || moveTo == g8;
 
-					moveText = kingside ? "O-O" : "O-O-O";
-
 					int castlingRookFromIndex = kingside ? moveTo + 1 : moveTo - 2;
 					int castlingRookToIndex = kingside ? moveTo - 1 : moveTo + 1;
 
@@ -170,8 +148,6 @@ namespace Chess {
 
 					PieceList.Add((int) promotePieceType, ColorToMove, moveTo);
 
-					moveText = MoveText.GetSquareText(moveTo) + MoveText.GetPieceText(movePiece);
-
 					break;
 				default:
 					break;
@@ -180,9 +156,6 @@ namespace Chess {
 			// Update the board representation
 			Square[moveTo] = movePiece;
 			Square[moveFrom] = 0;
-
-			// Add to moveText list
-			Text[colorToMoveIndex].Add(moveText);
 
 			// Update castle rights
 			// King move
@@ -216,7 +189,7 @@ namespace Chess {
 			}
 
 			// Reset the promote piece type
-			CurrentGameState &= ~promotePieceTypeMask;
+			CurrentGameState &= ~PromotePieceTypeMask;
 
 			UpdateSideToMove(!WhiteToMove);
 		}

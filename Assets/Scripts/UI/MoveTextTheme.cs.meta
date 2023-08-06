@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: c492b884d472b214684b86bf9b2e50be
+guid: 2760ec578fe37654283428bb51413ee0
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - moveTextTheme: {fileID: 11400000, guid: b7c03b7f7daaf2448ae21e488118eb8b, type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
