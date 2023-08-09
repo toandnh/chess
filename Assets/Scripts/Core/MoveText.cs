@@ -15,7 +15,7 @@ namespace Chess {
 
 		public List<List<string>> Text;
 
-		public int HighlightIndex = -1;
+		int highlightIndex = -1;
 
 		public MoveText() {
 			Initialize();
@@ -72,7 +72,7 @@ namespace Chess {
 			// Add to moveText list
 			Text[board.WhiteToMove ? Board.WhiteIndex : Board.BlackIndex].Add(moveText);
 
-			HighlightIndex = Text.Count - 1;
+			highlightIndex = Text.Count - 1;
 		}
 
 		public void ResetMoveText() {
