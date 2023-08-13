@@ -122,10 +122,7 @@ namespace Chess.Game {
 							// See Piece class for more information on number representation of pieces
 							int promotePieceType = 5 - pieceIndex;
 
-							// Set the promote piece type
-							board.CurrentGameState |= (uint) promotePieceType << 8;
-
-							int flag = Move.Flag.Promote;
+							int flag = promotePieceType + 2;
 							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];
 							if (MoveGeneratorUtility.IsCheckAfterPromotion(board.Square, toSquare, promotePieceType, opponentKingSquare)) {
 								flag |= Move.Flag.Check;
@@ -209,7 +206,7 @@ namespace Chess.Game {
 
 			if (isLegalMove) {
 				// Promotion move
-				if (chosenMove.MoveFlag == Move.Flag.Promote) {
+				if (chosenMove.MoveFlag >= 4 && chosenMove.MoveFlag <= 7) {
 					CancelPieceSelection();
 					boardUI.CreatePromoteMenu(chosenMove.TargetSquare, board.ColorToMove);
 					boardUI.PromoteStartSquareIndex = targetIndex;

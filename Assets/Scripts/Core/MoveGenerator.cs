@@ -26,7 +26,7 @@ namespace Chess {
 
 		ulong opponentThreatMap;
 
-		ulong verticalAndHorizontalCheckMap;
+		ulong orthogonalCheckMap;
 		ulong diagonalCheckMap;
 		ulong knightCheckMap;
 		ulong pawnCheckMap;
@@ -63,7 +63,7 @@ namespace Chess {
 
 			opponentThreatMap = bitMapGenerator.OpponentThreatMap;
 
-			verticalAndHorizontalCheckMap = bitMapGenerator.VerticalAndHorizontalCheckMap;
+			orthogonalCheckMap = bitMapGenerator.OrthogonalCheckMap;
 			diagonalCheckMap = bitMapGenerator.DiagonalCheckMap;
 			knightCheckMap = bitMapGenerator.KnightCheckMap;
 			pawnCheckMap = bitMapGenerator.PawnCheckMap;
@@ -104,13 +104,13 @@ namespace Chess {
 				// Skip if square is occupied by friendly piece
 				if (Piece.IsColor(targetSquarePiece, friendlyColor)) continue;
 
-				// Flag this move as a capture move
-				if (Piece.IsColor(targetSquarePiece, opponentColor)) flag = Move.Flag.Capture;
-
 				moves.Add(new Move(kingSquare, targetSquare, flag));
 
 				// Cannot castle while in check
 				if (inCheck) continue;
+
+				// Square is occupied by opponent piece, cannot castle
+				if (Piece.IsColor(targetSquarePiece, opponentColor)) continue;
 
 				// Castle kingside
 				if (targetSquare == f1 || targetSquare == f8) {
@@ -118,6 +118,9 @@ namespace Chess {
 
 					// Castle square is under control by opponent, cannot move here
 					if (HasSquare(opponentThreatMap, castleKingsideSquare)) continue;
+
+					// Square is occupied by opponent piece, cannot castle
+					if (Piece.IsColor(board.Square[castleKingsideSquare], opponentColor)) continue;
 
 					if (board.Square[castleKingsideSquare] == Piece.None && hasKingSideCastleRight) {
 						moves.Add(new Move(kingSquare, castleKingsideSquare, Move.Flag.Castle));
@@ -129,6 +132,10 @@ namespace Chess {
 					// Castle squares is under control by opponent, cannot move here
 					if (HasSquare(opponentThreatMap, castleQueensideSquare)) continue;
 					if (HasSquare(opponentThreatMap, castleQueensideSquare - 1)) continue;
+
+					// Square is occupied by opponent piece, cannot castle
+					if (Piece.IsColor(board.Square[castleQueensideSquare], opponentColor)) continue;
+					if (Piece.IsColor(board.Square[castleQueensideSquare - 1], opponentColor)) continue;
 
 					if (board.Square[castleQueensideSquare] == Piece.None && 
 							board.Square[castleQueensideSquare -1] == Piece.None && 
@@ -222,8 +229,8 @@ namespace Chess {
 
 		void GenerateSlidingPieceMoves(int startSquare, int startDirIndex, int endDirIndex) {
 			ulong slidingCheckMap = 0;
-			slidingCheckMap = endDirIndex <= 4 ? verticalAndHorizontalCheckMap : diagonalCheckMap;
-			slidingCheckMap = startDirIndex == 0 && endDirIndex == 8 ? verticalAndHorizontalCheckMap | diagonalCheckMap : slidingCheckMap;
+			slidingCheckMap = endDirIndex <= 4 ? orthogonalCheckMap : diagonalCheckMap;
+			slidingCheckMap = startDirIndex == 0 && endDirIndex == 8 ? orthogonalCheckMap | diagonalCheckMap : slidingCheckMap;
 
 			for (int dirIndex = startDirIndex; dirIndex < endDirIndex; dirIndex++) {
 				int currentDirOffset = DirectionOffsets[dirIndex];
@@ -238,13 +245,6 @@ namespace Chess {
 					if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
 
 					int flag = Move.Flag.None;
-					bool haveToCapture = false;
-
-					// Flag this move as a capture move
-					if (targetSquarePiece != Piece.None && Piece.IsColor(targetSquarePiece, opponentColor)) {
-						flag |= Move.Flag.Capture;
-						haveToCapture = true;
-					}
 
 					// Possible discovered check
 					if (HasSquare(slidingCheckMap, targetSquare)) {
@@ -265,7 +265,7 @@ namespace Chess {
 					moves.Add(new Move(startSquare, targetSquare, flag));
 
 					// Block by opponent piece, have to capture
-					if (haveToCapture) break;
+					if (Piece.IsColor(targetSquarePiece, opponentColor)) break;
 				}
 			}
 		}
@@ -292,11 +292,8 @@ namespace Chess {
 
 					int flag = Move.Flag.None;
 
-					// Flag this move as a capture move
-					if (Piece.IsColor(targetSquarePiece, opponentColor)) flag |= Move.Flag.Capture;
-
 					// Possible discovered check
-					if (HasSquare(verticalAndHorizontalCheckMap, targetSquare) || HasSquare(diagonalCheckMap, targetSquare)) {
+					if (HasSquare(orthogonalCheckMap, targetSquare) || HasSquare(diagonalCheckMap, targetSquare)) {
 						if (IsDiscoveredCheck(knightSquare)) {
 							flag |= Move.Flag.Check;
 						}
@@ -329,12 +326,19 @@ namespace Chess {
 			}
 
 			foreach (int pawnSquare in pawns) {
+				bool isPinnedVertically = false;
+				bool isPinnedDiagonally = false;
+				
 				// Piece is possibly pinned
 				if (HasSquare(opponentThreatMap, pawnSquare)) {
 					if (IsPinned(pawnSquare)) {
-						// Pinned diagonally or horizontally, skip this piece
-						if (IsAlignedDiagonally(friendlyKingSquare, pawnSquare) || IsAlignedHorizontally(friendlyKingSquare, pawnSquare)) {
-							continue;
+						// Cannot move when pinned horizontally
+						if (IsAlignedHorizontally(friendlyKingSquare, pawnSquare)) continue;
+
+						if (IsAlignedDiagonally(friendlyKingSquare, pawnSquare)) {
+							isPinnedDiagonally = true;
+						} else {
+							isPinnedVertically = true;
 						}
 					}
 				}
@@ -342,16 +346,19 @@ namespace Chess {
 				int rank = RankIndex(pawnSquare);
 				int promotionRank = whiteToMove ? 7 : 0;
 
-				int flag;
+				int flag = Move.Flag.None;
 
 				int squareOneForward = pawnSquare + pawnOffset;
 
 				// Forward moves
-				if (board.Square[squareOneForward] == Piece.None) {
+				if (board.Square[squareOneForward] == Piece.None && !isPinnedDiagonally) {
 					bool canMove = !(inCheck && !HasSquare(squaresInCheckRayMap, squareOneForward));
 					if (canMove) {
 						if (RankIndex(squareOneForward) == promotionRank) {
-							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.Promote));
+							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToKnight));
+							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToBishop));
+							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToRook));
+							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToQueen));
 						} else {
 							flag = Move.Flag.None;
 							if (HasSquare(pawnCheckMap, squareOneForward)) {
@@ -378,13 +385,30 @@ namespace Chess {
 					}
 				}
 
+				if (isPinnedVertically) continue;
+
 				// Capture moves
 				for (int j = 0; j < 2; j++) {
 					// Check if diagonal square exists
 					if (NumSquaresToEdge[pawnSquare][PawnAttackDirections[friendlyColorIndex][j]] > 0) {
 						int pawnCaptureDir = DirectionOffsets[PawnAttackDirections[friendlyColorIndex][j]];
+
 						int targetSquare = pawnSquare + pawnCaptureDir;
 						int targetSquarePiece = board.Square[targetSquare];
+						int targetSquarePieceType = Piece.PieceType(targetSquarePiece);
+
+						// Pinned diagonally;
+						if (isPinnedDiagonally) {
+							// And this square does not have an attacking piece;
+							if (targetSquarePieceType != Piece.Bishop && targetSquarePieceType != Piece.Queen) {
+								continue;
+							// Or has an attacking piece but not on the same line 
+							} else {
+								if (DirectionOffset(friendlyKingSquare, pawnSquare) != DirectionOffset(friendlyKingSquare, targetSquare)) {
+									continue;
+								}
+							}
+						}
 
 						// King is in check and this move does not block the check
 						if (inCheck && !HasSquare(squaresInCheckRayMap, targetSquare)) continue;
@@ -398,16 +422,17 @@ namespace Chess {
 						// Regular capture
 						if (Piece.IsColor(targetSquarePiece, opponentColor)) {
 							if (RankIndex(targetSquare) == promotionRank) {
-								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.Promote));
+								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToKnight));
+								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToBishop));
+								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToRook));
+								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToQueen));
 							} else {
-								flag |= Move.Flag.Capture;
-								moves.Add(new Move(pawnSquare, targetSquare, flag));
+								moves.Add(new Move(pawnSquare, targetSquare));
 							}
 						}
 
 						// En-passant capture
 						if (targetSquare == enPassantSquare) {
-							flag &= Move.Flag.Capture;
 							flag |= Move.Flag.EnPassant;
 							moves.Add(new Move(pawnSquare, targetSquare, flag));
 						}

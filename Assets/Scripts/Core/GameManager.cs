@@ -34,9 +34,6 @@ namespace Chess.Game {
 		MoveTextUI moveTextUI;
 		CaptureUI captureUI;
 
-		//string testWhitePromotionFen = "3k4/6P1/5K2/8/8/8/8/8 w - - 0 1";
-		//string testBlackPromotionFen = "8/8/8/8/8/5K2/6p1/3k4 w - - 0 1";
-
 		public void Start() {
 			moveText = new MoveText();
 			board = new Board();
@@ -62,7 +59,6 @@ namespace Chess.Game {
 		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
 			moveText.ResetMoveText();
 			board.LoadStartPosition();
-			//board.LoadCustomPosition(testBlackPromotionFen);
 
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor(false);
@@ -105,9 +101,9 @@ namespace Chess.Game {
 		}
 
 		void OnMoveChosen(Move move) {
-			bool captureIntoPromote = false;
+			bool isCapture = false;
 			if (board.Square[move.TargetSquare] != 0) {
-				captureIntoPromote = true;
+				isCapture = true;
 			}
 
 			moveText.GenerateMoveText(move, board);
@@ -117,22 +113,18 @@ namespace Chess.Game {
 			
 			boardUI.OnMoveMade(board, move);
 			moveTextUI.OnMoveMade(moveText, board.WhiteToMove);
-
-			// Since the variable captureIntoPromote is not used with promote flag, it simply means capture 
-			if (captureIntoPromote) {
-				captureUI.OnMoveMade(board, boardUI);
-			}
 			
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
 			// Get the MSB - check bit
 			bool check = ((move.MoveFlag >> 3) & 1) != 0;
 
+			if (isCapture || moveFlag == Move.Flag.EnPassant) {
+				captureUI.OnMoveMade(board, boardUI);
+				capture.Play();
+			}
+
 			switch (moveFlag) {
-				case Move.Flag.EnPassant:
-				case Move.Flag.Capture:
-					capture.Play();
-					break;
 				case Move.Flag.Castle:
 					castle.Play();
 					break;
@@ -140,8 +132,10 @@ namespace Chess.Game {
 				case Move.Flag.PawnTwoForward:
 					moveSelf.Play();
 					break;
-				case Move.Flag.Promote:
-					if (captureIntoPromote) capture.Play();
+				case Move.Flag.PromoteToKnight:
+				case Move.Flag.PromoteToBishop:
+				case Move.Flag.PromoteToRook:
+				case Move.Flag.PromoteToQueen:
 					promote.Play();
 					break;
 			}

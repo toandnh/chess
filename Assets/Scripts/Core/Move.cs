@@ -6,10 +6,13 @@ namespace Chess {
 		public readonly struct Flag {
 			public const int None = 0;
 			public const int EnPassant = 1;
-			public const int Capture = 2;
-			public const int Castle = 3;
-			public const int PawnTwoForward = 4;
-			public const int Promote = 5;
+			public const int Castle = 2;
+			public const int PawnTwoForward = 3;
+
+			public const int PromoteToKnight = 4;
+			public const int PromoteToBishop = 5;
+			public const int PromoteToRook = 6;
+			public const int PromoteToQueen = 7;
 
 			public const int Check = 8;
 		}

@@ -61,8 +61,11 @@ namespace Chess {
 					moveText = kingside ? "O-O" : "O-O-O";
 
 					break;
-				case Move.Flag.Promote:
-					int promotePieceType = (int) (board.CurrentGameState & Board.PromotePieceTypeMask) >> 8;
+				case Move.Flag.PromoteToKnight:
+				case Move.Flag.PromoteToBishop:
+				case Move.Flag.PromoteToRook:
+				case Move.Flag.PromoteToQueen:
+					int promotePieceType = move.MoveFlag - 2;
 					int pieceColor = board.WhiteToMove ? Piece.White : Piece.Black;
 					moveText = GetSquareText(moveTo) + GetPieceText(promotePieceType | pieceColor);
 

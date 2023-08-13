@@ -20,7 +20,7 @@ namespace Chess {
 
 		public ulong OpponentThreatMap;
 
-		public ulong VerticalAndHorizontalCheckMap;
+		public ulong OrthogonalCheckMap;
 		public ulong DiagonalCheckMap;
 		public ulong KnightCheckMap;
 		public ulong PawnCheckMap;
@@ -30,7 +30,7 @@ namespace Chess {
 		void Initialize() {
 			OpponentThreatMap = 0;
 
-			VerticalAndHorizontalCheckMap = 0;
+			OrthogonalCheckMap = 0;
 			DiagonalCheckMap = 0;
 			KnightCheckMap = 0;
 			PawnCheckMap = 0;
@@ -59,7 +59,7 @@ namespace Chess {
 		}
 
 		void GeneratePosibleCheckMap() {
-			VerticalAndHorizontalCheckMap |= GenerateSlidingMoveThreats(opponentKingSquare, 0, 4, false);
+			OrthogonalCheckMap |= GenerateSlidingMoveThreats(opponentKingSquare, 0, 4, false);
 			DiagonalCheckMap |= GenerateSlidingMoveThreats(opponentKingSquare, 4, 8, false);
 
 			KnightCheckMap = KnightAttackBitBoard[opponentKingSquare];
