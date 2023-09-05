@@ -15,7 +15,7 @@ namespace Chess.Game {
 
 		public int PromoteStartSquareIndex { get; set; }
 
-		public bool IsWhiteBottom = true;
+		public bool IsWhiteBottom = false;
 
 		bool showLegalMoves = false;
 
@@ -42,7 +42,6 @@ namespace Chess.Game {
 
 		MeshRenderer[] squareMenuRenderers;
 		SpriteRenderer[] menuPieceRenderers;
-
 
 		void Awake() {
 			moveGenerator = new MoveGenerator();
@@ -99,12 +98,15 @@ namespace Chess.Game {
 				}
 			}
 
+			Debug.Log(IsWhiteBottom);
+
 			for (int file = 0; file < 8; file++) {
 				// Create square
 				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
 				square.parent = transform;
 				square.name = "file" + file.ToString();
-				square.position = PositionFromCoord(file, -1, 0);
+				//square.position = PositionFromCoord(file, -1, 0);
+				square.position = new Vector3(-6.5f + file, -4.5f, squareDepth);
 				Material squareMaterial = new Material(squareShader);
 
 				fileLabelRenderers[file] = square.gameObject.GetComponent<MeshRenderer>();
@@ -112,10 +114,12 @@ namespace Chess.Game {
 				fileLabelRenderers[file].material.color = boardTheme.LabelSquares;
 
 				// Create text sprite renderer for current square
+				int pos = IsWhiteBottom ? file : 7 - file;
 				SpriteRenderer textRenderer = new GameObject("File").AddComponent<SpriteRenderer>();
-				textRenderer.sprite = textSpriteList[file];
+				textRenderer.sprite = textSpriteList[pos];
 				textRenderer.transform.parent = square;
-				textRenderer.transform.position = PositionFromCoord(file, -1, pieceDepth);
+				//textRenderer.transform.position = PositionFromCoord(file, -1, pieceDepth);
+				textRenderer.transform.position = new Vector3(-6.5f + file, -4.5f, pieceDepth);
 				squareTextRenderers[file] = textRenderer;
 			}
 
@@ -124,7 +128,8 @@ namespace Chess.Game {
 				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
 				square.parent = transform;
 				square.name = "rank" + rank.ToString();
-				square.position = PositionFromCoord(-1, rank, 0);
+				//square.position = PositionFromCoord(-1, rank, 0);
+				square.position = new Vector3(-7.5f, -3.5f + rank, squareDepth);
 				Material squareMaterial = new Material(squareShader);
 
 				rankLabelRenderers[rank] = square.gameObject.GetComponent<MeshRenderer>();
@@ -132,10 +137,12 @@ namespace Chess.Game {
 				rankLabelRenderers[rank].material.color = boardTheme.LabelSquares;
 
 				// Create number sprite renderer for current square
+				int pos = IsWhiteBottom ? rank : 7 - rank;
 				SpriteRenderer numberRenderer = new GameObject("Rank").AddComponent<SpriteRenderer>();
-				numberRenderer.sprite = numberSpriteList[rank];
+				numberRenderer.sprite = numberSpriteList[pos];
 				numberRenderer.transform.parent = square;
-				numberRenderer.transform.position = PositionFromCoord(-1, rank, pieceDepth);
+				//numberRenderer.transform.position = PositionFromCoord(-1, rank, pieceDepth);
+				numberRenderer.transform.position = new Vector3(-7.5f, -3.5f + rank, pieceDepth);
 				squareNumberRenderers[rank] = numberRenderer;
 			}
 		}

@@ -2649,7 +2649,7 @@ MonoBehaviour:
   - {fileID: 913375793, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
   - {fileID: 776275730, guid: 215943dc9dd533a438676c97bc927e06, type: 3}
   PromoteMenuOnScreen: 0
-  IsWhiteBottom: 1
+  IsWhiteBottom: 0
 --- !u!114 &877292622
 MonoBehaviour:
   m_ObjectHideFlags: 0
