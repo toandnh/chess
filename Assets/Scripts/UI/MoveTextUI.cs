@@ -7,6 +7,8 @@ namespace Chess.Game {
 	public class MoveTextUI : MonoBehaviour {
 		public MoveTextTheme moveTextTheme;
 
+		public TMP_FontAsset FontAsset;
+
 		Transform content;
 		ScrollRect scrollRect;
 
@@ -83,7 +85,9 @@ namespace Chess.Game {
 
 				text = moveNumber.GetComponent<TextMeshProUGUI>();
 				text.fontStyle = FontStyles.Bold;
-				text.fontSize = 40;
+				text.font = FontAsset;
+				text.enableAutoSizing = true;
+				text.color = moveTextTheme.Text;
 				text.text = (currentIndex + 1).ToString() + ".";
 
 				// White's move
@@ -109,7 +113,9 @@ namespace Chess.Game {
 
 				text = textWhite.GetComponent<TextMeshProUGUI>();
 				text.fontStyle = FontStyles.Bold;
-				text.fontSize = 40;
+				text.font = FontAsset;
+				text.enableAutoSizing = true;
+				text.color = moveTextTheme.Text;
 				text.text = moveText.Text[Board.WhiteIndex][currentIndex];
 			
 			// Black's turn
@@ -139,7 +145,9 @@ namespace Chess.Game {
 
 				text = textBlack.GetComponent<TextMeshProUGUI>();
 				text.fontStyle = FontStyles.Bold;
-				text.fontSize = 40;
+				text.font = FontAsset;
+				text.enableAutoSizing = true;
+				text.color = moveTextTheme.Text;
 				text.text = moveText.Text[Board.BlackIndex][currentIndex];
 			}
 

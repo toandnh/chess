@@ -9,9 +9,6 @@ namespace Chess.Game {
 		public Color Highlighted;
 		public Color Legal;
 
-		public Color MoveTextLight;
-		public Color MoveTextDark;
-
 		public SquareColors LightSquares;
 		public SquareColors DarkSquares;
 

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2760ec578fe37654283428bb51413ee0, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
+  Text: {r: 0.9490197, g: 0.9176471, b: 0.8470589, a: 1}
   Highlighted: {r: 0.38679248, g: 0.37000716, b: 0.37000716, a: 0.39215687}
   Light:
     Normal: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 0.39215687}
