@@ -11,11 +11,8 @@ namespace Chess.Game {
 		public Sprite[] textSpriteList;
 		public Sprite[] numberSpriteList;
 
-		public bool PromoteMenuOnScreen = false;
-
+		public bool IsWhiteBottom { get; set; } = true;
 		public int PromoteStartSquareIndex { get; set; }
-
-		public bool IsWhiteBottom = false;
 
 		bool showLegalMoves = false;
 
@@ -98,14 +95,11 @@ namespace Chess.Game {
 				}
 			}
 
-			Debug.Log(IsWhiteBottom);
-
 			for (int file = 0; file < 8; file++) {
 				// Create square
 				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
 				square.parent = transform;
 				square.name = "file" + file.ToString();
-				//square.position = PositionFromCoord(file, -1, 0);
 				square.position = new Vector3(-6.5f + file, -4.5f, squareDepth);
 				Material squareMaterial = new Material(squareShader);
 
@@ -118,7 +112,6 @@ namespace Chess.Game {
 				SpriteRenderer textRenderer = new GameObject("File").AddComponent<SpriteRenderer>();
 				textRenderer.sprite = textSpriteList[pos];
 				textRenderer.transform.parent = square;
-				//textRenderer.transform.position = PositionFromCoord(file, -1, pieceDepth);
 				textRenderer.transform.position = new Vector3(-6.5f + file, -4.5f, pieceDepth);
 				squareTextRenderers[file] = textRenderer;
 			}
@@ -128,7 +121,6 @@ namespace Chess.Game {
 				Transform square = GameObject.CreatePrimitive(PrimitiveType.Quad).transform;
 				square.parent = transform;
 				square.name = "rank" + rank.ToString();
-				//square.position = PositionFromCoord(-1, rank, 0);
 				square.position = new Vector3(-7.5f, -3.5f + rank, squareDepth);
 				Material squareMaterial = new Material(squareShader);
 
@@ -141,15 +133,12 @@ namespace Chess.Game {
 				SpriteRenderer numberRenderer = new GameObject("Rank").AddComponent<SpriteRenderer>();
 				numberRenderer.sprite = numberSpriteList[pos];
 				numberRenderer.transform.parent = square;
-				//numberRenderer.transform.position = PositionFromCoord(-1, rank, pieceDepth);
 				numberRenderer.transform.position = new Vector3(-7.5f, -3.5f + rank, pieceDepth);
 				squareNumberRenderers[rank] = numberRenderer;
 			}
 		}
 
 		public void CreatePromoteMenu(int startSquare, int colorToMove) {
-			PromoteMenuOnScreen = true;
-
 			Shader squareShader = Shader.Find("Unlit/Color");
 
 			squareMenuRenderers = new MeshRenderer[4];
@@ -157,7 +146,7 @@ namespace Chess.Game {
 
 			bool isWhitePromote = colorToMove == Piece.White;
 
-			int mask = isWhitePromote ? 0b01000 : 0b10000;
+			int mask = isWhitePromote ? Piece.White : Piece.Black;
 
 			int file = BoardRepresentation.FileIndex(startSquare);
 			int rank = BoardRepresentation.RankIndex(startSquare);
@@ -185,14 +174,15 @@ namespace Chess.Game {
 				pieceChoiceRenderer.transform.position = PositionFromCoord(file, rank, menuChoiceDepth);
 				menuPieceRenderers[index] = pieceChoiceRenderer;
 
-				rank = (IsWhiteBottom && isWhitePromote) || (!IsWhiteBottom && !isWhitePromote) ? rank - 1 : rank + 1;
+				// If the promotion is at the top of the board, render the options downwards and vice versa
+				rank = (IsWhiteBottom && isWhitePromote) || (!IsWhiteBottom && isWhitePromote) ? rank - 1 : rank + 1;
 			}
 		}
 
 		public void DestroyPromoteMenu() {
 			for (int index = 0; index < squareMenuRenderers.Length; index++) {
-				Destroy(squareMenuRenderers[index]);
-				Destroy(menuPieceRenderers[index]);
+				Destroy(squareMenuRenderers[index].gameObject);
+				//Destroy(menuPieceRenderers[index]);
 			}
 		}
 
@@ -223,11 +213,22 @@ namespace Chess.Game {
 		public void UpdatePosition(Board board) {
 			for (int file = 0; file < 8; file++) {
 				for (int rank = 0; rank < 8; rank++) {
-					Coord coord = new Coord(file, rank);
-					int piece = board.Square[BoardRepresentation.IndexFromCoord(coord.fileIndex, coord.rankIndex)];
+					int piece = board.Square[BoardRepresentation.IndexFromCoord(file, rank)];
 					squarePieceRenderers[file, rank].sprite = pieceTheme.GetPieceSprite(piece);
 					squarePieceRenderers[file, rank].transform.position = PositionFromCoord(file, rank, pieceDepth);
+
+					highlightSquareRenderers[file, rank].transform.position = PositionFromCoord(file, rank, highlightSquareDepth);
 				}
+			}
+		}
+
+		public void UpdateLabel() {
+			for (int index = 0; index < 8; index++) {
+				int file = IsWhiteBottom ? index : 7 - index;
+				int rank = IsWhiteBottom ? index : 7 - index;
+
+				squareTextRenderers[index].sprite = textSpriteList[file];
+				squareNumberRenderers[index].sprite = numberSpriteList[rank];
 			}
 		}
 

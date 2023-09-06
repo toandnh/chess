@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using Random = System.Random;
+
 using UnityEngine;
 
 namespace Chess.Game {
@@ -34,7 +36,7 @@ namespace Chess.Game {
 		MoveTextUI moveTextUI;
 		CaptureUI captureUI;
 
-		public void Start() {
+		void Start() {
 			moveText = new MoveText();
 			board = new Board();
 			
@@ -51,6 +53,23 @@ namespace Chess.Game {
 			}
 		}
 
+		public void NewRandomGame() {
+			bool[] options = { true, false, false, true, false, false, true, true, true, false };
+
+			Random random = new Random();
+			int chosenIndex = random.Next(options.Length);
+
+			NewGame(options[chosenIndex]);
+		}
+
+		public void NewBlackGame() {
+			NewGame(false);
+		}
+
+		public void NewWhiteGame() {
+			NewGame(true);
+		}
+
 		public void NewGame(bool humanPlayWhite) {
 			boardUI.SetWhitePerspective(humanPlayWhite);
 			NewGame(PlayerType.Human, PlayerType.Human);
@@ -60,6 +79,7 @@ namespace Chess.Game {
 			moveText.ResetMoveText();
 			board.LoadStartPosition();
 
+			boardUI.UpdateLabel();
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor(false);
 

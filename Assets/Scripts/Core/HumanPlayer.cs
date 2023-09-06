@@ -85,7 +85,7 @@ namespace Chess.Game {
 					int endSquareIndex = startSquareIndex - 8 * 3;
 
 					// Promote at the bottom of the board
-					bool startFromBottom = (!board.WhiteToMove || !boardUI.IsWhiteBottom) && (board.WhiteToMove || boardUI.IsWhiteBottom);
+					bool startFromBottom = (!boardUI.IsWhiteBottom || !board.WhiteToMove) && (boardUI.IsWhiteBottom || !board.WhiteToMove);
 
 					if (startFromBottom) {
 						endSquareIndex = startSquareIndex + 8 * 3;
