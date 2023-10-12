@@ -18,7 +18,7 @@ namespace Chess.Game {
 		public AudioSource moveSelf;
 		public AudioSource promote;
 
-		public enum PlayerType {Human, AI}
+		public enum PlayerType { Human, Bot }
 
 		State gameState;
 
@@ -44,7 +44,8 @@ namespace Chess.Game {
 			moveTextUI = FindObjectOfType<MoveTextUI>();
 			captureUI = FindObjectOfType<CaptureUI>();
 
-			NewGame(WhitePlayerType, BlackPlayerType);
+			//NewGame(WhitePlayerType, BlackPlayerType);
+			NewRandomGame();
 		}
 
 		void Update() {
@@ -72,7 +73,10 @@ namespace Chess.Game {
 
 		public void NewGame(bool humanPlayWhite) {
 			boardUI.SetWhitePerspective(humanPlayWhite);
-			NewGame(PlayerType.Human, PlayerType.Human);
+			//NewGame(PlayerType.Human, PlayerType.Human);
+			PlayerType player1 = humanPlayWhite ? PlayerType.Human : PlayerType.Bot;
+			PlayerType player2 = player1 == PlayerType.Human ? PlayerType.Bot : PlayerType.Human;
+			NewGame(player1, player2);
 		}
 
 		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
@@ -101,8 +105,8 @@ namespace Chess.Game {
 
 			if (playerType == PlayerType.Human) {
 				player = new HumanPlayer(board);
-			} else {
-				//
+			} else if (playerType == PlayerType.Bot) {
+				player = new BotPlayer(board);
 			}
 			player.OnMoveChosen += OnMoveChosen;
 		}
