@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+using Random = System.Random;
+
 using UnityEngine;
 
 namespace Chess.Game {
@@ -22,7 +24,11 @@ namespace Chess.Game {
 
 		void ComputeMove() {
 			List<Move> moves = moveGenerator.GenerateMoves(board);
-			ChoseMove(moves[0]);
+
+			Random random = new Random();
+			int chosenIndex = random.Next(moves.Count);
+
+			ChoseMove(moves[chosenIndex]);
 		}
 	}
 }

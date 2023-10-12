@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Chess.Game {
 	public class GameManager : MonoBehaviour {
-		public enum State { Playing }
+		public enum State { Playing, GameOver }
 
 		public event Action<Move> OnMoveMade;
 
@@ -51,6 +51,9 @@ namespace Chess.Game {
 		void Update() {
 			if (gameState == State.Playing) {
 				playerToMove.Update();
+			}
+			else if (gameState == State.GameOver) {
+				//
 			}
 		}
 
