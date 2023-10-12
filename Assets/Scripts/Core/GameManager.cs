@@ -128,6 +128,8 @@ namespace Chess.Game {
 		}
 
 		void OnMoveChosen(Move move) {
+			if (move.IsInvalid) return ;
+
 			bool isCapture = false;
 			if (board.Square[move.TargetSquare] != 0) {
 				isCapture = true;
