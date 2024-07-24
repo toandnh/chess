@@ -15,16 +15,18 @@ namespace Chess {
 		public const int BlackIndex = 1;
 
 		// Bits 0-3 store the castle rights;
-		// Bits 4-7 store the en passant file (starting at 1);
+		// Bits 4-7 store the en passant file (1 - 8);
 		// Bits 8-10 store the captured piece type.
 		public uint CurrentGameState;
+		Stack<uint> gameStateHistory;
+
+		public ulong CurrentZobristKey;
+		Stack<ulong> zobristKeyHistory;
 
 		public bool WhiteToMove;
 
 		public int ColorToMove;
 		public int OpponentColor;
-
-		Stack<uint> gameStateHistory;
 
 		// & masks
 		const uint castleRightsMask = 0b00000001111;
@@ -46,6 +48,7 @@ namespace Chess {
 			Captures[BlackIndex] = new int[6];
 
 			gameStateHistory = new Stack<uint>();
+			zobristKeyHistory = new Stack<ulong>();
 		}
 
 		public void LoadStartPosition() {
@@ -84,10 +87,15 @@ namespace Chess {
 			ushort initialGameState = (ushort) (whiteCastle | blackCastle | epState);
 			CurrentGameState = initialGameState;
 			gameStateHistory.Push(CurrentGameState);
+
+			// Calculate initial zobrist key
+			CurrentZobristKey = Zobrist.CalculateZobristKey(this);
+			zobristKeyHistory.Push(CurrentZobristKey);
 		}
 
 		public void MakeMove(Move move) {
-			uint castleRights = CurrentGameState & castleRightsMask; 
+			uint prevCastleRights = CurrentGameState & castleRightsMask; 
+			uint currCastleRights = prevCastleRights; 
 
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
@@ -104,23 +112,26 @@ namespace Chess {
 
 			int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
 
+			int colorIndexToMove = ColorToMove == Piece.White ? WhiteIndex : BlackIndex;
+			int opponentColorIndex = ColorToMove == Piece.White ? BlackIndex : WhiteIndex;
+
 			// Capture move, outside the switch clause because of capture-into-promote moves
 			int targetPieceSquare = moveFlag == Move.Flag.EnPassant ? epPawnSquare : moveTo;
 			int targetPieceType = Piece.PieceType(Square[targetPieceSquare]);
 			if (targetPieceType != Piece.None) {
-				// Remove from piece list
+				// Remove capture piece from piece list
 				PieceList.Remove(targetPieceType, OpponentColor, targetPieceSquare);
 
 				// Update captures list
-				Captures[WhiteToMove ? WhiteIndex : BlackIndex][targetPieceType]++;
+				Captures[colorIndexToMove][targetPieceType]++;
 
 				CurrentGameState |= (uint) targetPieceType << 8;
+
+				// Remove capture piece from zobrist key
+				CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, targetPieceSquare, targetPieceType, opponentColorIndex);
 			}
 
-			// Update move piece's position in piece lists
-			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
-
-			// Handle special move
+			// Handle special moves
 			switch (moveFlag) {
 				case Move.Flag.EnPassant:
 					Square[epPawnSquare] = Piece.None;
@@ -137,6 +148,15 @@ namespace Chess {
 
 					PieceList.Update(Piece.Rook, ColorToMove, castlingRookFromIndex, castlingRookToIndex);
 
+					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, castlingRookFromIndex, Piece.Rook, colorIndexToMove);
+					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, castlingRookToIndex, Piece.Rook, colorIndexToMove);
+
+					break;
+				case Move.Flag.PawnTwoForward:
+					uint file = (uint) BoardRepresentation.FileIndex(moveFrom) + 1;
+					CurrentGameState |= (file << 4);
+					CurrentZobristKey = Zobrist.UpdateEnpassantFile(CurrentZobristKey, file);
+
 					break;
 				case Move.Flag.PromoteToKnight:
 				case Move.Flag.PromoteToBishop:
@@ -145,8 +165,7 @@ namespace Chess {
 					PieceList.Remove(movePieceType, ColorToMove, moveTo);
 
 					movePiece = (int) promotePieceType | ColorToMove;
-
-					PieceList.Add((int) promotePieceType, ColorToMove, moveTo);
+					movePieceType = promotePieceType;
 
 					break;
 				default:
@@ -157,38 +176,49 @@ namespace Chess {
 			Square[moveTo] = movePiece;
 			Square[moveFrom] = 0;
 
+			// Update move piece's position in piece lists
+			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
+
+			// Update move piece's position in zobrist key
+			CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveFrom, movePieceType, colorIndexToMove);
+			CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveTo, movePieceType, colorIndexToMove);
+
 			// Update castle rights
 			// King move
 			if (movePieceType == Piece.King) {
 				if (WhiteToMove) {
-					castleRights &= whiteCastleKingSideMask;
-					castleRights &= whiteCastleQueenSideMask;
+					currCastleRights &= whiteCastleKingSideMask;
+					currCastleRights &= whiteCastleQueenSideMask;
 				} else {
-					castleRights &= blackCastleKingSideMask;
-					castleRights &= blackCastleQueenSideMask;
+					currCastleRights &= blackCastleKingSideMask;
+					currCastleRights &= blackCastleQueenSideMask;
 				}
 			}
 			// Move into or out of the corner squares
-			if (castleRights != 0) {
+			if (currCastleRights != 0) {
 				if (moveTo == h1 || moveFrom == h1) {
-					castleRights &= whiteCastleKingSideMask;
+					currCastleRights &= whiteCastleKingSideMask;
 				} else if (moveTo == a1 || moveFrom == a1) {
-					castleRights &= whiteCastleQueenSideMask;
+					currCastleRights &= whiteCastleQueenSideMask;
 				} else if (moveTo == h8 || moveFrom == h8) {
-					castleRights &= blackCastleKingSideMask;
+					currCastleRights &= blackCastleKingSideMask;
 				} else if (moveTo == a8 || moveFrom == a8) {
-					castleRights &= blackCastleQueenSideMask;
+					currCastleRights &= blackCastleQueenSideMask;
 				}
 			}
-			CurrentGameState |= castleRights;
+			CurrentGameState |= currCastleRights;
 
-			// Mark en-passant file
-			if (moveFlag == Move.Flag.PawnTwoForward) {
-				int file = BoardRepresentation.FileIndex(moveFrom) + 1;
-				CurrentGameState |= (uint) (file << 4);
+			if (currCastleRights != prevCastleRights) {
+				CurrentZobristKey = Zobrist.UpdateCastleRights(CurrentZobristKey, prevCastleRights, currCastleRights);
 			}
 
 			gameStateHistory.Push(CurrentGameState);
+
+			if (!WhiteToMove) {
+				CurrentZobristKey = Zobrist.UpdateSideToMove(CurrentZobristKey);
+			}
+
+			zobristKeyHistory.Push(CurrentZobristKey);
 
 			UpdateSideToMove(!WhiteToMove);
 		}
@@ -196,8 +226,6 @@ namespace Chess {
 		public void UnmakeMove(Move move) {
 			int friendlyColor = OpponentColor;
 			int opponentColor = ColorToMove;
-
-			uint castleRights = CurrentGameState & castleRightsMask;
 
 			int capturedPieceType = (int) (CurrentGameState & capturedPieceTypeMask) >> 8;
 			int capturedPiece = capturedPieceType != 0 ? capturedPieceType | opponentColor : 0;
@@ -215,8 +243,9 @@ namespace Chess {
 			bool isEnPassant = moveFlag == Move.Flag.EnPassant;
 
 			// Capture move; En passant will be handled below
-			if (capturedPieceType != 0 && !isEnPassant) {
+			if (capturedPieceType != Piece.None && !isEnPassant) {
 				PieceList.Add((int) capturedPieceType, opponentColor, moveFrom);
+				Captures[friendlyColor == Piece.White ? WhiteIndex : BlackIndex][capturedPieceType]--;
 			}
 
 			// Update PieceList for promotion case will be handled below
@@ -233,8 +262,9 @@ namespace Chess {
 
 					// Add opponent's pawn back to the list
 					PieceList.Add(Piece.Pawn, opponentColor, epPawnSquare);
+					Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][Piece.Pawn]--;
 
-					// Already handled
+					// Mark as already handled
 					capturedPiece = 0;
 
 					break;
@@ -274,6 +304,9 @@ namespace Chess {
 
 			gameStateHistory.Pop();
 			CurrentGameState = gameStateHistory.Peek();
+
+			zobristKeyHistory.Pop();
+			CurrentZobristKey = zobristKeyHistory.Peek();
 
 			UpdateSideToMove(!WhiteToMove);
 		}

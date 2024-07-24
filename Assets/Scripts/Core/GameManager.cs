@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+// To disambiguate between System.Random and UnityEngine.Random (CS0104)
 using Random = System.Random;
 
 using UnityEngine;

@@ -23,16 +23,23 @@ namespace Chess.Game {
 		}
 
 		void ComputeMove() {
-			List<Move> moves = moveGenerator.GenerateMoves(board);
+			int depth = 3;
 
-			int chosenIndex = -1;
-			if (moves.Count > 0) {
-				Random random = new Random();
-				chosenIndex = random.Next(moves.Count);
-			}
-			Move chosenMove = chosenIndex >= 0 ? moves[chosenIndex] : Move.InvalidMove;
+			Search search = new Search(board);
+			Move bestMove = search.FindMove(depth);
 
-			ChoseMove(chosenMove);
+			ChoseMove(bestMove);
+
+			// List<Move> moves = moveGenerator.GenerateMoves(board);
+
+			// int chosenIndex = -1;
+			// if (moves.Count > 0) {
+			// 	Random random = new Random();
+			// 	chosenIndex = random.Next(moves.Count);
+			// }
+			// Move chosenMove = chosenIndex >= 0 ? moves[chosenIndex] : Move.InvalidMove;
+
+			// ChoseMove(chosenMove);
 		}
 	}
 }
