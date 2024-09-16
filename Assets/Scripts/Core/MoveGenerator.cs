@@ -88,6 +88,7 @@ namespace Chess {
 				GeneratePawnMoves();
 			}
 
+			// Double check and no king moves = check mate
 			return moves;
 		}
 
@@ -262,10 +263,17 @@ namespace Chess {
 						}	
 					}
 
-					moves.Add(new Move(startSquare, targetSquare, flag));
-
 					// Block by opponent piece, have to capture
-					if (Piece.IsColor(targetSquarePiece, opponentColor)) break;
+					if (Piece.IsColor(targetSquarePiece, opponentColor)) {
+						// Prevent king-capture moves
+						if (targetSquarePiece != Piece.King) {
+							moves.Add(new Move(startSquare, targetSquare, flag));
+						}
+						break;
+					}
+
+					// Else, add this move to the list and keep looking
+					moves.Add(new Move(startSquare, targetSquare, flag));
 				}
 			}
 		}

@@ -5,18 +5,16 @@ namespace Chess {
 	public class CaptureListUpdate {
 		[Test]
 		public void NonCaptureMove() {
-			Board firstBoard = new Board();
-			firstBoard.LoadStartPosition();
-			Board secondBoard = new Board();
-			secondBoard.LoadStartPosition();
+			Board board = new Board();
+			board.LoadStartPosition();
 
 			Move e4 = new Move(12, 28, Move.Flag.PawnTwoForward);
-			firstBoard.MakeMove(e4);
+			board.MakeMove(e4);
 
 			bool noChange = true;
 			for (int colorIndex = 0; colorIndex < 2; colorIndex++) { 
-				for (int pieceIndex = 0; pieceIndex < firstBoard.Captures[colorIndex].Length; pieceIndex++) { 
-					noChange &= firstBoard.Captures[colorIndex][pieceIndex] == secondBoard.Captures[colorIndex][pieceIndex];
+				for (int pieceIndex = 0; pieceIndex < board.Captures[colorIndex].Length; pieceIndex++) { 
+					noChange &= board.Captures[colorIndex][pieceIndex] == 0;
 				}
 			}
 

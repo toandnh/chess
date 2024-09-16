@@ -245,7 +245,7 @@ namespace Chess {
 			// Capture move; En passant will be handled below
 			if (capturedPieceType != Piece.None && !isEnPassant) {
 				PieceList.Add((int) capturedPieceType, opponentColor, moveFrom);
-				Captures[friendlyColor == Piece.White ? WhiteIndex : BlackIndex][capturedPieceType]--;
+				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][capturedPieceType]--;
 			}
 
 			// Update PieceList for promotion case will be handled below

@@ -116,16 +116,12 @@ namespace Chess.Game {
 		}
 
 		void NotifyPlayerToMove() {
-			gameState = GetGameState();
-
 			if (gameState == State.Playing) {
 				playerToMove = board.WhiteToMove ? whitePlayer : blackPlayer;
 				playerToMove.NotifyTurnToMove();
+			} else if (gameState == State.GameOver) {
+				//
 			}
-		}
-
-		State GetGameState() {
-			return State.Playing;
 		}
 
 		void OnMoveChosen(Move move) {
