@@ -4,33 +4,46 @@ namespace Chess.Game {
 	public class CaptureUI : MonoBehaviour {
 		public PieceTheme pieceTheme;
 
-		Transform whiteCaptures;
-		Transform blackCaptures;
+		Transform bottomCaptures;
+		Transform topCaptures;
 
 		void Awake() {
-			whiteCaptures = GameObject.Find("Player Captures").transform;
-			blackCaptures = GameObject.Find("Opponent Captures").transform;
+			bottomCaptures = GameObject.Find("Player Captures").transform;
+			topCaptures = GameObject.Find("Opponent Captures").transform;
 		}
 
 		public void OnMoveMade(Board board, BoardUI boardUI) {
-			Transform captures;
+			// Transform captures;
 
-			// White bottom;
-			// this function is called at the end of the game loop, 
-			// hence, the turn is reversed
-			if (boardUI.IsWhiteBottom && !board.WhiteToMove || !boardUI.IsWhiteBottom && board.WhiteToMove) {
-				captures = whiteCaptures;
+			// // White bottom;
+			// // this function is called at the end of the game loop, 
+			// // hence, the turn is reversed
+			// if (boardUI.IsWhiteBottom && !board.WhiteToMove || !boardUI.IsWhiteBottom && board.WhiteToMove) {
+			// 	captures = bottomCaptures;
 
-				// Black bottom
-			} else {
-				captures = blackCaptures;
+			// 	// Black bottom
+			// } else {
+			// 	captures = topCaptures;
+			// }
+
+			// ResetCapture(captures);
+
+			// Function called at the end of game loop, so the turn is reversed
+			// int color = board.WhiteToMove ? Piece.White : Piece.Black;
+			DrawCapturedPieces(board, boardUI, board.WhiteToMove ? Piece.White : Piece.Black);
+		}
+
+		public void DrawCapturedPieces(Board board, BoardUI boardUI, int color) {
+			Transform captures = topCaptures;
+
+			if (boardUI.IsWhiteBottom && color != Piece.White || !boardUI.IsWhiteBottom && color == Piece.White) {
+				captures = bottomCaptures;
 			}
+
+			int colorIndex = color == Piece.White ? Board.BlackIndex : Board.WhiteIndex;
 
 			ResetCapture(captures);
 
-			// Function called at the end of game loop, so the turn is reversed
-			int colorIndex = board.WhiteToMove ? Board.BlackIndex : Board.WhiteIndex;
-			int color = board.WhiteToMove ? Piece.White : Piece.Black;
 			float xPosition = -550;
 			for (int pieceType = 1; pieceType < board.Captures[colorIndex].Length; pieceType++) {
 				int numPieces = board.Captures[colorIndex][pieceType];
@@ -53,11 +66,11 @@ namespace Chess.Game {
 		}
 
 		public void ResetCapture() {
-			ResetCapture(whiteCaptures);
-			ResetCapture(blackCaptures);
+			ResetCapture(bottomCaptures);
+			ResetCapture(topCaptures);
 		}
 
-		public void ResetCapture(Transform captures) {
+		void ResetCapture(Transform captures) {
 			while (captures.transform.childCount > 0) {
 				DestroyImmediate(captures.transform.GetChild(0).gameObject);
 			}

@@ -59,7 +59,7 @@ namespace Chess {
 			LoadPosition(fen);
 		}
 
-		public void LoadPosition(string fen) {
+		void LoadPosition(string fen) {
 			Initialize();
 			
 			var loadedPosition = FenUtility.PositionFromFen(fen);

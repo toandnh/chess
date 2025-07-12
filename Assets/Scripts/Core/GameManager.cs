@@ -13,6 +13,8 @@ namespace Chess.Game {
 
 		public event Action<Move> OnMoveMade;
 
+		public string FEN = "";
+
 		public AudioSource capture;
 		public AudioSource castle;
 		public AudioSource moveCheck;
@@ -59,15 +61,21 @@ namespace Chess.Game {
 		}
 
 		public void NewRandomGame() {
-			bool[] options = { true, false, false, true, false, false, true, true, true, false };
+			bool[] options = { true, false };
 
 			Random random = new Random();
 			int chosenIndex = random.Next(options.Length);
 
 			NewGame(options[chosenIndex]);
 		}
+		
+		public void NewGameFromFen() {
+			boardUI.SetWhitePerspective(true);
+			NewGame(FEN, PlayerType.Human, PlayerType.Human);
+		}
 
-		public void NewBlackGame() {
+		public void NewBlackGame()
+		{
 			NewGame(false);
 		}
 
@@ -80,19 +88,25 @@ namespace Chess.Game {
 			//NewGame(PlayerType.Human, PlayerType.Human);
 			PlayerType player1 = humanPlayWhite ? PlayerType.Human : PlayerType.Bot;
 			PlayerType player2 = player1 == PlayerType.Human ? PlayerType.Bot : PlayerType.Human;
-			NewGame(player1, player2);
+			NewGame(null, player1, player2);
 		}
 
-		void NewGame(PlayerType whitePlayerType, PlayerType blackPlayerType) {
+		void NewGame(string fen, PlayerType whitePlayerType, PlayerType blackPlayerType) {
+			board.LoadCustomPosition(fen ?? FenUtility.StartFen);
+
 			moveText.ResetMoveText();
-			board.LoadStartPosition();
 
 			boardUI.UpdateLabel();
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor(false);
 
 			moveTextUI.ResetMoveText();
-			captureUI.ResetCapture();
+
+			// captureUI.ResetCapture();
+			// This only re-draw the captures pieces of the moving side
+			// captureUI.OnMoveMade(board, boardUI);
+			captureUI.DrawCapturedPieces(board, boardUI, Piece.White);
+			captureUI.DrawCapturedPieces(board, boardUI, Piece.Black);
 
 			CreatePlayer(ref whitePlayer, whitePlayerType);
 			CreatePlayer(ref blackPlayer, blackPlayerType);
@@ -122,6 +136,10 @@ namespace Chess.Game {
 			} else if (gameState == State.GameOver) {
 				//
 			}
+		}
+
+		public void UpdateFen(string fen) {
+			FEN = fen;
 		}
 
 		void OnMoveChosen(Move move) {
