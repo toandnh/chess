@@ -4,7 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 
 namespace Chess.Game {
-	public class MoveTextUI : MonoBehaviour {
+	public class MoveTextUI : MonoBehaviour
+	{
 		public MoveTextTheme moveTextTheme;
 
 		public TMP_FontAsset FontAsset;
@@ -28,19 +29,22 @@ namespace Chess.Game {
 		}
 
 		void UpdateMoveText(MoveText moveText, bool whiteToMove) {
-			int currentIndex = moveText.Text[0].Count - 1;
+			int colorIndex = whiteToMove ? Board.BlackIndex : Board.WhiteIndex;
+			int currentIndex = moveText.Text[colorIndex].Count - 1;
+
+			float horOffset = whiteToMove ? 350 : -150;
 
 			GameObject panel;
 			RectTransform rectTransform;
 			TextMeshProUGUI text;
 
-			// White's turn; 
-			// this function is called at the end of the game loop, 
-			// hence, it actually is black's turn when the white's move is written down
-			if (!whiteToMove) {
-				// Create panel
-				panel = new GameObject();
-				panel.name = "Line " + (currentIndex + 1).ToString();
+			// Get the current panel
+			panel = GameObject.Find("Line " + (currentIndex + 1).ToString());
+			// Create new one if it's not there
+			if (!panel) {
+				panel = new GameObject {
+					name = "Line " + (currentIndex + 1).ToString()
+				};
 
 				panel.AddComponent<RectTransform>();
 				panel.AddComponent<CanvasRenderer>();
@@ -63,8 +67,9 @@ namespace Chess.Game {
 
 				// TextMeshPro
 				// Move number
-				GameObject moveNumber = new GameObject();
-				moveNumber.name = "Move " + (currentIndex + 1).ToString();
+				GameObject moveNumber = new GameObject {
+					name = "Move " + (currentIndex + 1).ToString()
+				};
 
 				moveNumber.AddComponent<RectTransform>();
 				moveNumber.AddComponent<CanvasRenderer>();
@@ -89,68 +94,36 @@ namespace Chess.Game {
 				text.enableAutoSizing = true;
 				text.color = moveTextTheme.Text;
 				text.text = (currentIndex + 1).ToString() + ".";
-
-				// White's move
-				GameObject textWhite = new GameObject();
-				textWhite.name = "White " + (currentIndex + 1).ToString();
-
-				textWhite.AddComponent<RectTransform>();
-				textWhite.AddComponent<CanvasRenderer>();
-				textWhite.AddComponent<TextMeshProUGUI>();
-
-				textWhite.transform.SetParent(panel.transform);
-
-				rectTransform = textWhite.GetComponent<RectTransform>();
-				rectTransform.sizeDelta = new Vector2(200, 50);
-				// x y offset
-				rectTransform.anchoredPosition = new Vector2(-150, 0);
-				// Anchor middle-center
-				rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-				rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-				rectTransform.pivot = new Vector2(0.5f, 0.5f);
-
-				rectTransform.localScale = new Vector2(1, 1);
-
-				text = textWhite.GetComponent<TextMeshProUGUI>();
-				text.fontStyle = FontStyles.Bold;
-				text.font = FontAsset;
-				text.enableAutoSizing = true;
-				text.color = moveTextTheme.Text;
-				text.text = moveText.Text[Board.WhiteIndex][currentIndex];
-			
-			// Black's turn
-			} else {
-				// Get the current panel
-				panel = GameObject.Find("Line " + (currentIndex + 1).ToString());
-
-				GameObject textBlack = new GameObject();
-				textBlack.name = "Black " + (currentIndex + 1).ToString();
-
-				textBlack.AddComponent<RectTransform>();
-				textBlack.AddComponent<CanvasRenderer>();
-				textBlack.AddComponent<TextMeshProUGUI>();
-
-				textBlack.transform.SetParent(panel.transform);
-
-				rectTransform = textBlack.GetComponent<RectTransform>();
-				rectTransform.sizeDelta = new Vector2(200, 50);
-				// x y offset
-				rectTransform.anchoredPosition = new Vector2(350, 0);
-				// Anchor middle-center
-				rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-				rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
-				rectTransform.pivot = new Vector2(0.5f, 0.5f);
-
-				rectTransform.localScale = new Vector2(1, 1);
-
-				text = textBlack.GetComponent<TextMeshProUGUI>();
-				text.fontStyle = FontStyles.Bold;
-				text.font = FontAsset;
-				text.enableAutoSizing = true;
-				text.color = moveTextTheme.Text;
-				text.text = moveText.Text[Board.BlackIndex][currentIndex];
 			}
 
+			GameObject currText = new GameObject {
+				name = whiteToMove ? "Black " + (currentIndex + 1).ToString() : "White " + (currentIndex + 1).ToString()
+			};
+
+			currText.AddComponent<RectTransform>();
+			currText.AddComponent<CanvasRenderer>();
+			currText.AddComponent<TextMeshProUGUI>();
+
+			currText.transform.SetParent(panel.transform);
+
+			rectTransform = currText.GetComponent<RectTransform>();
+			rectTransform.sizeDelta = new Vector2(200, 50);
+			// x y offset
+			rectTransform.anchoredPosition = new Vector2(horOffset, 0);
+			// Anchor middle-center
+			rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+			rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+			rectTransform.pivot = new Vector2(0.5f, 0.5f);
+
+			rectTransform.localScale = new Vector2(1, 1);
+
+			text = currText.GetComponent<TextMeshProUGUI>();
+			text.fontStyle = FontStyles.Bold;
+			text.font = FontAsset;
+			text.enableAutoSizing = true;
+			text.color = moveTextTheme.Text;
+			text.text = moveText.Text[colorIndex][currentIndex];
+			
 			scrollRect.verticalNormalizedPosition = 0;
 		}
 	}

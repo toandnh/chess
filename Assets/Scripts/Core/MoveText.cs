@@ -15,7 +15,7 @@ namespace Chess {
 
 		public List<List<string>> Text;
 
-		int highlightIndex = -1;
+		public int HighlightIndex = -1;
 
 		public MoveText() {
 			Initialize();
@@ -45,7 +45,7 @@ namespace Chess {
 					// Pawn capture pawn
 					moveText += FileNames[FileIndex(moveFrom)].ToString();
 				}
-				moveText = moveText + 'x';
+				moveText += 'x';
 			}
 
 			moveText += GetSquareText(moveTo);
@@ -75,7 +75,8 @@ namespace Chess {
 			// Add to moveText list
 			Text[board.WhiteToMove ? Board.WhiteIndex : Board.BlackIndex].Add(moveText);
 
-			highlightIndex = Text.Count - 1;
+			// ???
+			HighlightIndex = Text.Count - 1;
 		}
 
 		public void ResetMoveText() {

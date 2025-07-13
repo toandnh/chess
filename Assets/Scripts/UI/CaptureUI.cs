@@ -13,23 +13,6 @@ namespace Chess.Game {
 		}
 
 		public void OnMoveMade(Board board, BoardUI boardUI) {
-			// Transform captures;
-
-			// // White bottom;
-			// // this function is called at the end of the game loop, 
-			// // hence, the turn is reversed
-			// if (boardUI.IsWhiteBottom && !board.WhiteToMove || !boardUI.IsWhiteBottom && board.WhiteToMove) {
-			// 	captures = bottomCaptures;
-
-			// 	// Black bottom
-			// } else {
-			// 	captures = topCaptures;
-			// }
-
-			// ResetCapture(captures);
-
-			// Function called at the end of game loop, so the turn is reversed
-			// int color = board.WhiteToMove ? Piece.White : Piece.Black;
 			DrawCapturedPieces(board, boardUI, board.WhiteToMove ? Piece.White : Piece.Black);
 		}
 

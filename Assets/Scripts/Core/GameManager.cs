@@ -95,18 +95,17 @@ namespace Chess.Game {
 			board.LoadCustomPosition(fen ?? FenUtility.StartFen);
 
 			moveText.ResetMoveText();
-
+			// Custom fen when black moves first
+			if (!board.WhiteToMove) {
+				moveText.Text[Board.WhiteIndex].Add("");
+			}
+			
 			boardUI.UpdateLabel();
 			boardUI.UpdatePosition(board);
 			boardUI.ResetSquareColor(false);
 
 			moveTextUI.ResetMoveText();
-
-			// captureUI.ResetCapture();
-			// This only re-draw the captures pieces of the moving side
-			// captureUI.OnMoveMade(board, boardUI);
-			captureUI.DrawCapturedPieces(board, boardUI, Piece.White);
-			captureUI.DrawCapturedPieces(board, boardUI, Piece.Black);
+			captureUI.ResetCapture();
 
 			CreatePlayer(ref whitePlayer, whitePlayerType);
 			CreatePlayer(ref blackPlayer, blackPlayerType);
