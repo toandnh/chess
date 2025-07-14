@@ -5,11 +5,11 @@ namespace Chess {
 	using static BoardRepresentation;
 
 	public class Board {
-		public int[] Square;
+		public int[] Square { get; set; }
+
+		public int[][] Captures { get; set; }
 
 		public PieceList PieceList;
-
-		public int[][] Captures;
 
 		public const int WhiteIndex = 0;
 		public const int BlackIndex = 1;

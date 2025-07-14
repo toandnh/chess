@@ -18,8 +18,8 @@ namespace Chess {
 		public int Evaluate(Board board) {
 			this.board = board;
 
-			int whiteEval = calculateMaterialsValue(Piece.White) + evaluatePieceSquareTables(Piece.White);
-			int blackEval = calculateMaterialsValue(Piece.Black) + evaluatePieceSquareTables(Piece.Black);
+			int whiteEval = CalculateMaterialsValue(Piece.White) + EvaluatePieceSquareTables(Piece.White);
+			int blackEval = CalculateMaterialsValue(Piece.Black) + EvaluatePieceSquareTables(Piece.Black);
 
 			int eval = whiteEval - blackEval;
 			int perspective = board.WhiteToMove ? 1 : -1;
@@ -27,7 +27,7 @@ namespace Chess {
 			return perspective * eval;
 		}
 
-		int calculateMaterialsValue(int colorIndex) {
+		int CalculateMaterialsValue(int colorIndex) {
 			int materialsValue = 0;
 			materialsValue += board.PieceList.GetValue(Piece.Pawn)[colorIndex].Count * PawnValue;
 			materialsValue += board.PieceList.GetValue(Piece.Knight)[colorIndex].Count * KnightValue;
@@ -38,20 +38,20 @@ namespace Chess {
 			return materialsValue;
 		}
 
-		int evaluatePieceSquareTables(int colorIndex) {
+		int EvaluatePieceSquareTables(int colorIndex) {
 			int value = 0;
 			bool isWhite = colorIndex == Board.WhiteIndex;
-			value += evaluatePieceSquareTable(PieceSquareTables.Pawns, board.PieceList.GetValue(Piece.Pawn)[colorIndex], isWhite);
-			value += evaluatePieceSquareTable(PieceSquareTables.Knights, board.PieceList.GetValue(Piece.Knight)[colorIndex], isWhite);
-			value += evaluatePieceSquareTable(PieceSquareTables.Bishops, board.PieceList.GetValue(Piece.Bishop)[colorIndex], isWhite);
-			value += evaluatePieceSquareTable(PieceSquareTables.Rooks, board.PieceList.GetValue(Piece.Rook)[colorIndex], isWhite);
-			value += evaluatePieceSquareTable(PieceSquareTables.Queens, board.PieceList.GetValue(Piece.Queen)[colorIndex], isWhite);
-			int[] kingTable = isEndGame() ? PieceSquareTables.KingEndGame : PieceSquareTables.KingMiddleGame;
-			value += evaluatePieceSquareTable(kingTable, board.PieceList.GetValue(Piece.King)[colorIndex], isWhite);
+			value += EvaluatePieceSquareTable(PieceSquareTables.Pawns, board.PieceList.GetValue(Piece.Pawn)[colorIndex], isWhite);
+			value += EvaluatePieceSquareTable(PieceSquareTables.Knights, board.PieceList.GetValue(Piece.Knight)[colorIndex], isWhite);
+			value += EvaluatePieceSquareTable(PieceSquareTables.Bishops, board.PieceList.GetValue(Piece.Bishop)[colorIndex], isWhite);
+			value += EvaluatePieceSquareTable(PieceSquareTables.Rooks, board.PieceList.GetValue(Piece.Rook)[colorIndex], isWhite);
+			value += EvaluatePieceSquareTable(PieceSquareTables.Queens, board.PieceList.GetValue(Piece.Queen)[colorIndex], isWhite);
+			int[] kingTable = IsEndGame() ? PieceSquareTables.KingEndGame : PieceSquareTables.KingMiddleGame;
+			value += EvaluatePieceSquareTable(kingTable, board.PieceList.GetValue(Piece.King)[colorIndex], isWhite);
 			return value;
 		}
 
-		static int evaluatePieceSquareTable(int[] table, HashSet<int> pieceSquareList, bool isWhite) {
+		static int EvaluatePieceSquareTable(int[] table, HashSet<int> pieceSquareList, bool isWhite) {
 			int value = 0;
 			foreach (int pieceSquare in pieceSquareList) {
 				value += PieceSquareTables.GetValue(table, pieceSquare, isWhite);
@@ -61,7 +61,7 @@ namespace Chess {
 
 		// Both sides have no queens or
     // Every side which has a queen has additionally no other pieces or one minorpiece maximum.
-		bool isEndGame() {
+		bool IsEndGame() {
 			Dictionary<int, HashSet<int>> knights = board.PieceList.GetValue(Piece.Knight);
 			Dictionary<int, HashSet<int>> bishops = board.PieceList.GetValue(Piece.Bishop);
 			Dictionary<int, HashSet<int>> rooks = board.PieceList.GetValue(Piece.Rook);

@@ -16,16 +16,16 @@ namespace Chess {
 		int opponentKingSquare;
 		int friendlyKingSquare;
 
-		public bool InCheck;
+		public bool InCheck { get; set; }
 
-		public ulong OpponentThreatMap;
+		public ulong OpponentThreatMap { get; set; }
 
-		public ulong OrthogonalCheckMap;
-		public ulong DiagonalCheckMap;
-		public ulong KnightCheckMap;
-		public ulong PawnCheckMap;
+		public ulong OrthogonalCheckMap { get; set; }
+		public ulong DiagonalCheckMap { get; set; }
+		public ulong KnightCheckMap { get; set; }
+		public ulong PawnCheckMap { get; set; }
 
-		public ulong SquaresInCheckRayMap;
+		public ulong SquaresInCheckRayMap { get; set; }
 
 		void Initialize() {
 			OpponentThreatMap = 0;

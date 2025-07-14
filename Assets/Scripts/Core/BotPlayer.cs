@@ -29,17 +29,6 @@ namespace Chess.Game {
 			Move bestMove = search.FindMove(depth);
 
 			ChoseMove(bestMove);
-
-			// List<Move> moves = moveGenerator.GenerateMoves(board);
-
-			// int chosenIndex = -1;
-			// if (moves.Count > 0) {
-			// 	Random random = new Random();
-			// 	chosenIndex = random.Next(moves.Count);
-			// }
-			// Move chosenMove = chosenIndex >= 0 ? moves[chosenIndex] : Move.InvalidMove;
-
-			// ChoseMove(chosenMove);
 		}
 	}
 }

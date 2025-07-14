@@ -1,7 +1,7 @@
 using System;
 
 namespace Chess {
-	public struct Coord : IComparable<Coord> {
+	public readonly struct Coord : IComparable<Coord> {
 		public readonly int fileIndex;
 		public readonly int rankIndex;
 

@@ -29,7 +29,7 @@ namespace Chess {
 		public const string StartFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 		public static LoadedPositionInfo PositionFromFen(string fen) {
-			LoadedPositionInfo loadedPositionInfo = new LoadedPositionInfo();
+			LoadedPositionInfo loadedPositionInfo = new();
 			string[] sections = fen.Split(' ');
 
 			int file = 0;

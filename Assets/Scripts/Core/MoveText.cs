@@ -13,7 +13,7 @@ namespace Chess {
 			[Piece.King] = 'k'
 		};
 
-		public List<List<string>> Text;
+		public List<List<string>> Text { get; set; }
 
 		public int HighlightIndex = -1;
 

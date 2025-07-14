@@ -32,7 +32,7 @@ namespace Chess {
 
 			foreach (Move move in moves) { 
 				board.MakeMove(move);
-				int evaluateMove = -negaMax(board, depth);
+				int evaluateMove = -NegaMax(board, depth);
 				board.UnmakeMove(move);
 				if (evaluateMove > bestEval) {
 					bestMove = move;
@@ -43,7 +43,7 @@ namespace Chess {
 			return bestMove;
 		}
 
-		int negaMax(Board board, int depth) {
+		int NegaMax(Board board, int depth) {
 			if (depth == 0) return evaluation.Evaluate(board);
 
 			int value = int.MinValue;
@@ -51,7 +51,7 @@ namespace Chess {
 			List<Move> moves = moveGenerator.GenerateMoves(board);
 			foreach (Move move in moves) {
 				board.MakeMove(move);
-				value = Math.Max(value, -negaMax(board, depth - 1));
+				value = Math.Max(value, -NegaMax(board, depth - 1));
 				board.UnmakeMove(move);
 			}
 
