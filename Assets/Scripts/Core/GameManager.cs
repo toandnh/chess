@@ -13,8 +13,6 @@ namespace Chess.Game {
 
 		public event Action<Move> OnMoveMade;
 
-		public string FEN = "";
-
 		public AudioSource capture;
 		public AudioSource castle;
 		public AudioSource moveCheck;
@@ -23,10 +21,12 @@ namespace Chess.Game {
 
 		public enum PlayerType { Human, Bot }
 
-		State gameState;
-
 		public PlayerType WhitePlayerType;
 		public PlayerType BlackPlayerType;
+
+		public string Fen { get; set; } = "";
+
+		State gameState;
 
 		Player whitePlayer;
 		Player blackPlayer;
@@ -47,16 +47,14 @@ namespace Chess.Game {
 			moveTextUI = FindObjectOfType<MoveTextUI>();
 			captureUI = FindObjectOfType<CaptureUI>();
 
-			//NewGame(WhitePlayerType, BlackPlayerType);
 			NewRandomGame();
 		}
 
 		void Update() {
 			if (gameState == State.Playing) {
 				playerToMove.Update();
-			}
-			else if (gameState == State.GameOver) {
-				//
+			} else if (gameState == State.GameOver) {
+				return ; 
 			}
 		}
 
@@ -71,11 +69,10 @@ namespace Chess.Game {
 		
 		public void NewGameFromFen() {
 			boardUI.SetWhitePerspective(true);
-			NewGame(FEN, PlayerType.Human, PlayerType.Human);
+			NewGame(Fen, PlayerType.Human, PlayerType.Human);
 		}
 
-		public void NewBlackGame()
-		{
+		public void NewBlackGame() {
 			NewGame(false);
 		}
 
@@ -133,21 +130,15 @@ namespace Chess.Game {
 				playerToMove = board.WhiteToMove ? whitePlayer : blackPlayer;
 				playerToMove.NotifyTurnToMove();
 			} else if (gameState == State.GameOver) {
-				//
+				return ;
 			}
-		}
-
-		public void UpdateFen(string fen) {
-			FEN = fen;
 		}
 
 		void OnMoveChosen(Move move) {
 			if (move.IsInvalid) return ;
 
 			bool isCapture = false;
-			if (board.Square[move.TargetSquare] != 0) {
-				isCapture = true;
-			}
+			if (board.Square[move.TargetSquare] != Piece.None) isCapture = true;
 
 			moveText.GenerateMoveText(move, board);
 			board.MakeMove(move);

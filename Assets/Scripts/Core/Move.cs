@@ -2,7 +2,7 @@ namespace Chess {
 	public readonly struct Move {
 
 		// In the form 0000; with the MSB reserved for check flag
-		// e.g. 1010 indicates the move is a capture into a check
+		// e.g. 1001 indicates the move is an enpassant into a check
 		public readonly struct Flag {
 			public const int None = 0;
 			public const int EnPassant = 1;

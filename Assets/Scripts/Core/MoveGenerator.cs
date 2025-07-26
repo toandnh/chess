@@ -83,9 +83,9 @@ namespace Chess {
 
 			// Only king can move in double check
 			if (!inDoubleCheck) {
-				GenerateSlidingMoves();
-				GenerateKnightMoves();
 				GeneratePawnMoves();
+				GenerateKnightMoves();
+				GenerateSlidingMoves();
 			}
 
 			// Double check and no king moves = check mate
@@ -148,30 +148,6 @@ namespace Chess {
 		}
 
 		void GenerateSlidingMoves() {
-			HashSet<int> rooks = board.PieceList.GetValue(Piece.Rook)[friendlyColor];
-			foreach (int rookSquare in rooks) {
-				int startDir = 0;
-				int endDir = 4;
-				// Piece is possibly pinned
-				if (HasSquare(opponentThreatMap, rookSquare)) {
-					if (IsPinned(rookSquare)) {
-						// Rook is pinned diagonally, skip this rook
-						if (IsAlignedDiagonally(rookSquare, friendlyKingSquare)) {
-							continue;
-						}
-						// Pinned vertically or horizontally, limit rook movement 
-						if (IsAlignedVertically(rookSquare, friendlyKingSquare)) {
-							startDir = 0;
-							endDir = 2;
-						} else {
-							startDir = 2;
-							endDir = 4;
-						}
-					}
-				}
-				GenerateSlidingPieceMoves(rookSquare, startDir, endDir);
-			}
-
 			HashSet<int> bishops = board.PieceList.GetValue(Piece.Bishop)[friendlyColor];
 			foreach (int bishopSquare in bishops) {
 				int startDir = 4;
@@ -194,6 +170,30 @@ namespace Chess {
 					}
 				}
 				GenerateSlidingPieceMoves(bishopSquare, startDir, endDir);
+			}
+			
+			HashSet<int> rooks = board.PieceList.GetValue(Piece.Rook)[friendlyColor];
+			foreach (int rookSquare in rooks) {
+				int startDir = 0;
+				int endDir = 4;
+				// Piece is possibly pinned
+				if (HasSquare(opponentThreatMap, rookSquare)) {
+					if (IsPinned(rookSquare)) {
+						// Rook is pinned diagonally, skip this rook
+						if (IsAlignedDiagonally(rookSquare, friendlyKingSquare)) {
+							continue;
+						}
+						// Pinned vertically or horizontally, limit rook movement 
+						if (IsAlignedVertically(rookSquare, friendlyKingSquare)) {
+							startDir = 0;
+							endDir = 2;
+						} else {
+							startDir = 2;
+							endDir = 4;
+						}
+					}
+				}
+				GenerateSlidingPieceMoves(rookSquare, startDir, endDir);
 			}
 
 			HashSet<int> queens = board.PieceList.GetValue(Piece.Queen)[friendlyColor];
@@ -283,9 +283,7 @@ namespace Chess {
 			foreach (int knightSquare in knights) {
 				// Knight is pinned, skip this piece
 				if (HasSquare(opponentThreatMap, knightSquare)) {
-					if (IsPinned(knightSquare)) {
-						continue;
-					}
+					if (IsPinned(knightSquare)) continue;
 				}
 
 				for (int knightMoveIndex = 0; knightMoveIndex < KnightMoves[knightSquare].Length; knightMoveIndex++) {
@@ -314,6 +312,11 @@ namespace Chess {
 						} else {
 							flag |= Move.Flag.Check;
 						}	
+					}
+
+					// Prevent king-capture moves
+					if (Piece.IsColor(targetSquarePiece, opponentColor)) {
+						if (targetSquarePiece == Piece.King) continue;
 					}
 
 					moves.Add(new Move(knightSquare, targetSquare, flag));
@@ -363,10 +366,10 @@ namespace Chess {
 					bool canMove = !(inCheck && !HasSquare(squaresInCheckRayMap, squareOneForward));
 					if (canMove) {
 						if (RankIndex(squareOneForward) == promotionRank) {
-							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToKnight));
-							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToBishop));
-							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToRook));
-							moves.Add(new Move(pawnSquare, squareOneForward, Move.Flag.PromoteToQueen));
+							moves.Add(new Move(pawnSquare, squareOneForward, FullPawnPromotionFlag(Move.Flag.PromoteToKnight, squareOneForward, knightCheckMap)));
+							moves.Add(new Move(pawnSquare, squareOneForward, FullPawnPromotionFlag(Move.Flag.PromoteToBishop, squareOneForward, diagonalCheckMap)));
+							moves.Add(new Move(pawnSquare, squareOneForward, FullPawnPromotionFlag(Move.Flag.PromoteToRook, squareOneForward, orthogonalCheckMap)));
+							moves.Add(new Move(pawnSquare, squareOneForward, FullPawnPromotionFlag(Move.Flag.PromoteToQueen, squareOneForward, orthogonalCheckMap | diagonalCheckMap)));
 						} else {
 							flag = Move.Flag.None;
 							if (HasSquare(pawnCheckMap, squareOneForward)) {
@@ -429,13 +432,16 @@ namespace Chess {
 
 						// Regular capture
 						if (Piece.IsColor(targetSquarePiece, opponentColor)) {
+							// Prevent king-capture moves
+							if (targetSquarePieceType == Piece.King) continue;
+
 							if (RankIndex(targetSquare) == promotionRank) {
-								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToKnight));
-								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToBishop));
-								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToRook));
-								moves.Add(new Move(pawnSquare, targetSquare, Move.Flag.PromoteToQueen));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToKnight, targetSquare, knightCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToBishop, targetSquare, diagonalCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToRook, targetSquare, orthogonalCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToQueen, targetSquare, orthogonalCheckMap | diagonalCheckMap)));
 							} else {
-								moves.Add(new Move(pawnSquare, targetSquare));
+								moves.Add(new Move(pawnSquare, targetSquare, flag));
 							}
 						}
 
@@ -447,6 +453,10 @@ namespace Chess {
 					}
 				}
 			}
+		}
+
+		int FullPawnPromotionFlag(int currFlag, int pieceSquare, ulong checkMap) {
+			return HasSquare(checkMap, pieceSquare) ? currFlag | Move.Flag.Check : currFlag;
 		}
 
 		bool IsPinned(int startSquare) {

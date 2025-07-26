@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using UnityEngine;
+
 namespace Chess {
 	using static BoardRepresentation;
 
@@ -94,36 +96,35 @@ namespace Chess {
 		}
 
 		public void MakeMove(Move move) {
-			uint prevCastleRights = CurrentGameState & castleRightsMask; 
-			uint currCastleRights = prevCastleRights; 
+			int moveFrom = move.StartSquare;
+			int moveTo = move.TargetSquare;
 
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
 
-			int promotePieceType = moveFlag >= 4 && moveFlag <= 7 ? moveFlag - 2 : 0; 
+			int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
+			
+			int targetPieceSquare = moveFlag == Move.Flag.EnPassant ? epPawnSquare : moveTo;
+			int targetPieceType = Piece.PieceType(Square[targetPieceSquare]);
 
-			CurrentGameState = 0;
-
-			int moveFrom = move.StartSquare;
-			int moveTo = move.TargetSquare;
+			uint prevCastleRights = CurrentGameState & castleRightsMask; 
+			uint currCastleRights = prevCastleRights; 
 
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
 
-			int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
-
-			int colorIndexToMove = ColorToMove == Piece.White ? WhiteIndex : BlackIndex;
+			int colorToMoveIndex = ColorToMove == Piece.White ? WhiteIndex : BlackIndex;
 			int opponentColorIndex = ColorToMove == Piece.White ? BlackIndex : WhiteIndex;
+			
+			CurrentGameState = 0;
 
 			// Capture move, outside the switch clause because of capture-into-promote moves
-			int targetPieceSquare = moveFlag == Move.Flag.EnPassant ? epPawnSquare : moveTo;
-			int targetPieceType = Piece.PieceType(Square[targetPieceSquare]);
 			if (targetPieceType != Piece.None) {
 				// Remove capture piece from piece list
 				PieceList.Remove(targetPieceType, OpponentColor, targetPieceSquare);
 
 				// Update captures list
-				Captures[colorIndexToMove][targetPieceType]++;
+				Captures[colorToMoveIndex][targetPieceType]++;
 
 				CurrentGameState |= (uint) targetPieceType << 8;
 
@@ -148,8 +149,8 @@ namespace Chess {
 
 					PieceList.Update(Piece.Rook, ColorToMove, castlingRookFromIndex, castlingRookToIndex);
 
-					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, castlingRookFromIndex, Piece.Rook, colorIndexToMove);
-					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, castlingRookToIndex, Piece.Rook, colorIndexToMove);
+					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, castlingRookFromIndex, Piece.Rook, colorToMoveIndex);
+					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, castlingRookToIndex, Piece.Rook, colorToMoveIndex);
 
 					break;
 				case Move.Flag.PawnTwoForward:
@@ -162,7 +163,13 @@ namespace Chess {
 				case Move.Flag.PromoteToBishop:
 				case Move.Flag.PromoteToRook:
 				case Move.Flag.PromoteToQueen:
-					PieceList.Remove(movePieceType, ColorToMove, moveTo);
+					int promotePieceType = moveFlag - 2;
+
+					PieceList.Remove(movePieceType, ColorToMove, moveFrom);
+					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveFrom, movePieceType, colorToMoveIndex);
+
+					PieceList.Add(promotePieceType, ColorToMove, moveFrom);
+					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveFrom, promotePieceType, colorToMoveIndex);
 
 					movePiece = (int) promotePieceType | ColorToMove;
 					movePieceType = promotePieceType;
@@ -180,8 +187,8 @@ namespace Chess {
 			PieceList.Update(movePieceType, ColorToMove, moveFrom, moveTo);
 
 			// Update move piece's position in zobrist key
-			CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveFrom, movePieceType, colorIndexToMove);
-			CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveTo, movePieceType, colorIndexToMove);
+			CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveFrom, movePieceType, colorToMoveIndex);
+			CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveTo, movePieceType, colorToMoveIndex);
 
 			// Update castle rights
 			// King move
@@ -239,7 +246,7 @@ namespace Chess {
 			// Clear or unset the MSB - check bit
 			int moveFlag = move.MoveFlag & ~(1 << 3);
 
-			bool isPromote = moveFlag >= 4;
+			bool isPromote = moveFlag >= 4 && moveFlag <= 7;
 			bool isEnPassant = moveFlag == Move.Flag.EnPassant;
 
 			// Capture move; En passant will be handled below
@@ -285,7 +292,7 @@ namespace Chess {
 				case Move.Flag.PromoteToRook:
 				case Move.Flag.PromoteToQueen:
 					// Remove promoted piece
-					PieceList.Remove(movePieceType, friendlyColor, moveTo);
+					PieceList.Remove(movePieceType, friendlyColor, moveFrom);
 
 					movePieceType = Piece.Pawn;
 					movePiece = movePieceType | friendlyColor;

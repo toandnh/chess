@@ -91,9 +91,7 @@ namespace Chess.Game {
 						endSquareIndex = startSquareIndex + 8 * 3;
 
 						// Swap start and end index
-						int temp = startSquareIndex;
-						startSquareIndex = endSquareIndex;
-						endSquareIndex = temp;
+						(endSquareIndex, startSquareIndex) = (startSquareIndex, endSquareIndex);
 					}
 
 					// If index is one of menu squares
@@ -157,9 +155,7 @@ namespace Chess.Game {
 		}
 
 		void HandlePiecePlacement(Vector2 mousePos) {
-			Coord targetSquare;
-			
-			if (boardUI.CanGetSquareUnderMouse(mousePos, out targetSquare)) {
+			if (boardUI.CanGetSquareUnderMouse(mousePos, out Coord targetSquare)) {
 				// Return the piece to its original position
 				if (targetSquare.Equals(selectedPieceSquare)) {
 					boardUI.ResetPiecePosition(selectedPieceSquare);

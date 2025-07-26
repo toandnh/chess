@@ -14,14 +14,18 @@ namespace Chess {
 		int bestEval;
 		int bestEvalThisIteration;
 
+		bool stopSearch { get; set; }
+
 		public Search(Board board) {
 			this.board = board;
-			
+
 			evaluation = new Evaluation();
 			moveGenerator = new MoveGenerator();
 
 			bestMove = bestMoveThisIteration = Move.InvalidMove;
 			bestEval = bestEvalThisIteration = 0;
+			
+			stopSearch = false;
 		}
 
 		public Move FindMove(int depth) {
@@ -34,6 +38,7 @@ namespace Chess {
 				board.MakeMove(move);
 				int evaluateMove = -NegaMax(board, depth);
 				board.UnmakeMove(move);
+				
 				if (evaluateMove > bestEval) {
 					bestMove = move;
 					bestEval = evaluateMove;

@@ -2369,7 +2369,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6811aa85b84f1444a9371668d7a4ecce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FEN: 
   capture: {fileID: 877292619}
   castle: {fileID: 877292618}
   moveCheck: {fileID: 877292617}
@@ -4918,7 +4917,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 877292613}
         m_TargetAssemblyTypeName: Chess.Game.GameManager, Scripts
-        m_MethodName: UpdateFen
+        m_MethodName: set_Fen
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
