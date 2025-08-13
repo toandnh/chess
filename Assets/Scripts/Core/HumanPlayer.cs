@@ -109,18 +109,34 @@ namespace Chess.Game {
 								toSquare = endSquareIndex;
 							}
 
+							int flag = Move.Flag.None;
 							// Promote after capture
 							if (promoteFromSquareIndex != -1) {
 								fromSquare = promoteFromSquareIndex;
 								promoteFromSquareIndex = -1;
+
+								flag |= Move.Flag.Capture;
 							}
 
 							// Map the location of the pieces in the menu to its number representation
 							// E.g. The rook appears second in the menu, and its number representation is Piece.Rook = 4; 5 - 1 = 4
 							// See Piece class for more information on number representation of pieces
 							int promotePieceType = 5 - pieceIndex;
-
-							int flag = promotePieceType + 2;
+							switch (promotePieceType) {
+								case Piece.Knight:
+									flag |= Move.Flag.PromoteToKnight;
+									break;
+								case Piece.Bishop:
+									flag |= Move.Flag.PromoteToBishop;
+									break;
+								case Piece.Rook:
+									flag |= Move.Flag.PromoteToRook;
+									break;
+								case Piece.Queen:
+									flag |= Move.Flag.PromoteToQueen;
+									break;
+							}
+							
 							int opponentKingSquare = board.PieceList.GetValue(Piece.King)[board.OpponentColor].ToArray()[0];
 							if (MoveGeneratorUtility.IsCheckAfterPromotion(board.Square, toSquare, promotePieceType, opponentKingSquare)) {
 								flag |= Move.Flag.Check;
@@ -202,11 +218,12 @@ namespace Chess.Game {
 
 			if (isLegalMove) {
 				// Promotion move
-				if (chosenMove.MoveFlag >= 4 && chosenMove.MoveFlag <= 7) {
+				if (chosenMove.IsPromotion) {
 					CancelPieceSelection();
 					boardUI.CreatePromoteMenu(chosenMove.TargetSquare, board.ColorToMove);
 					boardUI.PromoteStartSquareIndex = targetIndex;
 					currentState = InputState.PromotePiece;
+					// Mark capture move
 					if (!MoveGeneratorUtility.IsAlignedVertically(chosenMove.StartSquare, chosenMove.TargetSquare)) {
 						promoteFromSquareIndex = chosenMove.StartSquare;
 					}

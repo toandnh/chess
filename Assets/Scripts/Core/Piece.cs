@@ -1,6 +1,7 @@
 namespace Chess {
 	public static class Piece {
 		public const int None = 0;
+		
 		public const int Pawn = 1;
 		public const int Knight = 2;
 		public const int Bishop = 3;
