@@ -137,9 +137,6 @@ namespace Chess.Game {
 		void OnMoveChosen(Move move) {
 			if (move.IsInvalid) return ;
 
-			bool isCapture = false;
-			if (board.Square[move.TargetSquare] != Piece.None) isCapture = true;
-
 			moveText.GenerateMoveText(move, board);
 			board.MakeMove(move);
 
@@ -147,18 +144,13 @@ namespace Chess.Game {
 			
 			boardUI.OnMoveMade(board, move);
 			moveTextUI.OnMoveMade(moveText, board.WhiteToMove);
-			
-			// Clear or unset the MSB - check bit
-			int moveFlag = move.MoveFlag & ~(1 << 3);
-			// Get the MSB - check bit
-			bool check = ((move.MoveFlag >> 3) & 1) != 0;
 
-			if (isCapture || moveFlag == Move.Flag.EnPassant) {
+			if (move.IsCapture || move.IsEnPassant) {
 				captureUI.OnMoveMade(board, boardUI);
 				capture.Play();
 			}
 
-			switch (moveFlag) {
+			switch (move.OtherMoveFlags) {
 				case Move.Flag.Castle:
 					castle.Play();
 					break;
@@ -174,7 +166,7 @@ namespace Chess.Game {
 					break;
 			}
 
-			if (check) moveCheck.Play();
+			if (move.IsCheck) moveCheck.Play();
 
 			NotifyPlayerToMove();
 		}

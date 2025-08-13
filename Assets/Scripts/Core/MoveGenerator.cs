@@ -105,14 +105,14 @@ namespace Chess {
 				// Skip if square is occupied by friendly piece
 				if (Piece.IsColor(targetSquarePiece, friendlyColor)) continue;
 
+				bool hasOpponentPiece = Piece.IsColor(targetSquarePiece, opponentColor);
+
+				// Raise capture flag
+				if (hasOpponentPiece) flag |= Move.Flag.Capture;
 				moves.Add(new Move(kingSquare, targetSquare, flag));
 
-				// Cannot castle while in check
-				if (inCheck) continue;
-
-				// Square is occupied by opponent piece, cannot castle
-				if (Piece.IsColor(targetSquarePiece, opponentColor)) continue;
-
+				// Cannot castle while in check or has an opponent piece in between
+				if (inCheck || hasOpponentPiece) continue;
 				// Castle kingside
 				if (targetSquare == f1 || targetSquare == f8) {
 					int castleKingsideSquare = targetSquare + 1;
@@ -267,6 +267,7 @@ namespace Chess {
 					if (Piece.IsColor(targetSquarePiece, opponentColor)) {
 						// Prevent king-capture moves
 						if (targetSquarePiece != Piece.King) {
+							flag |= Move.Flag.Capture;
 							moves.Add(new Move(startSquare, targetSquare, flag));
 						}
 						break;
@@ -317,6 +318,7 @@ namespace Chess {
 					// Prevent king-capture moves
 					if (Piece.IsColor(targetSquarePiece, opponentColor)) {
 						if (targetSquarePiece == Piece.King) continue;
+						flag |= Move.Flag.Capture;
 					}
 
 					moves.Add(new Move(knightSquare, targetSquare, flag));
@@ -435,14 +437,16 @@ namespace Chess {
 							// Prevent king-capture moves
 							if (targetSquarePieceType == Piece.King) continue;
 
+							flag |= Move.Flag.Capture;
 							if (RankIndex(targetSquare) == promotionRank) {
-								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToKnight, targetSquare, knightCheckMap)));
-								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToBishop, targetSquare, diagonalCheckMap)));
-								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToRook, targetSquare, orthogonalCheckMap)));
-								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(Move.Flag.PromoteToQueen, targetSquare, orthogonalCheckMap | diagonalCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(flag | Move.Flag.PromoteToKnight, targetSquare, knightCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(flag | Move.Flag.PromoteToBishop, targetSquare, diagonalCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(flag | Move.Flag.PromoteToRook, targetSquare, orthogonalCheckMap)));
+								moves.Add(new Move(pawnSquare, targetSquare, FullPawnPromotionFlag(flag | Move.Flag.PromoteToQueen, targetSquare, orthogonalCheckMap | diagonalCheckMap)));
 							} else {
 								moves.Add(new Move(pawnSquare, targetSquare, flag));
 							}
+							flag ^= Move.Flag.Capture;
 						}
 
 						// En-passant capture

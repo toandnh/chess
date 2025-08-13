@@ -99,12 +99,9 @@ namespace Chess {
 			int moveFrom = move.StartSquare;
 			int moveTo = move.TargetSquare;
 
-			// Clear or unset the MSB - check bit
-			int moveFlag = move.MoveFlag & ~(1 << 3);
-
 			int epPawnSquare = moveTo + (WhiteToMove ? -8 : 8);
 			
-			int targetPieceSquare = moveFlag == Move.Flag.EnPassant ? epPawnSquare : moveTo;
+			int targetPieceSquare = move.IsEnPassant ? epPawnSquare : moveTo;
 			int targetPieceType = Piece.PieceType(Square[targetPieceSquare]);
 
 			uint prevCastleRights = CurrentGameState & castleRightsMask; 
@@ -119,7 +116,7 @@ namespace Chess {
 			CurrentGameState = 0;
 
 			// Capture move, outside the switch clause because of capture-into-promote moves
-			if (targetPieceType != Piece.None) {
+			if (move.IsCapture || move.IsEnPassant) {
 				// Remove capture piece from piece list
 				PieceList.Remove(targetPieceType, OpponentColor, targetPieceSquare);
 
@@ -130,14 +127,15 @@ namespace Chess {
 
 				// Remove capture piece from zobrist key
 				CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, targetPieceSquare, targetPieceType, opponentColorIndex);
+				
+				// Fix enpassant square
+				if (move.IsEnPassant) {
+					Square[epPawnSquare] = Piece.None;
+				}
 			}
 
 			// Handle special moves
-			switch (moveFlag) {
-				case Move.Flag.EnPassant:
-					Square[epPawnSquare] = Piece.None;
-
-					break;
+			switch (move.OtherMoveFlags) {
 				case Move.Flag.Castle:
 					bool kingside = moveTo == g1 || moveTo == g8;
 
@@ -163,7 +161,7 @@ namespace Chess {
 				case Move.Flag.PromoteToBishop:
 				case Move.Flag.PromoteToRook:
 				case Move.Flag.PromoteToQueen:
-					int promotePieceType = moveFlag - 2;
+					int promotePieceType = move.PromotionPiece;
 
 					PieceList.Remove(movePieceType, ColorToMove, moveFrom);
 					CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, moveFrom, movePieceType, colorToMoveIndex);
@@ -243,38 +241,31 @@ namespace Chess {
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
 
-			// Clear or unset the MSB - check bit
-			int moveFlag = move.MoveFlag & ~(1 << 3);
-
-			bool isPromote = moveFlag >= 4 && moveFlag <= 7;
-			bool isEnPassant = moveFlag == Move.Flag.EnPassant;
-
-			// Capture move; En passant will be handled below
-			if (capturedPieceType != Piece.None && !isEnPassant) {
+			if (move.IsCapture) {
 				PieceList.Add((int) capturedPieceType, opponentColor, moveFrom);
 				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][capturedPieceType]--;
 			}
+			
+			if (move.IsEnPassant) {
+				int epPawnSquare = moveFrom + (WhiteToMove ? 8 : -8);
+
+				Square[epPawnSquare] = Piece.Pawn | opponentColor;
+
+				// Add opponent's pawn back to the list
+				PieceList.Add(Piece.Pawn, opponentColor, epPawnSquare);
+				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][Piece.Pawn]--;
+
+				// Mark as already handled
+				capturedPiece = 0;
+			}
 
 			// Update PieceList for promotion case will be handled below
-			if (!isPromote) {
+			if (!move.IsPromotion) {
 				PieceList.Update(movePieceType, friendlyColor, moveFrom, moveTo);
 			}
 
 			// Special moves
-			switch (moveFlag) {
-				case Move.Flag.EnPassant:
-					int epPawnSquare = moveFrom + (WhiteToMove ? 8 : -8);
-
-					Square[epPawnSquare] = Piece.Pawn | opponentColor;
-
-					// Add opponent's pawn back to the list
-					PieceList.Add(Piece.Pawn, opponentColor, epPawnSquare);
-					Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][Piece.Pawn]--;
-
-					// Mark as already handled
-					capturedPiece = 0;
-
-					break;
+			switch (move.OtherMoveFlags) {
 				case Move.Flag.Castle:
 					bool kingside = moveFrom == g1 || moveFrom == g8;
 

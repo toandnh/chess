@@ -1,36 +1,47 @@
 namespace Chess {
 	public readonly struct Move {
-
-		// In the form 0000; with the MSB reserved for check flag
-		// e.g. 1001 indicates the move is an enpassant into a check
 		public readonly struct Flag {
 			public const int None = 0;
-			public const int EnPassant = 1;
-			public const int Castle = 2;
-			public const int PawnTwoForward = 3;
+
+			/////////////////////////////////////////////////////////
+			// The "other" move flags
+			public const int Castle = 1;
+			public const int PawnTwoForward = 2;
 
 			public const int PromoteToKnight = 4;
-			public const int PromoteToBishop = 5;
-			public const int PromoteToRook = 6;
-			public const int PromoteToQueen = 7;
+			public const int PromoteToBishop = 8;
+			public const int PromoteToRook = 16;
+			public const int PromoteToQueen = 32;
+			/////////////////////////////////////////////////////////
 
-			public const int Check = 8;
+			public const int EnPassant = 64;
+			public const int Capture = 128;
+			
+			public const int Check = 256;
 		}
+
+		readonly ushort moveFlag;
 		readonly ushort moveValue;
 
-		const ushort StartSquareMask = 0b0000000000111111;
-		const ushort TargetSquareMask = 0b0000111111000000;
+		const ushort StartSquareMask = 0b000000111111;
+		const ushort TargetSquareMask = 0b111111000000;
 
-		public Move(ushort moveValue) {
+		const ushort OtherFlagsMask = 0b111111;
+		const ushort PromoteFlagsMask = 0b111100;
+
+		public Move(ushort moveValue, ushort moveFlag) {
 			this.moveValue = moveValue;
+			this.moveFlag = moveFlag;
 		}
 
 		public Move(int startSquare, int targetSquare) {
 			moveValue = (ushort) (startSquare | targetSquare << 6);
+			moveFlag = 0;
 		}
 
 		public Move(int startSquare, int targetSquare, int flag) {
-			moveValue = (ushort) (startSquare | targetSquare << 6 | flag << 12);
+			moveValue = (ushort) (startSquare | targetSquare << 6);
+			moveFlag = (ushort) flag;
 		}
 
 		public int StartSquare {
@@ -47,25 +58,82 @@ namespace Chess {
 
 		public int MoveFlag {
 			get {
-				return moveValue >> 12;
+				return moveFlag;
 			}
 		}
 
-		public static Move InvalidMove {
-			get {
-				return new Move(0);
-			}
-		}
-
-		public ushort Value {
+		public ushort MoveValue {
 			get {
 				return moveValue;
+			}
+		}
+		
+		public static Move InvalidMove {
+			get {
+				return new Move(0, 0);
 			}
 		}
 
 		public bool IsInvalid {
 			get {
 				return moveValue == 0;
+			}
+		}
+		
+		public bool IsPromotion {
+			get {
+				return (moveFlag & Flag.PromoteToKnight) != 0 ||
+								(moveFlag & Flag.PromoteToBishop) != 0 ||
+								(moveFlag & Flag.PromoteToRook) != 0 ||
+								(moveFlag & Flag.PromoteToQueen) != 0;
+			}
+		}
+		
+		public bool IsEnPassant {
+			get {
+				return (moveFlag & Flag.EnPassant) != 0;
+			}
+		}
+		
+		public bool IsCapture {
+			get {
+				return (moveFlag & Flag.Capture) != 0;
+			}
+		}
+		
+		public bool IsCheck {
+			get {
+				return (moveFlag & Flag.Check) != 0;
+			}
+		}
+		
+		public int OtherMoveFlags {
+			get {
+				return moveFlag & OtherFlagsMask;
+			}
+		}
+
+		public int PromotionPiece {
+			get {
+				int promotionPiece = int.MinValue;
+				int promoteFlag = moveFlag & PromoteFlagsMask;
+				switch (promoteFlag) {
+					case Flag.PromoteToKnight:
+						promotionPiece = Piece.Knight;
+						break;
+					case Flag.PromoteToBishop:
+						promotionPiece = Piece.Bishop;
+						break;
+					case Flag.PromoteToRook:
+						promotionPiece = Piece.Rook;
+						break;
+					case Flag.PromoteToQueen:
+						promotionPiece = Piece.Queen;
+						break;
+					default:
+						break;
+				}
+				return promotionPiece;
 			}
 		}
 

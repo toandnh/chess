@@ -28,7 +28,7 @@ namespace Chess {
 
 			Move e4 = new Move(12, 28, Move.Flag.PawnTwoForward);
 			Move d5 = new Move(51, 35, Move.Flag.PawnTwoForward);
-			Move xd5 = new Move(28, 35, Move.Flag.None);
+			Move xd5 = new Move(28, 35, Move.Flag.Capture);
 
 			board.MakeMove(e4);
 			board.MakeMove(d5);
@@ -55,7 +55,7 @@ namespace Chess {
 
 			Move e4 = new Move(12, 28, Move.Flag.PawnTwoForward);
 			Move d5 = new Move(51, 35, Move.Flag.PawnTwoForward);
-			Move xd5 = new Move(28, 35, Move.Flag.None);
+			Move xd5 = new Move(28, 35, Move.Flag.Capture);
 
 			board.MakeMove(e4);
 			board.MakeMove(d5);

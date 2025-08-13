@@ -55,7 +55,7 @@ namespace Chess {
 			string startFen = "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 1";
 			LoadCustomPosition(startFen);
 
-			Move ed5 = new Move(28, 35);
+			Move ed5 = new Move(28, 35, Move.Flag.Capture);
 
 			int[] boardBefore = (int[]) board.Square.Clone();
 			board.MakeMove(ed5);
@@ -76,7 +76,7 @@ namespace Chess {
 			string startFen = "rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 1";
 			LoadCustomPosition(startFen);
 
-			Move ed5 = new Move(28, 35);
+			Move ed5 = new Move(28, 35, Move.Flag.Capture);
 
 			int[] boardBefore = (int[]) board.Square.Clone();
 			board.MakeMove(ed5);
