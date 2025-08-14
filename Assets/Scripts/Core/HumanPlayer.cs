@@ -200,12 +200,12 @@ namespace Chess.Game {
 			int startIndex = BoardRepresentation.IndexFromCoord(startSquare);
 			int targetIndex = BoardRepresentation.IndexFromCoord(targetSquare);
 
-			bool isLegalMove = false;
-
 			Move chosenMove = new Move(startIndex, targetIndex);
 			MoveGenerator moveGenerator = new MoveGenerator();
 
-			var legalMoves = moveGenerator.GenerateMoves(board);
+			var legalMoves = moveGenerator.GeneratePieceMoves(board, startIndex);
+			
+			bool isLegalMove = false;
 
 			for (int i = 0; i < legalMoves.Count; i++) {
 				var legalMove = legalMoves[i];

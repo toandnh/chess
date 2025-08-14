@@ -39,7 +39,9 @@ namespace Chess {
 		bool hasKingSideCastleRight;
 		bool hasQueenSideCastleRight;
 
-		void Initialize() {
+		void Initialize(Board board) {
+			this.board = board;
+
 			moves = new List<Move>(64);
 
 			whiteToMove = board.WhiteToMove;
@@ -75,9 +77,7 @@ namespace Chess {
 		}
 
 		public List<Move> GenerateMoves(Board board) {
-			this.board = board;
-
-			Initialize();
+			Initialize(board);
 
 			GenerateKingMoves();
 
@@ -92,10 +92,10 @@ namespace Chess {
 			return moves;
 		}
 
-		public List<Move> GeneratePieceMoves(int pieceSquare) {
-			Initialize();
+		public List<Move> GeneratePieceMoves(Board board, int pieceSquare) {
+			Initialize(board);
 
-			int piece = board.Square[pieceSquare];
+			int piece = Piece.PieceType(board.Square[pieceSquare]);
 			
 			switch (piece) {
 				case Piece.Pawn:
@@ -119,7 +119,7 @@ namespace Chess {
 				default:
 					break;
 			}
-			
+
 			return moves;
 		}
 
