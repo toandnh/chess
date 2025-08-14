@@ -60,11 +60,35 @@ namespace Chess {
 			// Non reachable code
 			return true;
 		}
+		
+		public static int FullPawnPromotionFlag(int currFlag, int pieceSquare, ulong checkMap) {
+			return HasSquare(checkMap, pieceSquare) ? currFlag | Move.Flag.Check : currFlag;
+		}
+		
+		public static bool IsPinned(int[] board, int startSquare, int friendlyKingSquare) {
+			if (!IsAligned(friendlyKingSquare, startSquare)) return false;
+
+			int opponentColor = Piece.PieceColor(board[startSquare]) == Piece.White ? Piece.Black : Piece.White;
+			int searchDirOffset = (-1) * DirectionOffset(startSquare, friendlyKingSquare);
+
+			return HasAttackingPiece(board, startSquare, searchDirOffset, opponentColor) &&
+							!HasPieceBetween(board, startSquare, -searchDirOffset);
+		}
+
+		public static bool IsDiscoveredCheck(int[] board, int startSquare, int opponentKingSquare) {
+			if (!IsAligned(opponentKingSquare, startSquare)) return false;
+
+			int friendlyColor = Piece.PieceColor(board[startSquare]);
+			int searchDirOffset = (-1) * DirectionOffset(startSquare, opponentKingSquare);
+
+			return HasAttackingPiece(board, startSquare, searchDirOffset, friendlyColor) && 
+							!HasPieceBetween(board, startSquare, -searchDirOffset);;
+		}
 
 		public static bool IsAligned(int firstSquare, int secondSquare) {
-			return (IsAlignedDiagonally(firstSquare, secondSquare) ||
+			return IsAlignedDiagonally(firstSquare, secondSquare) ||
 							IsAlignedVertically(firstSquare, secondSquare) ||
-							IsAlignedHorizontally(firstSquare, secondSquare));
+							IsAlignedHorizontally(firstSquare, secondSquare);
 		}
 
 		public static bool IsAlignedDiagonally(int firstSquare, int secondSquare) {
