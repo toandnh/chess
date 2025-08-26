@@ -143,8 +143,6 @@ namespace Chess {
 				}
 				LegalPawnCaptures[squareIndex][Board.WhiteIndex] = legalWhitePawnCaptures.ToArray();
 				LegalPawnCaptures[squareIndex][Board.BlackIndex] = legalBlackPawnCaptures.ToArray();
-
-				//
 			}
 		}
 	}

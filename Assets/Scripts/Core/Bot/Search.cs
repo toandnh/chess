@@ -6,11 +6,13 @@ using UnityEngine;
 namespace Chess {
 	public class Search {
 		Board board;
-		Evaluation evaluation;
+
+		Algorithm algorithm;
 		MoveGenerator moveGenerator;
 
 		Move bestMove;
 		Move bestMoveThisIteration;
+
 		int bestEval;
 		int bestEvalThisIteration;
 
@@ -19,7 +21,7 @@ namespace Chess {
 		public Search(Board board) {
 			this.board = board;
 
-			evaluation = new Evaluation();
+			algorithm = new Algorithm();
 			moveGenerator = new MoveGenerator();
 
 			bestMove = bestMoveThisIteration = Move.InvalidMove;
@@ -36,7 +38,8 @@ namespace Chess {
 
 			foreach (Move move in moves) { 
 				board.MakeMove(move);
-				int evaluateMove = -NegaMax(board, depth);
+				// int evaluateMove = -algorithm.NegaMax(board, depth);
+				int evaluateMove = -algorithm.AlphaBeta(board, depth, int.MinValue, int.MaxValue);
 				board.UnmakeMove(move);
 				
 				if (evaluateMove > bestEval) {
@@ -46,21 +49,6 @@ namespace Chess {
 			}
 
 			return bestMove;
-		}
-
-		int NegaMax(Board board, int depth) {
-			if (depth == 0) return evaluation.Evaluate(board);
-
-			int value = int.MinValue;
-
-			List<Move> moves = moveGenerator.GenerateMoves(board);
-			foreach (Move move in moves) {
-				board.MakeMove(move);
-				value = Math.Max(value, -NegaMax(board, depth - 1));
-				board.UnmakeMove(move);
-			}
-
-			return value;
 		}
 	}
 }
