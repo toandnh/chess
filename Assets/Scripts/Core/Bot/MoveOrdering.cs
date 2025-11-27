@@ -14,27 +14,25 @@ namespace Chess {
 			{ 0,  0,  0,  0,  0,  0,  0 }					// K
 		};
 		
-		public List<Move> ReorderMoves(int[] board, List<Move> moves) {
+		public int BestMoveScoreIndex(int[] board, List<Move> moves, int currIndex) {
 			int score = int.MinValue;
-			int index = -1;
 			
-			for (int i = 0; i < moves.Count; i++) {
-				if (!moves[i].IsCapture) continue;
+			for (int moveIndex = currIndex; moveIndex < moves.Count; moveIndex++) {
+				if (!moves[moveIndex].IsCapture) continue;
 
-				int movePiece = Piece.PieceType(board[moves[i].StartSquare]);
-				int capturePiece = Piece.PieceType(board[moves[i].TargetSquare]);
+				int movePiece = Piece.PieceType(board[moves[moveIndex].StartSquare]);
+				int capturePiece = Piece.PieceType(board[moves[moveIndex].TargetSquare]);
 				
 				if (score < MVV_LVA[capturePiece, movePiece]) {
-					score = MVV_LVA[capturePiece, movePiece];
-					index = i;
+					(score, currIndex) = (MVV_LVA[capturePiece, movePiece], moveIndex);
 				}
 			}
-			
-			if (index != -1) {
-				(moves[0], moves[index]) = (moves[index], moves[0]);
-			}
-			
-			return moves;
+
+			return currIndex;
+		}
+		
+		public void SwapMoves(List<Move> moves, int toIndex, int fromIndex) {
+			(moves[toIndex], moves[fromIndex]) = (moves[fromIndex], moves[toIndex]);
 		}
 	}
 }

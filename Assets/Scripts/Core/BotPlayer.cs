@@ -23,7 +23,7 @@ namespace Chess.Game {
 		}
 
 		void ComputeMove() {
-			int depth = 3;
+			int depth = 5;
 
 			Search search = new Search(board);
 			Move bestMove = search.FindMove(depth);
