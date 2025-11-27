@@ -183,7 +183,7 @@ namespace Chess.Game {
 					}
 				// Try to move the piece to its target position
 				} else {
-					int targetIndex = BoardRepresentation.IndexFromCoord(targetSquare.fileIndex, targetSquare.rankIndex);
+					int targetIndex = BoardRepresentation.IndexFromCoord(targetSquare.FileIndex, targetSquare.RankIndex);
 					if (Piece.IsColor(board.Square[targetIndex], board.ColorToMove) && board.Square[targetIndex] != 0) {
 						CancelPieceSelection();
 						HandlePieceSelection(mousePos);

@@ -38,7 +38,7 @@ namespace Chess {
 		}
 
 		public static int IndexFromCoord(Coord coord) {
-			return IndexFromCoord(coord.fileIndex, coord.rankIndex);
+			return IndexFromCoord(coord.FileIndex, coord.RankIndex);
 		}
 
 		public static Coord CoordFromIndex(int squareIndex) {
@@ -50,7 +50,7 @@ namespace Chess {
 		}
 
 		public static string SquareNameFromCoord(Coord coord) {
-			return SquareNameFromCoord(coord.fileIndex, coord.rankIndex);
+			return SquareNameFromCoord(coord.FileIndex, coord.RankIndex);
 		}
 
 		public static string SquareNameFromIndex(int squareIndex) {

@@ -233,7 +233,7 @@ namespace Chess.Game {
 		}
 
 		public void DragPiece(Coord pieceCoord, Vector2 mousePos) {
-			squarePieceRenderers[pieceCoord.fileIndex, pieceCoord.rankIndex].transform.position = new Vector3(mousePos.x, mousePos.y, pieceDragDepth);
+			squarePieceRenderers[pieceCoord.FileIndex, pieceCoord.RankIndex].transform.position = new Vector3(mousePos.x, mousePos.y, pieceDragDepth);
 		}
 
 		public bool CanGetSquareUnderMouse(Vector2 mouseWorld, out Coord selectedCoord) {
@@ -271,12 +271,12 @@ namespace Chess.Game {
 		}
 
 		void SetSquareColor(Coord square, Color lightCol, Color darkCol) {
-			highlightSquareRenderers[square.fileIndex, square.rankIndex].material.color = (square.IsLightSquare()) ? lightCol : darkCol;
+			highlightSquareRenderers[square.FileIndex, square.RankIndex].material.color = (square.IsLightSquare()) ? lightCol : darkCol;
 		}
 
 		public void ResetPiecePosition(Coord coord) {
-			Vector3 position = PositionFromCoord(coord.fileIndex, coord.rankIndex, pieceDepth);
-			squarePieceRenderers[coord.fileIndex, coord.rankIndex].transform.position = position;
+			Vector3 position = PositionFromCoord(coord.FileIndex, coord.RankIndex, pieceDepth);
+			squarePieceRenderers[coord.FileIndex, coord.RankIndex].transform.position = position;
 		}
 
 		public void ResetSquarePosition() {
@@ -301,7 +301,7 @@ namespace Chess.Game {
 		}
 
 		public Vector3 PositionFromCoord(Coord coord, float depth = 0) {
-			return PositionFromCoord(coord.fileIndex, coord.rankIndex, depth);
+			return PositionFromCoord(coord.FileIndex, coord.RankIndex, depth);
 		}
 
 		public void SetWhitePerspective(bool whitePov) {
