@@ -9,7 +9,7 @@ namespace Chess {
 	public class Board {
 		public int[] Square { get; set; }
 
-		public int[][] Captures { get; set; }
+		public int[, ] Captures { get; set; }
 
 		public PieceList PieceList;
 
@@ -45,9 +45,7 @@ namespace Chess {
 
 			PieceList = new PieceList();
 
-			Captures = new int[2][];
-			Captures[WhiteIndex] = new int[6];
-			Captures[BlackIndex] = new int[6];
+			Captures = new int[2, 6];
 
 			gameStateHistory = new Stack<uint>();
 			zobristKeyHistory = new Stack<ulong>();
@@ -121,7 +119,7 @@ namespace Chess {
 				PieceList.Remove(targetPieceType, OpponentColor, targetPieceSquare);
 
 				// Update captures list
-				Captures[colorToMoveIndex][targetPieceType]++;
+				Captures[colorToMoveIndex, targetPieceType]++;
 
 				CurrentGameState |= (uint) targetPieceType << 8;
 
@@ -243,7 +241,7 @@ namespace Chess {
 
 			if (move.IsCapture) {
 				PieceList.Add((int) capturedPieceType, opponentColor, moveFrom);
-				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][capturedPieceType]--;
+				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex, capturedPieceType]--;
 			}
 			
 			if (move.IsEnPassant) {
@@ -253,7 +251,7 @@ namespace Chess {
 
 				// Add opponent's pawn back to the list
 				PieceList.Add(Piece.Pawn, opponentColor, epPawnSquare);
-				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex][Piece.Pawn]--;
+				Captures[opponentColor == Piece.White ? BlackIndex : WhiteIndex, Piece.Pawn]--;
 
 				// Mark as already handled
 				capturedPiece = 0;

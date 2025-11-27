@@ -13,8 +13,8 @@ namespace Chess {
 
 			bool noChange = true;
 			for (int colorIndex = 0; colorIndex < 2; colorIndex++) { 
-				for (int pieceIndex = 0; pieceIndex < board.Captures[colorIndex].Length; pieceIndex++) { 
-					noChange &= board.Captures[colorIndex][pieceIndex] == 0;
+				for (int pieceIndex = 0; pieceIndex < board.Captures.GetLength(1); pieceIndex++) { 
+					noChange &= board.Captures[colorIndex, pieceIndex] == 0;
 				}
 			}
 
@@ -36,11 +36,11 @@ namespace Chess {
 
 			bool correctlyUpdated = true;
 			for (int colorIndex = 0; colorIndex < 2; colorIndex++) {
-				for (int pieceIndex = 0; pieceIndex < board.Captures[colorIndex].Length; pieceIndex++) { 
+				for (int pieceIndex = 0; pieceIndex < board.Captures.GetLength(1); pieceIndex++) { 
 					if (colorIndex == Board.WhiteIndex && pieceIndex == Piece.Pawn) {
-						correctlyUpdated &= board.Captures[colorIndex][pieceIndex] == 1;
+						correctlyUpdated &= board.Captures[colorIndex, pieceIndex] == 1;
 					} else {
-						correctlyUpdated &= board.Captures[colorIndex][pieceIndex] == 0;
+						correctlyUpdated &= board.Captures[colorIndex, pieceIndex] == 0;
 					}
 				}
 			}
@@ -65,8 +65,8 @@ namespace Chess {
 
 			bool correctlyUpdated = true;
 			for (int colorIndex = 0; colorIndex < 2; colorIndex++) {
-				for (int pieceIndex = 0; pieceIndex < board.Captures[colorIndex].Length; pieceIndex++) { 
-					correctlyUpdated &= board.Captures[colorIndex][pieceIndex] == 0;
+				for (int pieceIndex = 0; pieceIndex < board.Captures.GetLength(1); pieceIndex++) { 
+					correctlyUpdated &= board.Captures[colorIndex, pieceIndex] == 0;
 				}
 			}
 

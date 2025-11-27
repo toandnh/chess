@@ -28,8 +28,8 @@ namespace Chess.Game {
 			ResetCapture(captures);
 
 			float xPosition = -550;
-			for (int pieceType = 1; pieceType < board.Captures[colorIndex].Length; pieceType++) {
-				int numPieces = board.Captures[colorIndex][pieceType];
+			for (int pieceType = 1; pieceType < board.Captures.GetLength(1); pieceType++) {
+				int numPieces = board.Captures[colorIndex, pieceType];
 				if (numPieces == 0) continue;
 
 				float depth = -0.1f;
