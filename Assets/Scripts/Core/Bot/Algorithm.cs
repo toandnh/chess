@@ -8,11 +8,6 @@ namespace Chess {
 		Evaluation evaluation;
 		MoveGenerator moveGenerator;
 		MoveOrdering moveOrdering;
-
-		const int MAX_KILLER_MOVES = 2;
-		const int MAX_PLY = 125;
-
-		int[, ] killerMoves;
 		
 		public Algorithm() {
 			evaluation = new Evaluation();
@@ -42,11 +37,14 @@ namespace Chess {
 
 			List<Move> moves = moveGenerator.GenerateMoves(board);
 			if (moves.Count == 0) return evaluation.Evaluate(board);
+
+			int[] movesScore = moveOrdering.GetMovesScore(board.Square, 0, moves);
 			
 			int value = int.MinValue;
 			
 			for (int moveIndex = 0; moveIndex < moves.Count; moveIndex++) {
-				moveOrdering.SwapMoves(moves, moveIndex, moveOrdering.BestMoveScoreIndex(board.Square, moves, moveIndex));
+				// moveOrdering.SwapMoves(moves, moveIndex, moveOrdering.BestMoveScoreIndex(board.Square, moves, moveIndex));
+				moveOrdering.PickAndSwapMoves(moves, movesScore, moveIndex);
 
 				board.MakeMove(moves[moveIndex]);
 

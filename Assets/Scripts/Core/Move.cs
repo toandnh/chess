@@ -142,5 +142,22 @@ namespace Chess {
 				return BoardRepresentation.SquareNameFromIndex(StartSquare) + "-" + BoardRepresentation.SquareNameFromIndex(TargetSquare);
 			}
 		}
+		
+		public override bool Equals(object obj) {
+			if (obj is not Move move) return false;
+			return moveValue.Equals(move.moveValue) && moveFlag.Equals(move.moveFlag);
+		}
+		
+		public override int GetHashCode() {
+			return moveValue.GetHashCode() ^ moveFlag.GetHashCode();
+		}
+		
+		public static bool operator == (Move move1, Move move2) {
+			return move1.Equals(move2);
+		}
+		
+		public static bool operator != (Move move1, Move move2) {
+			return !move1.Equals(move2);
+		}
 	}
 }
