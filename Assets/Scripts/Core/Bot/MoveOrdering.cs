@@ -14,10 +14,12 @@ namespace Chess {
 			{ 0,  0,  0,  0,  0,  0,  0 }					// K
 		};
 		
-		const int MVV_LVA_OFFSET = int.MinValue;
+		const int MVV_LVA_OFFSET = int.MaxValue - 256;
 
 		const int MAX_KILLER_MOVES_PER_PLY = 2;
-		const int MAX_PLY = 125;
+		const int MAX_PLY = 512;
+
+		const int KILLER_MOVE_VALUE = 10;
 
 		public Move[, ] KillerMoves { get; set; }
 		
@@ -51,11 +53,11 @@ namespace Chess {
 					int movePiece = Piece.PieceType(board[moves[moveIndex].StartSquare]);
 					int capturePiece = Piece.PieceType(board[moves[moveIndex].TargetSquare]);
 
-					score = MVV_LVA[capturePiece, movePiece];
+					score = MVV_LVA_OFFSET + MVV_LVA[capturePiece, movePiece];
 				} else {
 					for (int killerMoveIndex = 0; killerMoveIndex < MAX_KILLER_MOVES_PER_PLY; killerMoveIndex++) {
 						if (moves[moveIndex] == KillerMoves[ply, killerMoveIndex]) {
-							score = 0;
+							score = MVV_LVA_OFFSET - (killerMoveIndex + 1) * KILLER_MOVE_VALUE;
 						}
 					}
 				}
@@ -76,7 +78,7 @@ namespace Chess {
 			(moves[currIndex], moves[chosenIndex]) = (moves[chosenIndex], moves[currIndex]);
 		}
 		
-		public void StoreKillerMove(Move move, int ply) {
+		public void StoreKillerMove(int ply, Move move) {
 			if (move != KillerMoves[ply, 0]) {
 				(KillerMoves[ply, 0], KillerMoves[ply, 1]) = (move, KillerMoves[ply, 0]);
 			}

@@ -82,7 +82,8 @@ namespace Chess.Game {
 
 		public void NewGame(bool humanPlayWhite) {
 			boardUI.SetWhitePerspective(humanPlayWhite);
-			//NewGame(PlayerType.Human, PlayerType.Human);
+			// NewGame(null, PlayerType.Human, PlayerType.Human);
+			// NewGame(null, PlayerType.Bot, PlayerType.Bot);
 			PlayerType player1 = humanPlayWhite ? PlayerType.Human : PlayerType.Bot;
 			PlayerType player2 = player1 == PlayerType.Human ? PlayerType.Bot : PlayerType.Human;
 			NewGame(null, player1, player2);

@@ -19,6 +19,8 @@ namespace Chess {
 		// Bits 0-3 store the castle rights;
 		// Bits 4-7 store the en passant file (1 - 8);
 		// Bits 8-10 store the captured piece type.
+		// Bits 11-16 store the halfmove clock
+		// Bit 17 onwards store the fullmove number
 		public uint CurrentGameState;
 		Stack<uint> gameStateHistory;
 
@@ -31,8 +33,8 @@ namespace Chess {
 		public int OpponentColor;
 
 		// & masks
-		const uint castleRightsMask = 0b00000001111;
-		const uint capturedPieceTypeMask = 0b11100000000;
+		const uint castleRightsMask = 0b1111;
+		const uint capturedPieceTypeMask = 0b111 << 8;
 
 		// | masks
 		const uint whiteCastleKingSideMask = 0b11111111110;
@@ -102,8 +104,11 @@ namespace Chess {
 			int targetPieceSquare = move.IsEnPassant ? epPawnSquare : moveTo;
 			int targetPieceType = Piece.PieceType(Square[targetPieceSquare]);
 
-			uint prevCastleRights = CurrentGameState & castleRightsMask; 
-			uint currCastleRights = prevCastleRights; 
+			uint prevCastleRights = CurrentGameState & castleRightsMask;
+			uint currCastleRights = prevCastleRights;
+
+			uint halfMoveClock = (CurrentGameState >> 11) & 0b111111;
+			uint fullMoveNumber = (CurrentGameState >> 17) & 0b1111111;
 
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
@@ -151,7 +156,7 @@ namespace Chess {
 					break;
 				case Move.Flag.PawnTwoForward:
 					uint file = (uint) BoardRepresentation.FileIndex(moveFrom) + 1;
-					CurrentGameState |= (file << 4);
+					CurrentGameState |= (uint) file << 4;
 					CurrentZobristKey = Zobrist.UpdateEnpassantFile(CurrentZobristKey, file);
 
 					break;
@@ -214,12 +219,15 @@ namespace Chess {
 			if (currCastleRights != prevCastleRights) {
 				CurrentZobristKey = Zobrist.UpdateCastleRights(CurrentZobristKey, prevCastleRights, currCastleRights);
 			}
-
-			gameStateHistory.Push(CurrentGameState);
-
+			
 			if (!WhiteToMove) {
 				CurrentZobristKey = Zobrist.UpdateSideToMove(CurrentZobristKey);
+				fullMoveNumber++;
 			}
+			
+			CurrentGameState |= (uint) fullMoveNumber << 17;
+
+			gameStateHistory.Push(CurrentGameState);
 
 			zobristKeyHistory.Push(CurrentZobristKey);
 

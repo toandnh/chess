@@ -53,7 +53,12 @@ namespace Chess {
 				board.UnmakeMove(moves[moveIndex]);
 
 				alpha = Max(alpha, value);
-				if (alpha >= beta) break;
+				if (alpha >= beta) {
+					int ply = (int) ((board.CurrentGameState >> 17) & 0b1111111) * 2;
+					ply = board.WhiteToMove ? ply + 1 : ply + 2;
+					moveOrdering.StoreKillerMove(ply, moves[moveIndex]);
+					break;
+				}
 			}
 
 			return value;

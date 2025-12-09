@@ -10,7 +10,8 @@ namespace Chess {
 			public bool BlackCastleQueenSide;
 			public int EpFile;
 			public bool WhiteToMove;
-			public int PlyCount;
+			public int HalfMoveClock;
+			public int FullMoveNumber;
 
 			public LoadedPositionInfo() {
 				Squares = new int[64];
@@ -69,7 +70,10 @@ namespace Chess {
 			}
 
 			// Halfmove clock
-			int.TryParse(sections[4], out loadedPositionInfo.PlyCount);
+			int.TryParse(sections[4], out loadedPositionInfo.HalfMoveClock);
+
+			// Fullmove number
+			int.TryParse(sections[5], out loadedPositionInfo.FullMoveNumber);
 
 			return loadedPositionInfo;
 		}
@@ -135,9 +139,9 @@ namespace Chess {
 			fen += ' ';
 
 			bool whiteKingSide = (board.CurrentGameState & 1) == 1;
-			bool whiteQueenSide = (board.CurrentGameState >> 1 & 1) == 1;
-			bool blackKingSide = (board.CurrentGameState >> 2 & 1) == 1;
-			bool blackQueenSide = (board.CurrentGameState >> 3 & 1) == 1;
+			bool whiteQueenSide = (board.CurrentGameState & (1 << 1)) == 1;
+			bool blackKingSide = (board.CurrentGameState & (1 << 2)) == 1;
+			bool blackQueenSide = (board.CurrentGameState & (1 << 3)) == 1;
 
 			fen += whiteKingSide ? 'K' : "";
 			fen += whiteQueenSide ? 'Q' : "";
@@ -149,7 +153,7 @@ namespace Chess {
 			// En passant
 			fen += ' ';
 
-			int epFile = (int) board.CurrentGameState >> 4 & 0b1111;
+			int epFile = (int) (board.CurrentGameState >> 4) & 0b1111;
 			if (epFile == 0) {
 				fen += '-';
 			} else {
@@ -158,13 +162,13 @@ namespace Chess {
 				fen += fileName + epRank;	
 			}
 
-			// 50 move counter
+			// 50-move clock
 			fen += ' ';
-			fen += ' ';
+			fen += (int) (board.CurrentGameState >> 11) & 0b111111;
 
 			// Full move counter
 			fen += ' ';
-			fen += ' ';
+			fen += (int) (board.CurrentGameState >> 17) & 0b11111111;
 
 			return fen;
 		}

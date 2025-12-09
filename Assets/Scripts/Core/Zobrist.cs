@@ -9,7 +9,7 @@ namespace Chess {
 		const ulong SEED = 7997;
 
 		// [squareIndex, pieceType (1 - 6), pieceColor (0, 1)]
-		static readonly ulong[,,] piecesArray = new ulong[64, 7, 2];
+		static readonly ulong[, , ] piecesArray = new ulong[64, 7, 2];
 		static readonly ulong[] castleRights = new ulong[16];
 		// From 1 to 8
 		static readonly ulong[] enpassantFile = new ulong[9];
@@ -51,7 +51,7 @@ namespace Chess {
 
 			zobristKey ^= castleRights[board.CurrentGameState & 0b1111];
 
-			zobristKey ^= enpassantFile[(board.CurrentGameState >> 4) & 0b1111];
+			zobristKey ^= enpassantFile[board.CurrentGameState & (0b1111 << 4)];
 
 			if (!board.WhiteToMove) {
 				zobristKey ^= sideToMove;
