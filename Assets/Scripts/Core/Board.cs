@@ -24,6 +24,11 @@ namespace Chess {
 		public uint CurrentGameState;
 		Stack<uint> gameStateHistory;
 
+		const int EnPassantOffset = 4;
+		const int CapturedOffset = 8;
+		const int HalfMoveOffset = 11;
+		const int FullMoveOffset = 17;
+
 		public ulong CurrentZobristKey;
 		Stack<ulong> zobristKeyHistory;
 
@@ -107,16 +112,20 @@ namespace Chess {
 			uint prevCastleRights = CurrentGameState & castleRightsMask;
 			uint currCastleRights = prevCastleRights;
 
-			uint halfMoveClock = (CurrentGameState >> 11) & 0b111111;
-			uint fullMoveNumber = (CurrentGameState >> 17) & 0b1111111;
+			uint halfMoveClock = (CurrentGameState >> HalfMoveOffset) & 0b111111;
+			uint fullMoveNumber = (CurrentGameState >> FullMoveOffset) & 0b1111111;
 
 			int movePiece = Square[moveFrom];
 			int movePieceType = Piece.PieceType(movePiece);
 
 			int colorToMoveIndex = ColorToMove == Piece.White ? WhiteIndex : BlackIndex;
 			int opponentColorIndex = ColorToMove == Piece.White ? BlackIndex : WhiteIndex;
-			
+
 			CurrentGameState = 0;
+
+			bool fiftyMovesReset = false;
+
+			if (movePieceType == Piece.Pawn) fiftyMovesReset = true;
 
 			// Capture move, outside the switch clause because of capture-into-promote moves
 			if (move.IsCapture || move.IsEnPassant) {
@@ -126,7 +135,7 @@ namespace Chess {
 				// Update captures list
 				Captures[colorToMoveIndex, targetPieceType]++;
 
-				CurrentGameState |= (uint) targetPieceType << 8;
+				CurrentGameState |= (uint) targetPieceType << CapturedOffset;
 
 				// Remove capture piece from zobrist key
 				CurrentZobristKey = Zobrist.UpdatePieces(CurrentZobristKey, targetPieceSquare, targetPieceType, opponentColorIndex);
@@ -135,6 +144,8 @@ namespace Chess {
 				if (move.IsEnPassant) {
 					Square[epPawnSquare] = Piece.None;
 				}
+
+				fiftyMovesReset = true;
 			}
 
 			// Handle special moves
@@ -156,7 +167,7 @@ namespace Chess {
 					break;
 				case Move.Flag.PawnTwoForward:
 					uint file = (uint) BoardRepresentation.FileIndex(moveFrom) + 1;
-					CurrentGameState |= (uint) file << 4;
+					CurrentGameState |= (uint) file << EnPassantOffset;
 					CurrentZobristKey = Zobrist.UpdateEnpassantFile(CurrentZobristKey, file);
 
 					break;
@@ -224,8 +235,9 @@ namespace Chess {
 				CurrentZobristKey = Zobrist.UpdateSideToMove(CurrentZobristKey);
 				fullMoveNumber++;
 			}
-			
-			CurrentGameState |= (uint) fullMoveNumber << 17;
+
+			if (!fiftyMovesReset) CurrentGameState |= (uint) (halfMoveClock + 1) << HalfMoveOffset;
+			CurrentGameState |= (uint) fullMoveNumber << FullMoveOffset;
 
 			gameStateHistory.Push(CurrentGameState);
 
@@ -313,6 +325,29 @@ namespace Chess {
 			CurrentZobristKey = zobristKeyHistory.Peek();
 
 			UpdateSideToMove(!WhiteToMove);
+		}
+		
+		public bool DrawByFiftyMovesRule() {
+			return ((int) CurrentGameState >> HalfMoveOffset) >= 100;
+		}
+		
+		public bool DrawByThreeFoldRep() {
+			var zobristKeys = new ulong[zobristKeyHistory.Count];
+			zobristKeyHistory.CopyTo(zobristKeys, 0);
+
+			var gameStates = new uint[gameStateHistory.Count];
+			gameStateHistory.CopyTo(gameStates, 0);
+
+			var currZobristKey = zobristKeys[zobristKeys.Length - 1];
+
+			int count = 0;
+			for (int i = 0; i < zobristKeys.Length; i++) {
+				if (zobristKeys[i] == currZobristKey) count++;
+				// Half move clock set to 0 indicates this position was created by a capture or a pawn move
+				if (((int) gameStates[i] >> HalfMoveOffset) == 0) break;
+			}
+
+			return count >= 2;
 		}
 
 		void UpdateSideToMove(bool whiteToMove) {
