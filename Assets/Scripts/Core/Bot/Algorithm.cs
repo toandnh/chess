@@ -43,7 +43,6 @@ namespace Chess {
 			int value = int.MinValue;
 			
 			for (int moveIndex = 0; moveIndex < moves.Count; moveIndex++) {
-				// moveOrdering.SwapMoves(moves, moveIndex, moveOrdering.BestMoveScoreIndex(board.Square, moves, moveIndex));
 				moveOrdering.PickAndSwapMoves(moves, movesScore, moveIndex);
 
 				board.MakeMove(moves[moveIndex]);
@@ -54,7 +53,7 @@ namespace Chess {
 
 				alpha = Max(alpha, value);
 				if (alpha >= beta) {
-					int ply = (int) ((board.CurrentGameState >> 17) & 0b1111111) * 2;
+					int ply = (int) ((board.CurrentGameState >> Board.FullMoveOffset) & 0b1111111) * 2;
 					ply = board.WhiteToMove ? ply + 1 : ply + 2;
 					moveOrdering.StoreKillerMove(ply, moves[moveIndex]);
 					break;

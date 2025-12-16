@@ -26,23 +26,6 @@ namespace Chess {
 		public MoveOrdering() {
 			KillerMoves = new Move[MAX_PLY, MAX_KILLER_MOVES_PER_PLY];
 		}
-
-		public int BestMoveScoreIndex(int[] board, List<Move> moves, int currIndex) {
-			int score = int.MinValue;
-
-			for (int moveIndex = currIndex; moveIndex < moves.Count; moveIndex++) {
-				if (moves[moveIndex].IsCapture) {
-					int movePiece = Piece.PieceType(board[moves[moveIndex].StartSquare]);
-					int capturePiece = Piece.PieceType(board[moves[moveIndex].TargetSquare]);
-
-					if (score < MVV_LVA[capturePiece, movePiece]) {
-						(score, currIndex) = (MVV_LVA[capturePiece, movePiece], moveIndex);
-					}
-				}
-			}
-
-			return currIndex;
-		}
 		
 		public int[] GetMovesScore(int[] board, int ply, List<Move> moves) {
 			int[] movesScore = new int[moves.Count];
@@ -68,13 +51,13 @@ namespace Chess {
 		}
 		
 		public void PickAndSwapMoves(List<Move> moves, int[] movesScore, int currIndex) {
-			int currScore = movesScore[currIndex];
 			int chosenIndex = currIndex;
 
 			for (int moveIndex = currIndex; moveIndex < movesScore.Length; moveIndex++) {
-				chosenIndex = currScore < movesScore[moveIndex] ? moveIndex : currIndex; 
+				chosenIndex = movesScore[currIndex] < movesScore[moveIndex] ? moveIndex : currIndex; 
 			}
 			
+			(movesScore[currIndex], movesScore[chosenIndex]) = (movesScore[chosenIndex], movesScore[currIndex]);
 			(moves[currIndex], moves[chosenIndex]) = (moves[chosenIndex], moves[currIndex]);
 		}
 		

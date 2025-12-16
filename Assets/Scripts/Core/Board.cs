@@ -24,10 +24,10 @@ namespace Chess {
 		public uint CurrentGameState;
 		Stack<uint> gameStateHistory;
 
-		const int EnPassantOffset = 4;
-		const int CapturedOffset = 8;
-		const int HalfMoveOffset = 11;
-		const int FullMoveOffset = 17;
+		public const int EnPassantOffset = 4;
+		public const int CapturedOffset = 8;
+		public const int HalfMoveOffset = 11;
+		public const int FullMoveOffset = 17;
 
 		public ulong CurrentZobristKey;
 		Stack<ulong> zobristKeyHistory;

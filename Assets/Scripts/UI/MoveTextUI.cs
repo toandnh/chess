@@ -4,8 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 
 namespace Chess.Game {
-	public class MoveTextUI : MonoBehaviour
-	{
+	public class MoveTextUI : MonoBehaviour {
 		public MoveTextTheme moveTextTheme;
 
 		public TMP_FontAsset FontAsset;
